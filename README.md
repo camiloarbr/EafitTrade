@@ -21,7 +21,6 @@ Create a centralized platform where EAFIT students, professors, and staff can ea
 - **Key Features**:
   - Detailed and categorized vendor information.
   - Intuitive interface with advanced filters.
-  - Direct contact with vendors.
 - **Feasibility**: Can be developed using accessible web and mobile technologies.
 
 ## Business Goals
@@ -30,7 +29,6 @@ Create a centralized platform where EAFIT students, professors, and staff can ea
   - Supports digital transformation and innovation at EAFIT.
 - **Commercial Objectives**:
   - Increase visibility and sales for vendors.
-  - Potential monetization through premium subscriptions or advertising.
 
 ---
 
