@@ -128,7 +128,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Agregar configuración de login
+# Login configuration
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
+
+# Message configuration
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'

@@ -1,13 +1,25 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, HttpResponseForbidden
-from .models import Product
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
+from .models import Product, Comment, Favorite
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import ProductForm
+from .forms import ProductForm, CommentForm
+from django.views.decorators.http import require_POST
+from django.contrib.auth.forms import UserCreationForm
 
 def home(request):
     products = Product.objects.filter(available=True).order_by('-published_at')
-    return render(request, 'products/home.html', {'products': products})
+    
+    # Si el usuario está autenticado, obtener sus favoritos
+    user_favorites = []
+    if request.user.is_authenticated:
+        user_favorites = Favorite.objects.filter(user=request.user).values_list('product_id', flat=True)
+    
+    context = {
+        'products': products,
+        'user_favorites': user_favorites,
+    }
+    return render(request, 'products/home.html', context)
 
 @login_required
 def add_product(request):
@@ -64,5 +76,81 @@ def delete_product(request, product_id):
         return redirect('home')
     
     return render(request, 'products/confirm_delete.html', {'product': product})
+
+@login_required
+@require_POST
+def add_comment(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    form = CommentForm(request.POST)
+    
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.product = product
+        comment.user = request.user
+        comment.save()
+        messages.success(request, '¡Comentario agregado exitosamente!')
+    else:
+        messages.error(request, 'Error al agregar el comentario. Por favor, inténtalo de nuevo.')
+    
+    return redirect('product_detail', product_id=product_id)
+
+@login_required
+@require_POST
+def delete_comment(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    
+    if comment.user != request.user:
+        messages.error(request, 'No tienes permiso para eliminar este comentario.')
+        return redirect('product_detail', product_id=comment.product.id)
+    
+    product_id = comment.product.id
+    comment.delete()
+    messages.success(request, 'Comentario eliminado exitosamente.')
+    
+    return redirect('product_detail', product_id=product_id)
+
+@login_required
+@require_POST
+def toggle_favorite(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    favorite, created = Favorite.objects.get_or_create(
+        user=request.user,
+        product=product
+    )
+    
+    if not created:
+        favorite.delete()
+        return JsonResponse({'status': 'removed'})
+    
+    return JsonResponse({'status': 'added'})
+
+@login_required
+def favorites_list(request):
+    favorites = Favorite.objects.filter(user=request.user)
+    return render(request, 'products/favorites.html', {
+        'favorites': favorites
+    })
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, '¡Cuenta creada exitosamente! Ahora puedes iniciar sesión.')
+            return redirect('login')
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})
+
+def product_detail(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    comments = product.comments.all().order_by('-created_at')
+    comment_form = CommentForm() if request.user.is_authenticated else None
+    
+    return render(request, 'products/product_detail.html', {
+        'product': product,
+        'comments': comments,
+        'comment_form': comment_form
+    })
 
 # Create your views here.

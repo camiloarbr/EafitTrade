@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product
+from .models import Product, Comment, Favorite
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -7,3 +7,16 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ('category', 'condition', 'available')
     search_fields = ('name', 'description', 'tags')
     date_hierarchy = 'published_at'
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('user', 'product', 'created_at')
+    list_filter = ('created_at',)
+    search_fields = ('text', 'user__username', 'product__name')
+    date_hierarchy = 'created_at'
+
+@admin.register(Favorite)
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = ('user', 'product', 'created_at')
+    list_filter = ('created_at',)
+    search_fields = ('user__username', 'product__name')

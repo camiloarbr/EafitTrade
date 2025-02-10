@@ -1,48 +1,141 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Agregar Producto - EAFIT Trade</title>
-    <style>
-        /* Copiar los estilos de edit_product.html */
-    </style>
-</head>
-<body>
-    <div class="form-container">
-        <h1>Agregar Nuevo Producto</h1>
+{% extends 'products/base.html' %}
+
+{% block title %}Agregar Producto - EAFIT Trade{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .form-container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="number"],
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    .transfer-fields {
+        display: none;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        margin-top: 10px;
+    }
+    .button {
+        background-color: #2ecc71;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .button:hover {
+        background-color: #27ae60;
+    }
+    .save-button {
+        background-color: #2ecc71;
+        color: white;
+    }
+    .cancel-button {
+        background-color: #e74c3c;
+        color: white;
+        text-decoration: none;
+        display: inline-block;
+        margin-left: 10px;
+    }
+    .error-message {
+        color: #e74c3c;
+        font-size: 0.9em;
+        margin-top: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Agregar Nuevo Producto</h2>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
         
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            
-            {% for field in form %}
-                <div class="form-group {% if field.name in 'account_number,account_type,qr_code' %}transfer-fields{% endif %}">
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {% for field in form %}
+            {% if field.name not in 'account_number,account_type,qr_code' %}
+                <div class="form-group">
+                    {{ field.label_tag }}
                     {{ field }}
-                    {% if field.errors %}
-                        {% for error in field.errors %}
-                            <p class="error-message">{{ error }}</p>
-                        {% endfor %}
-                    {% endif %}
                     {% if field.help_text %}
-                        <small class="help-text">{{ field.help_text }}</small>
+                        <small>{{ field.help_text }}</small>
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="error-message">
+                            {{ field.errors }}
+                        </div>
                     {% endif %}
                 </div>
-            {% endfor %}
+            {% endif %}
+        {% endfor %}
+        
+        <div id="transfer-fields" class="transfer-fields">
+            <h3>Información de Transferencia</h3>
+            {{ form.account_type.label_tag }}
+            {{ form.account_type }}
+            
+            {{ form.account_number.label_tag }}
+            {{ form.account_number }}
+            
+            {{ form.qr_code.label_tag }}
+            {{ form.qr_code }}
+        </div>
+        
+        <button type="submit" class="button">Crear Producto</button>
+        <a href="{% url 'home' %}" class="button cancel-button">Cancelar</a>
+    </form>
+</div>
 
-            <button type="submit" class="button save-button">Crear Producto</button>
-            <a href="{% url 'home' %}" class="button cancel-button">Cancelar</a>
-        </form>
-    </div>
+<script>
+    function handlePaymentMethodChange() {
+        const paymentMethod = document.querySelector('#id_payment_method').value;
+        const transferFields = document.querySelector('#transfer-fields');
+        const transferInputs = transferFields.querySelectorAll('input, select');
+        
+        if (paymentMethod === 'Transferencia') {
+            transferFields.style.display = 'block';
+            transferInputs.forEach(input => {
+                input.required = true;
+            });
+        } else {
+            transferFields.style.display = 'none';
+            transferInputs.forEach(input => {
+                input.required = false;
+                input.value = '';
+            });
+        }
+    }
 
-    <script>
-        // Copiar el script de edit_product.html
-    </script>
-</body>
-</html> 
+    document.querySelector('#id_payment_method').addEventListener('change', handlePaymentMethodChange);
+    handlePaymentMethodChange(); // Ejecutar al cargar la página
+</script>
+{% endblock %} 

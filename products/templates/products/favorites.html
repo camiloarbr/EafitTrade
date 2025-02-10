@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mis Favoritos - EAFIT Trade</title>
+    <style>
+        .favorites-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .favorite-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+        }
+        .favorite-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+        .favorite-info {
+            flex-grow: 1;
+        }
+        .remove-favorite {
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="favorites-container">
+        <h1>Mis Productos Favoritos</h1>
+        
+        {% if favorites %}
+            {% for favorite in favorites %}
+                <div class="favorite-item" id="favorite-{{ favorite.product.id }}">
+                    {% if favorite.product.image %}
+                        <img src="{{ favorite.product.image.url }}" alt="{{ favorite.product.name }}" class="favorite-image">
+                    {% endif %}
+                    <div class="favorite-info">
+                        <h3>{{ favorite.product.name }}</h3>
+                        <p>Precio: ${{ favorite.product.price }}</p>
+                        <p>Vendedor: {{ favorite.product.seller.username }}</p>
+                    </div>
+                    <button class="remove-favorite" onclick="toggleFavorite({{ favorite.product.id }})">
+                        Quitar de favoritos
+                    </button>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No tienes productos favoritos aún.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        function toggleFavorite(productId) {
+            fetch(`/favorite/toggle/${productId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'removed') {
+                    document.getElementById(`favorite-${productId}`).remove();
+                }
+            });
+        }
+    </script>
+</body>
+</html> 

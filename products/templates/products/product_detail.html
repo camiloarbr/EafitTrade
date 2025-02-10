@@ -1,0 +1,177 @@
+{% extends 'products/base.html' %}
+
+{% block title %}{{ product.name }} - EAFIT Trade{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .product-container {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 2rem;
+        margin: 20px 0;
+    }
+    .product-image {
+        width: 100%;
+        max-height: 400px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+    .product-info {
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+    .payment-info {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: white;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+    .comments-section {
+        margin-top: 30px;
+    }
+    .comment {
+        padding: 15px;
+        border-bottom: 1px solid #ddd;
+        margin-bottom: 15px;
+    }
+    .comment-form {
+        margin-top: 20px;
+    }
+    .comment-input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    .price {
+        font-size: 24px;
+        color: #2ecc71;
+        font-weight: bold;
+    }
+    .qr-code {
+        max-width: 200px;
+        margin-top: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="product-container">
+    <div class="image-section">
+        {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+        {% endif %}
+    </div>
+    
+    <div class="product-info">
+        <h1>{{ product.name }}</h1>
+        <p class="price">${{ product.price }}</p>
+        <p><strong>Categoría:</strong> {{ product.get_category_display }}</p>
+        <p><strong>Estado:</strong> {{ product.get_condition_display }}</p>
+        <p><strong>Cantidad disponible:</strong> {{ product.quantity }}</p>
+        <p><strong>Descripción:</strong><br>{{ product.description }}</p>
+        
+        <div class="payment-info">
+            <h3>Información de Pago</h3>
+            <p><strong>Método:</strong> {{ product.get_payment_method_display }}</p>
+            
+            {% if product.payment_method == 'Transferencia' %}
+                <p><strong>Tipo de cuenta:</strong> {{ product.get_account_type_display }}</p>
+                <p><strong>Número de cuenta:</strong> {{ product.account_number }}</p>
+                {% if product.qr_code %}
+                    <img src="{{ product.qr_code.url }}" alt="Código QR" class="qr-code">
+                {% endif %}
+            {% endif %}
+        </div>
+        
+        {% if user.is_authenticated %}
+            <button 
+                onclick="toggleFavorite({{ product.id }})" 
+                class="button" 
+                id="favorite-btn-{{ product.id }}"
+            >
+                {% if product.id in user_favorites %}
+                    Quitar de favoritos
+                {% else %}
+                    Añadir a favoritos
+                {% endif %}
+            </button>
+        {% endif %}
+    </div>
+</div>
+
+<div class="comments-section">
+    <h2>Comentarios</h2>
+    
+    {% if user.is_authenticated %}
+        <form method="post" action="{% url 'add_comment' product.id %}" class="comment-form">
+            {% csrf_token %}
+            {{ comment_form.text }}
+            <button type="submit" class="button">Comentar</button>
+        </form>
+    {% else %}
+        <p>
+            <a href="{% url 'login' %}?next={{ request.path }}">Inicia sesión</a> 
+            para comentar
+        </p>
+    {% endif %}
+
+    {% for comment in comments %}
+        <div class="comment">
+            <p><strong>{{ comment.user.username }}</strong> - {{ comment.created_at|date:"d/m/Y H:i" }}</p>
+            <p>{{ comment.text }}</p>
+            {% if user == comment.user %}
+                <form method="post" action="{% url 'delete_comment' comment.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="button" 
+                            onclick="return confirm('¿Estás seguro de que quieres eliminar este comentario?')">
+                        Eliminar
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    {% empty %}
+        <p>No hay comentarios aún.</p>
+    {% endfor %}
+</div>
+
+<script>
+    function toggleFavorite(productId) {
+        fetch(`/favorite/toggle/${productId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json'
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+            const button = document.getElementById(`favorite-btn-${productId}`);
+            if (data.status === 'added') {
+                button.textContent = 'Quitar de favoritos';
+            } else {
+                button.textContent = 'Añadir a favoritos';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    // Función para confirmar eliminación de comentarios
+    function confirmDelete(event) {
+        if (!confirm('¿Estás seguro de que quieres eliminar este comentario?')) {
+            event.preventDefault();
+        }
+    }
+
+    // Agregar event listeners a los botones de eliminar comentarios
+    document.querySelectorAll('.delete-comment-btn').forEach(button => {
+        button.addEventListener('click', confirmDelete);
+    });
+</script>
+{% endblock %} 

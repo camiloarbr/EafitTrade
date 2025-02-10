@@ -31,6 +31,18 @@ urlpatterns = [
     # Agregar estas URLs para la autenticación
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
+    path('register/', products_views.register, name='register'),
+    
+    # URLs para comentarios
+    path('comment/add/<int:product_id>/', products_views.add_comment, name='add_comment'),
+    path('comment/delete/<int:comment_id>/', products_views.delete_comment, name='delete_comment'),
+    
+    # URLs para favoritos
+    path('favorite/toggle/<int:product_id>/', products_views.toggle_favorite, name='toggle_favorite'),
+    path('favorites/', products_views.favorites_list, name='favorites_list'),
+    
+    # Product detail URL
+    path('product/<int:product_id>/', products_views.product_detail, name='product_detail'),
 ]
 
 if settings.DEBUG:
