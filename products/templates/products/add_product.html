@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Agregar Producto - EAFIT Trade</title>
+    <style>
+        /* Copiar los estilos de edit_product.html */
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Agregar Nuevo Producto</h1>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div class="form-group {% if field.name in 'account_number,account_type,qr_code' %}transfer-fields{% endif %}">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                            <p class="error-message">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                    {% if field.help_text %}
+                        <small class="help-text">{{ field.help_text }}</small>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="button save-button">Crear Producto</button>
+            <a href="{% url 'home' %}" class="button cancel-button">Cancelar</a>
+        </form>
+    </div>
+
+    <script>
+        // Copiar el script de edit_product.html
+    </script>
+</body>
+</html> 

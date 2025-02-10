@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Eliminar Producto - EAFIT Trade</title>
+    <style>
+        .delete-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+        .delete-button {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .cancel-button {
+            background-color: #95a5a6;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="delete-container">
+        <h1>Confirmar Eliminación</h1>
+        <p>¿Estás seguro de que deseas eliminar el producto "{{ product.name }}"?</p>
+        
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="button delete-button">Sí, eliminar</button>
+            <a href="{% url 'home' %}" class="button cancel-button">Cancelar</a>
+        </form>
+    </div>
+</body>
+</html> 
