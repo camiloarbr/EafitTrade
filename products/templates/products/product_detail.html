@@ -4,140 +4,275 @@
 
 {% block extra_styles %}
 <style>
-    .product-container {
-        display: grid;
-        grid-template-columns: 1fr 2fr;
-        gap: 2rem;
-        margin: 20px 0;
+    .product-section {
+        background-color: #f8f9fa;
+        padding: 2rem 0;
     }
+    
+    .product-card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    
     .product-image {
         width: 100%;
-        max-height: 400px;
+        height: 400px;
         object-fit: cover;
-        border-radius: 8px;
     }
+    
     .product-info {
-        padding: 20px;
-        background-color: #f8f9fa;
-        border-radius: 8px;
+        padding: 2rem;
     }
-    .payment-info {
-        margin-top: 20px;
-        padding: 15px;
-        background-color: white;
-        border-radius: 8px;
-        border: 1px solid #ddd;
-    }
-    .comments-section {
-        margin-top: 30px;
-    }
-    .comment {
-        padding: 15px;
-        border-bottom: 1px solid #ddd;
-        margin-bottom: 15px;
-    }
-    .comment-form {
-        margin-top: 20px;
-    }
-    .comment-input {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-    }
+    
     .price {
-        font-size: 24px;
-        color: #2ecc71;
+        font-size: 2rem;
         font-weight: bold;
+        color: var(--primary-color);
     }
-    .qr-code {
-        max-width: 200px;
-        margin-top: 10px;
+    
+    .seller-info {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        background-color: #f8f9fa;
+        border-radius: 2rem;
+        margin: 1rem 0;
+    }
+    
+    .seller-avatar {
+        width: 30px;
+        height: 30px;
+        background-color: var(--primary-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        margin-right: 0.5rem;
+    }
+    
+    .payment-info {
+        background-color: #f8f9fa;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+    }
+    
+    .category-badge {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin: 1.5rem 0;
+    }
+    
+    .btn-action {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+    
+    .btn-action:hover {
+        transform: translateY(-2px);
+    }
+    
+    .favorite-btn {
+        background: none;
+        border: none;
+        color: #dc3545;
+        font-size: 1.5rem;
+        transition: transform 0.2s;
+    }
+    
+    .favorite-btn:hover {
+        transform: scale(1.1);
+    }
+    
+    /* Comentarios */
+    .comments-section {
+        margin-top: 2rem;
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    
+    .comment {
+        border-bottom: 1px solid #eee;
+        padding: 1rem 0;
+    }
+    
+    .comment:last-child {
+        border-bottom: none;
+    }
+    
+    .comment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .comment-user {
+        font-weight: 500;
+        color: var(--primary-color);
+    }
+    
+    .comment-date {
+        font-size: 0.875rem;
+        color: var(--secondary-color);
+    }
+    
+    .comment-form textarea {
+        border-radius: 0.5rem;
+        padding: 1rem;
+        resize: none;
+    }
+    
+    @media (max-width: 767.98px) {
+        .product-image {
+            height: 300px;
+        }
+        
+        .product-info {
+            padding: 1.5rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="product-container">
-    <div class="image-section">
-        {% if product.image %}
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
-        {% endif %}
-    </div>
-    
-    <div class="product-info">
-        <h1>{{ product.name }}</h1>
-        <p class="price">${{ product.price }}</p>
-        <p><strong>Categoría:</strong> {{ product.get_category_display }}</p>
-        <p><strong>Estado:</strong> {{ product.get_condition_display }}</p>
-        <p><strong>Cantidad disponible:</strong> {{ product.quantity }}</p>
-        <p><strong>Descripción:</strong><br>{{ product.description }}</p>
-        
-        <div class="payment-info">
-            <h3>Información de Pago</h3>
-            <p><strong>Método:</strong> {{ product.get_payment_method_display }}</p>
-            
-            {% if product.payment_method == 'Transferencia' %}
-                <p><strong>Tipo de cuenta:</strong> {{ product.get_account_type_display }}</p>
-                <p><strong>Número de cuenta:</strong> {{ product.account_number }}</p>
-                {% if product.qr_code %}
-                    <img src="{{ product.qr_code.url }}" alt="Código QR" class="qr-code">
-                {% endif %}
-            {% endif %}
+<section class="product-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <a href="{% url 'home' %}" class="btn btn-outline-primary mb-4">
+                    <i class="fas fa-arrow-left me-2"></i>Volver al Inicio
+                </a>
+            </div>
         </div>
         
-        {% if user.is_authenticated %}
-            <button 
-                onclick="toggleFavorite({{ product.id }})" 
-                class="button" 
-                id="favorite-btn-{{ product.id }}"
-            >
-                {% if product.id in user_favorites %}
-                    Quitar de favoritos
-                {% else %}
-                    Añadir a favoritos
-                {% endif %}
-            </button>
-        {% endif %}
-    </div>
-</div>
-
-<div class="comments-section">
-    <h2>Comentarios</h2>
-    
-    {% if user.is_authenticated %}
-        <form method="post" action="{% url 'add_comment' product.id %}" class="comment-form">
-            {% csrf_token %}
-            {{ comment_form.text }}
-            <button type="submit" class="button">Comentar</button>
-        </form>
-    {% else %}
-        <p>
-            <a href="{% url 'login' %}?next={{ request.path }}">Inicia sesión</a> 
-            para comentar
-        </p>
-    {% endif %}
-
-    {% for comment in comments %}
-        <div class="comment">
-            <p><strong>{{ comment.user.username }}</strong> - {{ comment.created_at|date:"d/m/Y H:i" }}</p>
-            <p>{{ comment.text }}</p>
-            {% if user == comment.user %}
-                <form method="post" action="{% url 'delete_comment' comment.id %}" style="display: inline;">
+        <div class="product-card">
+            <div class="row g-0">
+                <div class="col-md-6">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                    {% else %}
+                        <div class="product-image d-flex align-items-center justify-content-center bg-light">
+                            <i class="fas fa-image fa-3x text-secondary"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <div class="product-info">
+                        <span class="category-badge">
+                            <i class="fas fa-tag me-2"></i>{{ product.get_category_display }}
+                        </span>
+                        
+                        <h1 class="display-5 mb-3">{{ product.name }}</h1>
+                        <p class="price mb-3">${{ product.price }}</p>
+                        
+                        <div class="seller-info">
+                            <div class="seller-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span>{{ product.seller.username }}</span>
+                        </div>
+                        
+                        <p class="lead mb-4">{{ product.description }}</p>
+                        
+                        <div class="action-buttons">
+                            {% if user.is_authenticated %}
+                                <button onclick="toggleFavorite({{ product.id }})" 
+                                        class="favorite-btn" 
+                                        id="favorite-btn-{{ product.id }}">
+                                    <i class="fas fa-heart {% if is_favorite %}text-danger{% else %}text-secondary{% endif %}"></i>
+                                </button>
+                            {% endif %}
+                            
+                            {% if user == product.seller %}
+                                <a href="{% url 'edit_product' product.id %}" class="btn btn-outline-primary btn-action">
+                                    <i class="fas fa-edit me-2"></i>Editar
+                                </a>
+                                <a href="{% url 'delete_product' product.id %}" class="btn btn-outline-danger btn-action">
+                                    <i class="fas fa-trash me-2"></i>Eliminar
+                                </a>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="payment-info">
+                            <h4 class="mb-3">
+                                <i class="fas fa-money-bill me-2"></i>Información de Pago
+                            </h4>
+                            <p class="mb-2"><strong>Método de pago:</strong> {{ product.get_payment_method_display }}</p>
+                            {% if product.payment_method == 'Transferencia' %}
+                                <p class="mb-2"><strong>Tipo de cuenta:</strong> {{ product.get_account_type_display }}</p>
+                                <p class="mb-2"><strong>Número de cuenta:</strong> {{ product.account_number }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sección de Comentarios -->
+        <div class="comments-section">
+            <h3 class="mb-4">
+                <i class="fas fa-comments me-2"></i>Comentarios
+            </h3>
+            
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'add_comment' product.id %}" class="comment-form mb-4">
                     {% csrf_token %}
-                    <button type="submit" class="button" 
-                            onclick="return confirm('¿Estás seguro de que quieres eliminar este comentario?')">
-                        Eliminar
+                    <div class="mb-3">
+                        {{ comment_form.text }}
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-action">
+                        <i class="fas fa-paper-plane me-2"></i>Comentar
                     </button>
                 </form>
             {% endif %}
+            
+            {% for comment in comments %}
+                <div class="comment">
+                    <div class="comment-header">
+                        <span class="comment-user">
+                            <i class="fas fa-user-circle me-2"></i>{{ comment.user.username }}
+                        </span>
+                        <span class="comment-date">
+                            <i class="fas fa-clock me-1"></i>{{ comment.created_at|date:"d/m/Y H:i" }}
+                        </span>
+                    </div>
+                    <p class="mb-2">{{ comment.text }}</p>
+                    {% if user == comment.user %}
+                        <form method="post" action="{% url 'delete_comment' comment.id %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-link text-danger p-0" 
+                                    onclick="return confirm('¿Estás seguro de que quieres eliminar este comentario?')">
+                                <i class="fas fa-trash-alt me-1"></i>Eliminar
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <p class="text-muted text-center">No hay comentarios aún. ¡Sé el primero en comentar!</p>
+            {% endfor %}
         </div>
-    {% empty %}
-        <p>No hay comentarios aún.</p>
-    {% endfor %}
-</div>
+    </div>
+</section>
 
+{% block extra_scripts %}
 <script>
     function toggleFavorite(productId) {
         fetch(`/favorite/toggle/${productId}/`, {
@@ -150,28 +285,16 @@
         })
         .then(response => response.json())
         .then(data => {
-            const button = document.getElementById(`favorite-btn-${productId}`);
+            const button = document.querySelector(`#favorite-btn-${productId} i`);
             if (data.status === 'added') {
-                button.textContent = 'Quitar de favoritos';
+                button.classList.remove('text-secondary');
+                button.classList.add('text-danger');
             } else {
-                button.textContent = 'Añadir a favoritos';
+                button.classList.remove('text-danger');
+                button.classList.add('text-secondary');
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
         });
     }
-
-    // Función para confirmar eliminación de comentarios
-    function confirmDelete(event) {
-        if (!confirm('¿Estás seguro de que quieres eliminar este comentario?')) {
-            event.preventDefault();
-        }
-    }
-
-    // Agregar event listeners a los botones de eliminar comentarios
-    document.querySelectorAll('.delete-comment-btn').forEach(button => {
-        button.addEventListener('click', confirmDelete);
-    });
 </script>
+{% endblock %}
 {% endblock %} 
