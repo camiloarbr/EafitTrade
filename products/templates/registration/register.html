@@ -4,139 +4,197 @@
 
 {% block extra_styles %}
 <style>
-    .auth-container {
-        max-width: 400px;
-        margin: 2rem auto;
+    .auth-section {
+        min-height: calc(100vh - 56px);
+        background-color: var(--primary-color);
+        background-image: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%);
     }
     
     .auth-card {
-        background: white;
-        border-radius: 10px;
+        border-radius: 1rem;
+        overflow: hidden;
         box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        padding: 2rem;
     }
     
-    .auth-header {
-        text-align: center;
+    .auth-image {
+        background-image: url('https://www.eafit.edu.co/Style%20Library/images/logo-universidad-eafit.png');
+        background-size: cover;
+        background-position: center;
+        background-color: #f8f9fa;
+        min-height: 300px;
+    }
+    
+    .auth-form {
+        padding: 3rem;
+    }
+    
+    .brand-wrapper {
         margin-bottom: 2rem;
     }
     
-    .auth-header i {
+    .brand-icon {
         font-size: 2rem;
         color: var(--primary-color);
-        margin-bottom: 1rem;
     }
     
-    .form-floating {
-        margin-bottom: 1rem;
+    .brand-text {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #333;
+        margin: 0;
     }
     
-    .form-floating input {
-        border-radius: 8px;
+    .form-control {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #dee2e6;
+        transition: all 0.2s ease-in-out;
     }
     
-    .auth-footer {
-        text-align: center;
-        margin-top: 1.5rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid #eee;
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .form-label {
+        color: #495057;
+        font-weight: 500;
     }
     
     .btn-auth {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 0.5rem;
         width: 100%;
-        padding: 0.8rem;
         font-weight: 500;
-        margin-top: 1rem;
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .btn-auth:hover {
+        transform: translateY(-1px);
+    }
+    
+    .auth-footer {
+        margin-top: 2rem;
+        text-align: center;
     }
     
     .help-text {
         font-size: 0.875rem;
         color: var(--secondary-color);
-        margin-top: 0.25rem;
+        margin-top: 0.5rem;
+    }
+    
+    @media (max-width: 767.98px) {
+        .auth-image {
+            min-height: 200px;
+        }
+        
+        .auth-form {
+            padding: 2rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="auth-container">
-        <div class="auth-card">
-            <div class="auth-header">
-                <i class="fas fa-user-plus"></i>
-                <h2>Crear Cuenta</h2>
-            </div>
+<section class="auth-section py-5">
+    <div class="container h-100">
+        <div class="row justify-content-center align-items-center">
+            <div class="col-12 col-xl-10">
+                <div class="card auth-card">
+                    <div class="row g-0">
+                        <div class="col-md-5 d-none d-md-block">
+                            <div class="auth-image h-100"></div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="auth-form">
+                                <div class="brand-wrapper d-flex align-items-center">
+                                    <i class="fas fa-store brand-icon me-3"></i>
+                                    <h1 class="brand-text">EAFIT Trade</h1>
+                                </div>
 
-            {% if form.errors %}
-            <div class="alert alert-danger" role="alert">
-                <i class="fas fa-exclamation-circle me-2"></i>
-                Por favor corrige los siguientes errores:
-                <ul class="mb-0 mt-2">
-                    {% for field, errors in form.errors.items %}
-                        {% for error in errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
+                                <h2 class="fw-normal mb-4" style="letter-spacing: 1px;">Crear Cuenta</h2>
 
-            <form method="post" novalidate>
-                {% csrf_token %}
-                
-                <div class="form-floating">
-                    <input type="text" name="username" class="form-control {% if form.username.errors %}is-invalid{% endif %}" 
-                           id="id_username" placeholder="Usuario" required>
-                    <label for="id_username">Usuario</label>
-                    {% if form.username.errors %}
-                    <div class="invalid-feedback">
-                        {{ form.username.errors|join:", " }}
+                                {% if form.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    <i class="fas fa-exclamation-circle me-2"></i>
+                                    Por favor corrige los siguientes errores:
+                                    <ul class="mb-0 mt-2">
+                                        {% for field, errors in form.errors.items %}
+                                            {% for error in errors %}
+                                                <li>{{ error }}</li>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% endif %}
+
+                                <form method="post" novalidate>
+                                    {% csrf_token %}
+                                    
+                                    <div class="mb-4">
+                                        <label for="id_username" class="form-label">Usuario</label>
+                                        <input type="text" name="username" 
+                                               class="form-control form-control-lg {% if form.username.errors %}is-invalid{% endif %}" 
+                                               id="id_username" required>
+                                        {% if form.username.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ form.username.errors|join:", " }}
+                                        </div>
+                                        {% endif %}
+                                        {% if form.username.help_text %}
+                                        <div class="help-text">{{ form.username.help_text }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label for="id_password1" class="form-label">Contraseña</label>
+                                        <input type="password" name="password1" 
+                                               class="form-control form-control-lg {% if form.password1.errors %}is-invalid{% endif %}" 
+                                               id="id_password1" required>
+                                        {% if form.password1.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ form.password1.errors|join:", " }}
+                                        </div>
+                                        {% endif %}
+                                        {% if form.password1.help_text %}
+                                        <div class="help-text">{{ form.password1.help_text }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label for="id_password2" class="form-label">Confirmar Contraseña</label>
+                                        <input type="password" name="password2" 
+                                               class="form-control form-control-lg {% if form.password2.errors %}is-invalid{% endif %}" 
+                                               id="id_password2" required>
+                                        {% if form.password2.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ form.password2.errors|join:", " }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary btn-auth mb-3">
+                                        <i class="fas fa-user-plus me-2"></i>Crear Cuenta
+                                    </button>
+                                    
+                                    <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-auth">
+                                        <i class="fas fa-arrow-left me-2"></i>Volver al Inicio
+                                    </a>
+
+                                    <div class="auth-footer">
+                                        <p class="mb-0">¿Ya tienes una cuenta?</p>
+                                        <a href="{% url 'login' %}" class="text-primary">Inicia sesión aquí</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
-                    {% endif %}
-                    {% if form.username.help_text %}
-                    <div class="help-text">{{ form.username.help_text }}</div>
-                    {% endif %}
                 </div>
-
-                <div class="form-floating">
-                    <input type="password" name="password1" class="form-control {% if form.password1.errors %}is-invalid{% endif %}" 
-                           id="id_password1" placeholder="Contraseña" required>
-                    <label for="id_password1">Contraseña</label>
-                    {% if form.password1.errors %}
-                    <div class="invalid-feedback">
-                        {{ form.password1.errors|join:", " }}
-                    </div>
-                    {% endif %}
-                    {% if form.password1.help_text %}
-                    <div class="help-text">{{ form.password1.help_text }}</div>
-                    {% endif %}
-                </div>
-
-                <div class="form-floating">
-                    <input type="password" name="password2" class="form-control {% if form.password2.errors %}is-invalid{% endif %}" 
-                           id="id_password2" placeholder="Confirmar Contraseña" required>
-                    <label for="id_password2">Confirmar Contraseña</label>
-                    {% if form.password2.errors %}
-                    <div class="invalid-feedback">
-                        {{ form.password2.errors|join:", " }}
-                    </div>
-                    {% endif %}
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-auth">
-                    <i class="fas fa-user-plus me-2"></i>Crear Cuenta
-                </button>
-                
-                <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-auth">
-                    <i class="fas fa-arrow-left me-2"></i>Volver al Inicio
-                </a>
-            </form>
-
-            <div class="auth-footer">
-                <p class="mb-0">¿Ya tienes una cuenta? 
-                    <a href="{% url 'login' %}" class="text-primary">Inicia sesión aquí</a>
-                </p>
             </div>
         </div>
     </div>
-</div>
+</section>
 {% endblock %} 
