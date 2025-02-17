@@ -1,80 +1,215 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Mis Favoritos - EAFIT Trade</title>
-    <style>
-        .favorites-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+{% extends 'products/base.html' %}
+
+{% block title %}Mis Favoritos - EAFIT Trade{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .favorites-section {
+        background-color: #f8f9fa;
+        padding: 2rem 0;
+        min-height: calc(100vh - 56px);
+    }
+    
+    .favorites-header {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .favorites-icon {
+        color: var(--primary-color);
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .product-card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        overflow: hidden;
+        transition: transform 0.2s;
+        height: 100%;
+        position: relative;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .product-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .product-info {
+        padding: 1.5rem;
+    }
+    
+    .product-price {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+    
+    .product-seller {
+        font-size: 0.875rem;
+        color: var(--secondary-color);
+        display: flex;
+        align-items: center;
+        margin: 0.5rem 0;
+    }
+    
+    .seller-avatar {
+        width: 24px;
+        height: 24px;
+        background-color: var(--primary-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        margin-right: 0.5rem;
+        font-size: 0.75rem;
+    }
+    
+    .category-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background-color: rgba(255,255,255,0.9);
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .btn-remove {
+        background: none;
+        border: none;
+        color: #dc3545;
+        padding: 0;
+        transition: all 0.2s;
+    }
+    
+    .btn-remove:hover {
+        transform: scale(1.1);
+    }
+    
+    .btn-view {
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        transition: all 0.2s;
+    }
+    
+    .btn-view:hover {
+        transform: translateY(-2px);
+    }
+    
+    .empty-favorites {
+        text-align: center;
+        padding: 3rem;
+    }
+    
+    .empty-favorites i {
+        font-size: 4rem;
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 767.98px) {
+        .product-card {
+            margin-bottom: 1rem;
         }
-        .favorite-item {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-        }
-        .favorite-image {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            margin-right: 15px;
-        }
-        .favorite-info {
-            flex-grow: 1;
-        }
-        .remove-favorite {
-            background-color: #ff4444;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-    <div class="favorites-container">
-        <h1>Mis Productos Favoritos</h1>
-        
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="favorites-section">
+    <div class="container">
+        <div class="favorites-header">
+            <i class="fas fa-heart favorites-icon"></i>
+            <h1 class="display-5">Mis Favoritos</h1>
+        </div>
+
         {% if favorites %}
+        <div class="row g-4">
             {% for favorite in favorites %}
-                <div class="favorite-item" id="favorite-{{ favorite.product.id }}">
+            <div class="col-12 col-md-6 col-lg-4" id="favorite-{{ favorite.product.id }}">
+                <div class="product-card">
+                    <span class="category-badge">
+                        <i class="fas fa-tag me-1"></i>{{ favorite.product.get_category_display }}
+                    </span>
+                    
                     {% if favorite.product.image %}
-                        <img src="{{ favorite.product.image.url }}" alt="{{ favorite.product.name }}" class="favorite-image">
+                        <img src="{{ favorite.product.image.url }}" alt="{{ favorite.product.name }}" class="product-image">
+                    {% else %}
+                        <div class="product-image d-flex align-items-center justify-content-center bg-light">
+                            <i class="fas fa-image fa-3x text-secondary"></i>
+                        </div>
                     {% endif %}
-                    <div class="favorite-info">
-                        <h3>{{ favorite.product.name }}</h3>
-                        <p>Precio: ${{ favorite.product.price }}</p>
-                        <p>Vendedor: {{ favorite.product.seller.username }}</p>
+                    
+                    <div class="product-info">
+                        <h5 class="mb-2">{{ favorite.product.name }}</h5>
+                        <p class="product-price mb-2">${{ favorite.product.price }}</p>
+                        
+                        <div class="product-seller">
+                            <div class="seller-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span>{{ favorite.product.seller.username }}</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <a href="{% url 'product_detail' favorite.product.id %}" class="btn btn-outline-primary btn-view">
+                                <i class="fas fa-eye me-2"></i>Ver Detalles
+                            </a>
+                            <button onclick="toggleFavorite({{ favorite.product.id }})" class="btn-remove">
+                                <i class="fas fa-heart-broken fa-lg"></i>
+                            </button>
+                        </div>
                     </div>
-                    <button class="remove-favorite" onclick="toggleFavorite({{ favorite.product.id }})">
-                        Quitar de favoritos
-                    </button>
                 </div>
+            </div>
             {% endfor %}
+        </div>
         {% else %}
-            <p>No tienes productos favoritos aún.</p>
+        <div class="empty-favorites">
+            <i class="far fa-heart mb-3"></i>
+            <h3>No tienes productos favoritos aún</h3>
+            <p class="text-muted mb-4">Explora productos y marca los que te gusten como favoritos</p>
+            <a href="{% url 'home' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-search me-2"></i>Explorar Productos
+            </a>
+        </div>
         {% endif %}
     </div>
+</section>
 
-    <script>
-        function toggleFavorite(productId) {
-            fetch(`/favorite/toggle/${productId}/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'removed') {
-                    document.getElementById(`favorite-${productId}`).remove();
-                }
-            });
-        }
-    </script>
-</body>
-</html> 
+{% block extra_scripts %}
+<script>
+    function toggleFavorite(productId) {
+        fetch(`/favorite/toggle/${productId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'removed') {
+                const card = document.getElementById(`favorite-${productId}`);
+                card.style.transform = 'scale(0.8)';
+                card.style.opacity = '0';
+                setTimeout(() => {
+                    card.remove();
+                    if (document.querySelectorAll('.product-card').length === 0) {
+                        location.reload();
+                    }
+                }, 300);
+            }
+        });
+    }
+</script>
+{% endblock %}
+{% endblock %} 
