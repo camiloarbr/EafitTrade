@@ -106,9 +106,10 @@
                         
                         {% if user.is_authenticated %}
                         <button 
-                            onclick="toggleFavorite({{ product.id }})" 
+                            onclick="toggleFavorite({{ product.id }})"
                             class="favorite-btn" 
                             id="favorite-btn-{{ product.id }}"
+                        >
                         >
                             <i class="fas fa-heart fa-lg {% if product.id in user_favorites %}text-danger{% else %}text-secondary{% endif %}"></i>
                         </button>
