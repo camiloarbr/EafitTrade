@@ -1,74 +1,142 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Registro - EAFIT Trade</title>
-    <style>
-        .register-container {
-            max-width: 400px;
-            margin: 50px auto;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-        }
-        .button:hover {
-            background-color: #45a049;
-        }
-        .error-message {
-            color: red;
-            margin-bottom: 10px;
-        }
-    </style>
-</head>
-<body>
-    <div class="register-container">
-        <h2>Registro de Usuario</h2>
-        
-        {% if form.errors %}
-            <div class="error-message">
-                Por favor corrige los siguientes errores:
-                {{ form.errors }}
+{% extends 'products/base.html' %}
+
+{% block title %}Registro - EAFIT Trade{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .auth-container {
+        max-width: 400px;
+        margin: 2rem auto;
+    }
+    
+    .auth-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        padding: 2rem;
+    }
+    
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .auth-header i {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+    
+    .form-floating {
+        margin-bottom: 1rem;
+    }
+    
+    .form-floating input {
+        border-radius: 8px;
+    }
+    
+    .auth-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #eee;
+    }
+    
+    .btn-auth {
+        width: 100%;
+        padding: 0.8rem;
+        font-weight: 500;
+        margin-top: 1rem;
+    }
+    
+    .help-text {
+        font-size: 0.875rem;
+        color: var(--secondary-color);
+        margin-top: 0.25rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <i class="fas fa-user-plus"></i>
+                <h2>Crear Cuenta</h2>
             </div>
-        {% endif %}
-        
-        <form method="post">
-            {% csrf_token %}
-            {% for field in form %}
-                <div class="form-group">
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.help_text %}
-                        <small>{{ field.help_text }}</small>
+
+            {% if form.errors %}
+            <div class="alert alert-danger" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                Por favor corrige los siguientes errores:
+                <ul class="mb-0 mt-2">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+                
+                <div class="form-floating">
+                    <input type="text" name="username" class="form-control {% if form.username.errors %}is-invalid{% endif %}" 
+                           id="id_username" placeholder="Usuario" required>
+                    <label for="id_username">Usuario</label>
+                    {% if form.username.errors %}
+                    <div class="invalid-feedback">
+                        {{ form.username.errors|join:", " }}
+                    </div>
+                    {% endif %}
+                    {% if form.username.help_text %}
+                    <div class="help-text">{{ form.username.help_text }}</div>
                     {% endif %}
                 </div>
-            {% endfor %}
-            <button type="submit" class="button">Registrarse</button>
-        </form>
-        
-        <p style="text-align: center; margin-top: 15px;">
-            ¿Ya tienes una cuenta? <a href="{% url 'login' %}">Inicia sesión</a>
-        </p>
+
+                <div class="form-floating">
+                    <input type="password" name="password1" class="form-control {% if form.password1.errors %}is-invalid{% endif %}" 
+                           id="id_password1" placeholder="Contraseña" required>
+                    <label for="id_password1">Contraseña</label>
+                    {% if form.password1.errors %}
+                    <div class="invalid-feedback">
+                        {{ form.password1.errors|join:", " }}
+                    </div>
+                    {% endif %}
+                    {% if form.password1.help_text %}
+                    <div class="help-text">{{ form.password1.help_text }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-floating">
+                    <input type="password" name="password2" class="form-control {% if form.password2.errors %}is-invalid{% endif %}" 
+                           id="id_password2" placeholder="Confirmar Contraseña" required>
+                    <label for="id_password2">Confirmar Contraseña</label>
+                    {% if form.password2.errors %}
+                    <div class="invalid-feedback">
+                        {{ form.password2.errors|join:", " }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-auth">
+                    <i class="fas fa-user-plus me-2"></i>Crear Cuenta
+                </button>
+                
+                <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-auth">
+                    <i class="fas fa-arrow-left me-2"></i>Volver al Inicio
+                </a>
+            </form>
+
+            <div class="auth-footer">
+                <p class="mb-0">¿Ya tienes una cuenta? 
+                    <a href="{% url 'login' %}" class="text-primary">Inicia sesión aquí</a>
+                </p>
+            </div>
+        </div>
     </div>
-</body>
-</html> 
+</div>
+{% endblock %} 
