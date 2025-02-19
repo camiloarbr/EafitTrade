@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator, RegexValidator
+from django.core.validators import MinValueValidator, RegexValidator, MaxValueValidator
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 
@@ -159,6 +159,17 @@ class Product(models.Model):
             models.Index(fields=['available']),
         ]
 
+    @property
+    def average_rating(self):
+        comments = self.comments.all()
+        if not comments:
+            return 0
+        return round(sum(comment.rating for comment in comments) / len(comments), 1)
+
+    @property
+    def total_ratings(self):
+        return self.comments.count()
+
 class Comment(models.Model):
     product = models.ForeignKey(
         Product, 
@@ -173,6 +184,11 @@ class Comment(models.Model):
     text = models.TextField(
         max_length=500,
         verbose_name='Comentario'
+    )
+    rating = models.PositiveSmallIntegerField(
+        verbose_name='Calificación',
+        validators=[MinValueValidator(0), MaxValueValidator(5)],
+        help_text='Calificación de 0 a 5 estrellas'
     )
     created_at = models.DateTimeField(
         auto_now_add=True,

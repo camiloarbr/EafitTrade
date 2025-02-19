@@ -57,12 +57,15 @@ class ProductForm(forms.ModelForm):
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ['text']
+        fields = ['text', 'rating']
         widgets = {
             'text': forms.Textarea(attrs={
                 'rows': 3,
                 'placeholder': 'Escribe tu comentario aquí...',
                 'class': 'comment-input'
+            }),
+            'rating': forms.HiddenInput(attrs={
+                'class': 'rating-input'
             })
         }
 
@@ -72,4 +75,12 @@ class CommentForm(forms.ModelForm):
             raise forms.ValidationError('El comentario no puede estar vacío')
         if len(text) > 500:
             raise forms.ValidationError('El comentario no puede tener más de 500 caracteres')
-        return text 
+        return text
+
+    def clean_rating(self):
+        rating = self.cleaned_data.get('rating')
+        if rating is None:
+            raise forms.ValidationError('Debes asignar una calificación')
+        if not (0 <= rating <= 5):
+            raise forms.ValidationError('La calificación debe estar entre 0 y 5')
+        return rating 
