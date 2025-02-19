@@ -67,8 +67,9 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border: none;      /* Elimina el borde alrededor */
-        background: transparent; /* Hace el fondo transparente para solo mostrar el corazón */
+        border-radius: 50%;
+        background: rgba(255,255,255,0.9);
+        border: none;      /* Elimina el borde alrededor del botón de favoritos */
     }
     
     /* Ajusta el espaciado entre las tarjetas */
@@ -99,9 +100,7 @@
         </div>
         <div class="col-md-6 text-md-end">
             {% if user.is_authenticated %}
-            <a href="{% url 'add_product' %}" class="btn btn-primary">
-                <i class="fas fa-plus me-2"></i>Publicar Producto
-            </a>
+            <!-- Botón de publicar producto eliminado -->
             {% endif %}
         </div>
     </div>
