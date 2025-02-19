@@ -9,6 +9,8 @@
         transition: transform 0.2s;
         border: none;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        max-width: 320px;  /* Limita el ancho máximo de las tarjetas */
+        margin: 0 auto;    /* Centra las tarjetas en su columna */
     }
     
     .product-card:hover {
@@ -16,14 +18,22 @@
     }
     
     .product-image {
-        height: 200px;
+        height: 180px;     /* Reduce la altura de la imagen */
         object-fit: cover;
     }
     
+    .card-body {
+        padding: 1rem;     /* Reduce el padding interno */
+    }
+    
+    .card-title {
+        font-size: 1.1rem; /* Reduce el tamaño del título */
+        margin-bottom: 0.5rem;
+    }
+    
     .price {
-        font-size: 1.25rem;
-        font-weight: bold;
-        color: var(--primary-color);
+        font-size: 1.1rem; /* Ajusta el tamaño del precio */
+        margin-bottom: 0.5rem;
     }
     
     .category-badge {
@@ -37,28 +47,45 @@
     }
     
     .seller-info {
-        font-size: 0.875rem;
-        color: var(--secondary-color);
-    }
-    
-    .favorite-btn {
-        border: none;
-        background: none;
-        color: #dc3545;
-        transition: transform 0.2s;
-    }
-    
-    .favorite-btn:hover {
-        transform: scale(1.1);
+        font-size: 0.8rem;
+        margin-bottom: 0.75rem;
     }
     
     .product-actions {
-        opacity: 0.9;
-        transition: opacity 0.2s;
+        gap: 0.5rem;       /* Espacio entre botones */
     }
     
-    .product-card:hover .product-actions {
-        opacity: 1;
+    .btn-outline-primary {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+    }
+    
+    .favorite-btn {
+        padding: 0;
+        width: 32px;       /* Tamaño fijo para el botón de favoritos */
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;      /* Elimina el borde alrededor */
+        background: transparent; /* Hace el fondo transparente para solo mostrar el corazón */
+    }
+    
+    /* Ajusta el espaciado entre las tarjetas */
+    .row.g-4 {
+        --bs-gutter-x: 1.5rem;
+        --bs-gutter-y: 1.5rem;
+    }
+    
+    /* Ajustes responsivos */
+    @media (max-width: 768px) {
+        .product-card {
+            max-width: 100%;
+        }
+        
+        .product-image {
+            height: 160px;
+        }
     }
 </style>
 {% endblock %}
@@ -68,7 +95,7 @@
     <!-- Header con búsqueda y filtros -->
     <div class="row mb-4 align-items-center">
         <div class="col-md-6">
-            <h1 class="h3 mb-0">Productos Disponibles</h1>
+            <h1 class="h3 mb-0">Productos</h1>
         </div>
         <div class="col-md-6 text-md-end">
             {% if user.is_authenticated %}
@@ -82,7 +109,7 @@
     <!-- Grid de productos -->
     <div class="row g-4">
         {% for product in products %}
-        <div class="col-12 col-md-6 col-lg-4">
+        <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
             <div class="card product-card">
                 <div class="position-relative">
                     {% if product.image %}
@@ -109,9 +136,9 @@
                             onclick="toggleFavorite({{ product.id }})"
                             class="favorite-btn" 
                             id="favorite-btn-{{ product.id }}"
+                            title="Agregar a favoritos"
                         >
-                        >
-                            <i class="fas fa-heart fa-lg {% if product.id in user_favorites %}text-danger{% else %}text-secondary{% endif %}"></i>
+                            <i class="fas fa-heart {% if product.id in user_favorites %}text-danger{% else %}text-secondary{% endif %}"></i>
                         </button>
                         {% endif %}
                     </div>
