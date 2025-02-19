@@ -1,43 +1,43 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Eliminar Producto - EAFIT Trade</title>
-    <style>
-        .delete-container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            text-align: center;
-        }
-        .button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            margin: 10px;
-        }
-        .delete-button {
-            background-color: #e74c3c;
-            color: white;
-        }
-        .cancel-button {
-            background-color: #95a5a6;
-            color: white;
-        }
-    </style>
-</head>
-<body>
-    <div class="delete-container">
-        <h1>Confirmar Eliminación</h1>
-        <p>¿Estás seguro de que deseas eliminar el producto "{{ product.name }}"?</p>
-        
-        <form method="post">
-            {% csrf_token %}
-            <button type="submit" class="button delete-button">Sí, eliminar</button>
-            <a href="{% url 'home' %}" class="button cancel-button">Cancelar</a>
-        </form>
+{% extends 'products/base.html' %}
+
+{% block title %}Eliminar Producto - EAFIT Trade{% endblock %}
+
+{% block content %}
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            
+            <div class="modal-body text-center py-4">
+                <i class="fas fa-trash-alt fa-3x text-danger mb-3"></i>
+                <h4>¿Estás seguro?</h4>
+                <p class="mb-0">Esta acción eliminará permanentemente el producto "{{ product.name }}"</p>
+            </div>
+            
+            <div class="modal-footer justify-content-center border-0 pt-0">
+                <form method="post" class="d-flex gap-3 w-100 px-3">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger flex-grow-1">
+                        <i class="fas fa-trash-alt me-2"></i>Sí, Eliminar
+                    </button>
+                    <a href="{% url 'home' %}" class="btn btn-secondary flex-grow-1">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </a>
+                </form>
+            </div>
+        </div>
     </div>
-</body>
-</html> 
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        modal.show();
+    });
+</script>
+{% endblock %} 

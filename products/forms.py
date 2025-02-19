@@ -10,15 +10,28 @@ class ProductForm(forms.ModelForm):
             'account_number', 'account_type', 'qr_code', 'tags'
         ]
         widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={
+                'class': 'form-control',
                 'rows': 4,
                 'placeholder': 'Describe tu producto detalladamente'
             }),
-            'tags': forms.TextInput(attrs={
-                'placeholder': 'Ejemplo: libro, matemáticas, cálculo'
-            }),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'condition': forms.Select(attrs={'class': 'form-control'}),
             'location': forms.TextInput(attrs={
+                'class': 'form-control',
                 'placeholder': 'Ejemplo: Biblioteca, Bloque 18'
+            }),
+            'image': forms.FileInput(attrs={'class': 'form-control'}),
+            'payment_method': forms.Select(attrs={'class': 'form-control'}),
+            'account_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'account_type': forms.Select(attrs={'class': 'form-control'}),
+            'qr_code': forms.FileInput(attrs={'class': 'form-control'}),
+            'tags': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ejemplo: libro, matemáticas, cálculo'
             }),
         }
 

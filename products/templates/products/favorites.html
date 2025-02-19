@@ -186,7 +186,6 @@
     </div>
 </section>
 
-<p>En esta sección, cada producto favorito está asociado con el ID del usuario que lo ha marcado como favorito. Esto se logra a través del modelo <code>Favorite</code>, que tiene dos claves foráneas: una que apunta al <code>User</code> y otra que apunta al <code>Product</code>. Así, cada vez que un usuario agrega un producto a sus favoritos, se crea una entrada en la tabla de favoritos que vincula el ID del usuario con el ID del producto correspondiente. La lógica de conexión entre el ID del producto y el ID del usuario se encuentra en el modelo <code>Favorite</code>, donde se define la relación entre el usuario y el producto.</p>
 
 {% block extra_scripts %}
 <script>
