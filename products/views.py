@@ -3,10 +3,10 @@ from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from .models import Product, Comment, Favorite
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import ProductForm, CommentForm
+from .forms import ProductForm, CommentForm, CustomUserCreationForm
 from django.views.decorators.http import require_POST
-from django.contrib.auth.forms import UserCreationForm
 
+@login_required
 def home(request):
     products = Product.objects.filter(available=True).order_by('-published_at')
     
@@ -133,13 +133,13 @@ def favorites_list(request):
 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, '¡Cuenta creada exitosamente! Ahora puedes iniciar sesión.')
             return redirect('login')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
 
 def product_detail(request, product_id):

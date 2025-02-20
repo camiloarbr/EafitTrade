@@ -1,5 +1,7 @@
 from django import forms
 from .models import Product, Comment
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
 class ProductForm(forms.ModelForm):
     class Meta:
@@ -96,4 +98,22 @@ class CommentForm(forms.ModelForm):
             raise forms.ValidationError('Debes asignar una calificación')
         if not (0 <= rating <= 5):
             raise forms.ValidationError('La calificación debe estar entre 0 y 5')
-        return rating 
+        return rating
+
+class CustomUserCreationForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = UserCreationForm.Meta.fields
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].help_text = 'Requerido. 150 caracteres o menos. Letras, dígitos y @/./+/-/_ solamente.'
+        self.fields['password1'].help_text = '''
+            <ul>
+                <li>Tu contraseña no puede ser muy similar a tu otra información personal.</li>
+                <li>Tu contraseña debe contener al menos 8 caracteres.</li>
+                <li>Tu contraseña no puede ser una contraseña comúnmente utilizada.</li>
+                <li>Tu contraseña no puede ser completamente numérica.</li>
+            </ul>
+        '''
+        self.fields['password2'].help_text = 'Ingresa la misma contraseña que antes, para verificación.' 

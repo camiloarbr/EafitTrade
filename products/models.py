@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, RegexValidator, MaxValueValidator
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 
 class Product(models.Model):
     PAYMENT_CHOICES = [
