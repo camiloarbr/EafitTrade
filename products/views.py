@@ -6,7 +6,6 @@ from django.contrib import messages
 from .forms import ProductForm, CommentForm, CustomUserCreationForm
 from django.views.decorators.http import require_POST
 
-@login_required
 def home(request):
     products = Product.objects.filter(available=True).order_by('-published_at')
     
