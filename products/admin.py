@@ -4,8 +4,8 @@ from .models import Product, Comment, Favorite
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'price', 'available', 'seller')
-    list_filter = ('category', 'condition', 'available')
-    search_fields = ('name', 'description', 'tags')
+    list_filter = ('category', 'condition', 'available', 'food_type')
+    search_fields = ('name', 'description')
     date_hierarchy = 'published_at'
 
 @admin.register(Comment)
