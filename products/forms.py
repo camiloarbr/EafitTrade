@@ -8,7 +8,7 @@ class ProductForm(forms.ModelForm):
         model = Product
         fields = [
             'name', 'category', 'food_type', 'description', 'price',
-            'condition', 'image', 'available'
+            'condition', 'image'
         ]
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
@@ -22,18 +22,12 @@ class ProductForm(forms.ModelForm):
             'price': forms.NumberInput(attrs={'class': 'form-control'}),
             'condition': forms.Select(attrs={'class': 'form-control', 'id': 'id_condition'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
-            'available': forms.CheckboxInput(attrs={
-                'class': 'form-check-input',
-                'role': 'switch'
-            }),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['food_type'].required = False
         self.fields['condition'].required = False
-        self.fields['available'].label = 'Producto disponible'
-        self.fields['available'].help_text = 'Desmarque esta opción si el producto no está disponible temporalmente'
         
         # Mejora de las etiquetas y mensajes de ayuda
         for field in self.fields:
