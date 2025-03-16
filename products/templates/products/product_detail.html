@@ -321,41 +321,6 @@
                                 </a>
                             {% endif %}
                         </div>
-                        
-                        <div class="payment-info mt-4">
-                            <h4 class="mb-3">
-                                <i class="fas fa-money-bill-wave me-2"></i>Información de Pago
-                            </h4>
-                            <div class="payment-details p-3 bg-light rounded">
-                                <p class="mb-2">
-                                    <strong>Método de pago:</strong> {{ product.payment_method }}
-                                </p>
-                                
-                                {% if product.payment_method == 'Transferencia' %}
-                                    <div class="transfer-info">
-                                        <p class="mb-2">
-                                            <strong>Tipo de cuenta:</strong> {{ product.account_type }}
-                                        </p>
-                                        <p class="mb-2">
-                                            <strong>Número de cuenta:</strong> {{ product.account_number }}
-                                        </p>
-                                        
-                                        {% if product.qr_code %}
-                                            <div class="qr-code-container text-center mt-3">
-                                                <p class="mb-2"><strong>Código QR para pago:</strong></p>
-                                                <div class="qr-wrapper">
-                                                    <img src="{{ product.qr_code.url }}" 
-                                                         alt="Código QR para pago" 
-                                                         class="qr-image"
-                                                         data-bs-toggle="modal" 
-                                                         data-bs-target="#qrModal">
-                                                </div>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -424,30 +389,6 @@
         </div>
     </div>
 </section>
-
-<!-- Modal para QR -->
-{% if product.qr_code %}
-<div class="modal fade" id="qrModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-qrcode me-2"></i>Código QR para pago
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body text-center p-4">
-                <img src="{{ product.qr_code.url }}" 
-                     alt="Código QR para pago" 
-                     class="qr-image-large">
-                <p class="mt-3 mb-0 text-muted">
-                    Escanea este código QR para realizar el pago
-                </p>
-            </div>
-        </div>
-    </div>
-</div>
-{% endif %}
 
 {% block extra_scripts %}
 <script>
