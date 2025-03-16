@@ -7,7 +7,8 @@ from .forms import ProductForm, CommentForm, CustomUserCreationForm
 from django.views.decorators.http import require_POST
 
 def home(request):
-    products = Product.objects.filter(available=True)
+    # Quitamos el filtro de available=True para mostrar todos los productos
+    products = Product.objects.all()
     
     # Búsqueda por nombre
     search_query = request.GET.get('search', '')

@@ -232,6 +232,30 @@
     .modal-header .btn-close {
         filter: brightness(0) invert(1);
     }
+
+    .product-unavailable .product-image {
+        filter: grayscale(50%);
+        opacity: 0.8;
+    }
+    
+    .product-availability {
+        margin-top: -1rem;
+    }
+    
+    .alert {
+        border-radius: 1rem;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .alert-danger {
+        background-color: #fff1f0;
+        color: #dc3545;
+    }
+    
+    .alert i {
+        font-size: 1.5rem;
+    }
 </style>
 {% endblock %}
 
@@ -274,6 +298,18 @@
                                 <span class="badge bg-success">
                                     <i class="fas fa-check-circle me-1"></i>Disponible
                                 </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="product-availability mb-4">
+                            {% if not product.available %}
+                            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                <i class="fas fa-exclamation-circle fa-lg me-2"></i>
+                                <div>
+                                    <strong>Producto no disponible</strong>
+                                    <p class="mb-0">Este producto no está disponible para la venta en este momento.</p>
+                                </div>
+                            </div>
                             {% endif %}
                         </div>
                         

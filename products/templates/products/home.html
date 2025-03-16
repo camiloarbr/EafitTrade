@@ -142,6 +142,47 @@
             margin-top: 1rem;
         }
     }
+    
+    .product-unavailable {
+        opacity: 0.8;
+        position: relative;
+    }
+    
+    .grayscale {
+        filter: grayscale(50%);
+    }
+    
+    .unavailable-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+    }
+    
+    .unavailable-overlay .badge {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .product-status {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 2;
+    }
+    
+    .badge {
+        font-size: 0.875rem;
+        padding: 0.5em 1em;
+        border-radius: 2rem;
+    }
 </style>
 {% endblock %}
 
@@ -223,12 +264,21 @@
     <div class="row g-4">
         {% for product in products %}
         <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-            <div class="card product-card">
+            <div class="card product-card {% if not product.available %}product-unavailable{% endif %}">
                 <div class="position-relative">
                     {% if product.image %}
-                    <img src="{{ product.image.url }}" class="card-img-top product-image" alt="{{ product.name }}">
+                    <img src="{{ product.image.url }}" 
+                         class="card-img-top product-image {% if not product.available %}grayscale{% endif %}" 
+                         alt="{{ product.name }}">
                     {% endif %}
                     <span class="category-badge">{{ product.get_category_display }}</span>
+                    {% if not product.available %}
+                    <div class="unavailable-overlay">
+                        <span class="badge bg-danger">
+                            <i class="fas fa-times-circle me-1"></i>No disponible
+                        </span>
+                    </div>
+                    {% endif %}
                 </div>
                 
                 <div class="card-body">
@@ -236,9 +286,13 @@
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <p class="price mb-0">${{ product.price }}</p>
                         {% if not product.available %}
-                            <span class="badge bg-danger">No disponible</span>
+                            <span class="badge bg-danger">
+                                <i class="fas fa-times-circle me-1"></i>No disponible
+                            </span>
                         {% else %}
-                            <span class="badge bg-success">Disponible</span>
+                            <span class="badge bg-success">
+                                <i class="fas fa-check-circle me-1"></i>Disponible
+                            </span>
                         {% endif %}
                     </div>
                     <div class="star-rating">
