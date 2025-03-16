@@ -233,7 +233,14 @@
                 
                 <div class="card-body">
                     <h5 class="card-title">{{ product.name }}</h5>
-                    <p class="price mb-2">${{ product.price }}</p>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <p class="price mb-0">${{ product.price }}</p>
+                        {% if not product.available %}
+                            <span class="badge bg-danger">No disponible</span>
+                        {% else %}
+                            <span class="badge bg-success">Disponible</span>
+                        {% endif %}
+                    </div>
                     <div class="star-rating">
                         {% for i in "12345"|make_list %}
                             {% if forloop.counter <= product.average_rating %}
