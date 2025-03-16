@@ -99,6 +99,49 @@
         font-size: 0.8rem;
         color: var(--secondary-color);
     }
+    
+    /* Estilos para el buscador avanzado */
+    .search-section .card {
+        border: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border-radius: 1rem;
+    }
+    
+    .search-section .card-body {
+        padding: 1.5rem;
+    }
+    
+    .search-section .form-control,
+    .search-section .form-select {
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #dee2e6;
+    }
+    
+    .search-section .input-group-text {
+        background-color: white;
+        border-right: none;
+    }
+    
+    .search-section .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .search-section .btn-primary {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+    }
+    
+    .results-section {
+        padding: 1rem 0;
+    }
+    
+    @media (max-width: 767.98px) {
+        .search-section .btn-primary {
+            margin-top: 1rem;
+        }
+    }
 </style>
 {% endblock %}
 
