@@ -88,7 +88,7 @@ class Product(models.Model):
     )
 
     def clean(self):
-        # Lógica de validación
+        # Actualizar la lógica de validación
         if self.category == 'Comida':
             self.condition = None  # No aplica estado para comida
         else:
