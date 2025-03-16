@@ -7,46 +7,28 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = [
-            'name', 'category', 'description', 'quantity', 'price',
-            'condition', 'location', 'image', 'payment_method',
-            'account_number', 'account_type', 'qr_code', 'tags'
+            'name', 'category', 'food_type', 'description', 'price',
+            'condition', 'image'
         ]
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'category': forms.Select(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-control', 'id': 'id_category'}),
+            'food_type': forms.Select(attrs={'class': 'form-control', 'id': 'id_food_type'}),
             'description': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 4,
                 'placeholder': 'Describe tu producto detalladamente'
             }),
-            'quantity': forms.NumberInput(attrs={'class': 'form-control'}),
             'price': forms.NumberInput(attrs={'class': 'form-control'}),
-            'condition': forms.Select(attrs={'class': 'form-control'}),
-            'location': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Ejemplo: Biblioteca, Bloque 18'
-            }),
+            'condition': forms.Select(attrs={'class': 'form-control', 'id': 'id_condition'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
-            'payment_method': forms.Select(attrs={'class': 'form-control'}),
-            'account_number': forms.TextInput(attrs={'class': 'form-control'}),
-            'account_type': forms.Select(attrs={'class': 'form-control'}),
-            'qr_code': forms.FileInput(attrs={'class': 'form-control'}),
-            'tags': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Ejemplo: libro, matemáticas, cálculo'
-            }),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['location'].required = False
-        self.fields['tags'].required = False
+        self.fields['food_type'].required = False
+        self.fields['condition'].required = False
         
-        # Campos de transferencia inicialmente no requeridos
-        self.fields['account_number'].required = False
-        self.fields['account_type'].required = False
-        self.fields['qr_code'].required = False
-
         # Mejora de las etiquetas y mensajes de ayuda
         for field in self.fields:
             if self.fields[field].required:
@@ -54,18 +36,18 @@ class ProductForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        payment_method = cleaned_data.get('payment_method')
+        category = cleaned_data.get('category')
         
-        if payment_method == 'Transferencia':
-            required_fields = {
-                'account_number': 'número de cuenta',
-                'account_type': 'tipo de cuenta',
-                'qr_code': 'código QR'
-            }
-            
-            for field, name in required_fields.items():
-                if not cleaned_data.get(field):
-                    self.add_error(field, f'El {name} es requerido para pagos por transferencia')
+        if category == 'Comida':
+            food_type = cleaned_data.get('food_type')
+            if not food_type:
+                self.add_error('food_type', 'Debe seleccionar un tipo de comida')
+            cleaned_data['condition'] = None
+        else:
+            condition = cleaned_data.get('condition')
+            if not condition:
+                self.add_error('condition', 'Debe seleccionar un estado para el producto')
+            cleaned_data['food_type'] = None
         
         return cleaned_data
 
