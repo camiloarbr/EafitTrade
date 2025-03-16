@@ -1,4 +1,5 @@
 {% extends 'products/base.html' %}
+{% load humanize %}
 
 {% block title %}EAFIT Trade - Inicio{% endblock %}
 
@@ -6,34 +7,41 @@
 <style>
     .product-card {
         height: 100%;
-        transition: transform 0.2s;
+        transition: all 0.2s;
         border: none;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        max-width: 320px;  /* Limita el ancho máximo de las tarjetas */
-        margin: 0 auto;    /* Centra las tarjetas en su columna */
+        max-width: 320px;
+        margin: 0 auto;
     }
     
     .product-card:hover {
         transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
     
     .product-image {
-        height: 180px;     /* Reduce la altura de la imagen */
+        height: 200px;
         object-fit: cover;
     }
     
     .card-body {
-        padding: 1rem;     /* Reduce el padding interno */
+        padding: 1rem;
     }
     
     .card-title {
-        font-size: 1.1rem; /* Reduce el tamaño del título */
-        margin-bottom: 0.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
     
     .price {
-        font-size: 1.1rem; /* Ajusta el tamaño del precio */
-        margin-bottom: 0.5rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--primary-color);
     }
     
     .category-badge {
@@ -43,7 +51,56 @@
         background-color: rgba(255,255,255,0.9);
         padding: 0.25rem 0.75rem;
         border-radius: 20px;
+        font-size: 0.75rem;
+        color: var(--primary-color);
+    }
+    
+    .favorite-btn {
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.9);
+        border: none;
+        z-index: 2;
+    }
+    
+    .product-unavailable {
+        opacity: 0.7;
+    }
+    
+    .grayscale {
+        filter: grayscale(50%);
+    }
+    
+    .star-rating {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        margin-top: 0.5rem;
         font-size: 0.875rem;
+        color: #ffc107;
+    }
+    
+    .rating-value {
+        font-weight: 600;
+    }
+    
+    .rating-count {
+        color: var(--secondary-color);
+        font-size: 0.75rem;
+    }
+    
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.25em 0.5em;
+    }
+    
+    .badge i {
+        font-size: 0.75rem;
     }
     
     .seller-info {
@@ -58,18 +115,6 @@
     .btn-outline-primary {
         padding: 0.4rem 0.8rem;
         font-size: 0.9rem;
-    }
-    
-    .favorite-btn {
-        padding: 0;
-        width: 32px;       /* Tamaño fijo para el botón de favoritos */
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.9);
-        border: none;      /* Elimina el borde alrededor del botón de favoritos */
     }
     
     /* Ajusta el espaciado entre las tarjetas */
@@ -87,17 +132,6 @@
         .product-image {
             height: 160px;
         }
-    }
-    
-    .star-rating {
-        color: #ffc107;
-        font-size: 0.9rem;
-        margin: 0.5rem 0;
-    }
-    
-    .rating-count {
-        font-size: 0.8rem;
-        color: var(--secondary-color);
     }
     
     /* Estilos para el buscador avanzado */
@@ -143,15 +177,6 @@
         }
     }
     
-    .product-unavailable {
-        opacity: 0.8;
-        position: relative;
-    }
-    
-    .grayscale {
-        filter: grayscale(50%);
-    }
-    
     .unavailable-overlay {
         position: absolute;
         top: 0;
@@ -178,10 +203,17 @@
         z-index: 2;
     }
     
-    .badge {
-        font-size: 0.875rem;
-        padding: 0.5em 1em;
-        border-radius: 2rem;
+    .availability-badge {
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .text-success {
+        color: #198754 !important;
+    }
+    
+    .text-danger {
+        color: #dc3545 !important;
     }
 </style>
 {% endblock %}
@@ -264,92 +296,53 @@
     <div class="row g-4">
         {% for product in products %}
         <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-            <div class="card product-card {% if not product.available %}product-unavailable{% endif %}">
-                <div class="position-relative">
-                    {% if product.image %}
-                    <img src="{{ product.image.url }}" 
-                         class="card-img-top product-image {% if not product.available %}grayscale{% endif %}" 
-                         alt="{{ product.name }}">
-                    {% endif %}
-                    <span class="category-badge">{{ product.get_category_display }}</span>
-                    {% if not product.available %}
-                    <div class="unavailable-overlay">
-                        <span class="badge bg-danger">
-                            <i class="fas fa-times-circle me-1"></i>No disponible
-                        </span>
-                    </div>
-                    {% endif %}
-                </div>
-                
-                <div class="card-body">
-                    <h5 class="card-title">{{ product.name }}</h5>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <p class="price mb-0">${{ product.price }}</p>
-                        {% if not product.available %}
-                            <span class="badge bg-danger">
-                                <i class="fas fa-times-circle me-1"></i>No disponible
-                            </span>
-                        {% else %}
-                            <span class="badge bg-success">
-                                <i class="fas fa-check-circle me-1"></i>Disponible
-                            </span>
+            <a href="{% url 'product_detail' product.id %}" class="text-decoration-none">
+                <div class="card product-card {% if not product.available %}product-unavailable{% endif %}">
+                    <div class="position-relative">
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" 
+                             class="card-img-top product-image {% if not product.available %}grayscale{% endif %}" 
+                             alt="{{ product.name }}">
                         {% endif %}
+                        <span class="category-badge">{{ product.get_category_display }}</span>
                     </div>
-                    <div class="star-rating">
-                        {% for i in "12345"|make_list %}
-                            {% if forloop.counter <= product.average_rating %}
-                                <i class="fas fa-star"></i>
-                            {% else %}
-                                <i class="far fa-star"></i>
+                    
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title text-dark mb-0">{{ product.name }}</h5>
+                            {% if user.is_authenticated %}
+                            <button 
+                                onclick="toggleFavorite(event, {{ product.id }})"
+                                class="favorite-btn" 
+                                id="favorite-btn-{{ product.id }}"
+                                title="Agregar a favoritos"
+                            >
+                                <i class="fas fa-heart {% if product.id in user_favorites %}text-danger{% else %}text-secondary{% endif %}"></i>
+                            </button>
                             {% endif %}
-                        {% endfor %}
-                        <span class="rating-count">({{ product.total_ratings }})</span>
-                    </div>
-                    
-                    {% if product.category == 'Comida' and product.food_type %}
-                    <p class="card-text text-muted">
-                        <i class="fas fa-utensils me-1"></i>{{ product.get_food_type_display }}
-                    </p>
-                    {% elif product.condition %}
-                    <p class="card-text text-muted">
-                        <i class="fas fa-tag me-1"></i>{{ product.get_condition_display }}
-                    </p>
-                    {% endif %}
-                    
-                    <p class="card-text text-truncate">{{ product.description }}</p>
-                    <p class="seller-info mb-3">
-                        <i class="fas fa-user me-1"></i>{{ product.seller.username }}
-                    </p>
-                    
-                    <div class="product-actions d-flex justify-content-between align-items-center">
-                        <a href="{% url 'product_detail' product.id %}" class="btn btn-outline-primary">
-                            Ver Detalles
-                        </a>
-                        
-                        {% if user.is_authenticated %}
-                        <button 
-                            onclick="toggleFavorite({{ product.id }})"
-                            class="favorite-btn" 
-                            id="favorite-btn-{{ product.id }}"
-                            title="Agregar a favoritos"
-                        >
-                            <i class="fas fa-heart {% if product.id in user_favorites %}text-danger{% else %}text-secondary{% endif %}"></i>
-                        </button>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <p class="price mb-0">$ {{ product.price|floatformat:0|intcomma }}</p>
+                            <span class="availability-badge {% if product.available %}text-success{% else %}text-danger{% endif %}">
+                                {% if product.available %}
+                                    <i class="fas fa-check-circle me-1"></i>Disponible
+                                {% else %}
+                                    <i class="fas fa-times-circle me-1"></i>No disponible
+                                {% endif %}
+                            </span>
+                        </div>
+
+                        {% if product.total_ratings > 0 %}
+                        <div class="star-rating">
+                            <span class="rating-value">{{ product.average_rating }}</span>
+                            <i class="fas fa-star"></i>
+                            <span class="rating-count">({{ product.total_ratings }})</span>
+                        </div>
                         {% endif %}
                     </div>
-                    
-                    {% if user == product.seller %}
-                    <div class="mt-2 pt-2 border-top">
-                        <a href="{% url 'edit_product' product.id %}" class="btn btn-sm btn-outline-secondary me-2">
-                            <i class="fas fa-edit me-1"></i>Editar
-                        </a>
-                        <a href="{% url 'delete_product' product.id %}" class="btn btn-sm btn-outline-danger">
-                            <i class="fas fa-trash me-1"></i>Eliminar
-                        </a>
-                    </div>
-                    {% endif %}
                 </div>
-            </div>
+            </a>
         </div>
         {% empty %}
         <div class="col-12 text-center py-5">
@@ -391,8 +384,8 @@
         document.getElementById('categoryFilter').addEventListener('change', handleCategoryChange);
     });
 
-    // Función para favoritos (mantener la existente)
-    function toggleFavorite(productId) {
+    function toggleFavorite(event, productId) {
+        event.preventDefault(); // Evitar que el click se propague al enlace padre
         fetch(`/favorite/toggle/${productId}/`, {
             method: 'POST',
             headers: {
