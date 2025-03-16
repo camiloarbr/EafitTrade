@@ -213,6 +213,24 @@
                                 {% endif %}
                             </div>
                             
+                            <!-- Disponibilidad -->
+                            <div class="mb-4">
+                                <div class="form-check form-switch">
+                                    {{ form.available }}
+                                    <label class="form-check-label" for="{{ form.available.id_for_label }}">
+                                        {{ form.available.label }}
+                                    </label>
+                                </div>
+                                {% if form.available.help_text %}
+                                    <div class="help-text">{{ form.available.help_text }}</div>
+                                {% endif %}
+                                {% if form.available.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.available.errors|join:", " }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
                             <div class="d-flex gap-3 mt-4">
                                 <button type="submit" class="btn btn-primary btn-form flex-grow-1">
                                     <i class="fas fa-save me-2"></i>Guardar Cambios
