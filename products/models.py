@@ -40,7 +40,9 @@ class Product(models.Model):
     category = models.CharField(
         max_length=50,
         choices=CATEGORY_CHOICES,
-        verbose_name='Categoría'
+        verbose_name='Categoría',
+        null=True,
+        blank=True
     )
     food_type = models.CharField(
         max_length=50,
