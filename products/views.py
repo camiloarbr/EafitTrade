@@ -7,7 +7,25 @@ from .forms import ProductForm, CommentForm, CustomUserCreationForm
 from django.views.decorators.http import require_POST
 
 def home(request):
-    products = Product.objects.filter(available=True).order_by('-published_at')
+    products = Product.objects.filter(available=True)
+    
+    # Búsqueda por nombre
+    search_query = request.GET.get('search', '')
+    if search_query:
+        products = products.filter(name__icontains=search_query)
+    
+    # Filtro por categoría
+    category = request.GET.get('category', '')
+    if category:
+        products = products.filter(category=category)
+    
+    # Filtro por tipo de comida (solo si la categoría es Comida)
+    food_type = request.GET.get('food_type', '')
+    if category == 'Comida' and food_type:
+        products = products.filter(food_type=food_type)
+    
+    # Ordenar por fecha de publicación
+    products = products.order_by('-published_at')
     
     # Si el usuario está autenticado, obtener sus favoritos
     user_favorites = []
@@ -17,6 +35,11 @@ def home(request):
     context = {
         'products': products,
         'user_favorites': user_favorites,
+        'search_query': search_query,
+        'selected_category': category,
+        'selected_food_type': food_type,
+        'categories': Product.CATEGORY_CHOICES,
+        'food_types': Product.FOOD_TYPE_CHOICES,
     }
     return render(request, 'products/home.html', context)
 
