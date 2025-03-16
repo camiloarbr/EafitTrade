@@ -141,6 +141,17 @@
                         {% endfor %}
                         <span class="rating-count">({{ product.total_ratings }})</span>
                     </div>
+                    
+                    {% if product.category == 'Comida' and product.food_type %}
+                    <p class="card-text text-muted">
+                        <i class="fas fa-utensils me-1"></i>{{ product.get_food_type_display }}
+                    </p>
+                    {% elif product.condition %}
+                    <p class="card-text text-muted">
+                        <i class="fas fa-tag me-1"></i>{{ product.get_condition_display }}
+                    </p>
+                    {% endif %}
+                    
                     <p class="card-text text-truncate">{{ product.description }}</p>
                     <p class="seller-info mb-3">
                         <i class="fas fa-user me-1"></i>{{ product.seller.username }}
