@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 class Product(models.Model):
     CATEGORY_CHOICES = [
@@ -120,5 +121,61 @@ class Product(models.Model):
     @property
     def total_ratings(self):
         return self.comments.count()
-    
-    # También mantener el resto de las clases Comment y Favorite sin cambios
+
+class Comment(models.Model):
+    product = models.ForeignKey(
+        Product, 
+        on_delete=models.CASCADE,
+        related_name='comments'
+    )
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE,
+        related_name='comments'
+    )
+    text = models.TextField(
+        max_length=500,
+        verbose_name='Comentario'
+    )
+    rating = models.PositiveSmallIntegerField(
+        verbose_name='Calificación',
+        validators=[MinValueValidator(0), MaxValueValidator(5)],
+        help_text='Calificación de 0 a 5 estrellas'
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Fecha de publicación'
+    )
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Comentario'
+        verbose_name_plural = 'Comentarios'
+
+    def __str__(self):
+        return f'Comentario de {self.user.username} en {self.product.name}'
+
+class Favorite(models.Model):
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE,
+        related_name='favorites'
+    )
+    product = models.ForeignKey(
+        Product, 
+        on_delete=models.CASCADE,
+        related_name='favorited_by'
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Fecha de agregado'
+    )
+
+    class Meta:
+        unique_together = ['user', 'product']
+        ordering = ['-created_at']
+        verbose_name = 'Favorito'
+        verbose_name_plural = 'Favoritos'
+
+    def __str__(self):
+        return f'{self.user.username} ♥ {self.product.name}'
