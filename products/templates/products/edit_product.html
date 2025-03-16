@@ -11,54 +11,62 @@
         padding: 3rem 0;
     }
     
-    .form-container {
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 20px;
+    .form-card {
+        border-radius: 1rem;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        background: white;
+        overflow: hidden;
     }
-    .form-group {
-        margin-bottom: 15px;
+    
+    .form-header {
+        background: var(--primary-color);
+        padding: 2rem;
+        color: white;
+        text-align: center;
     }
-    label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
+    
+    .form-body {
+        padding: 2rem;
     }
-    input[type="text"],
-    input[type="number"],
-    textarea,
-    select {
-        width: 100%;
-        padding: 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
+    
+    .form-control {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #dee2e6;
     }
-    .transfer-fields {
+    
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .form-label {
+        color: #495057;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+    
+    .help-text {
+        font-size: 0.875rem;
+        color: var(--secondary-color);
+        margin-top: 0.25rem;
+    }
+    
+    .btn-form {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+    
+    .btn-form:hover {
+        transform: translateY(-2px);
+    }
+    
+    .dynamic-field {
         display: none;
-    }
-    .transfer-fields.active {
-        display: block;
-    }
-    .error-message {
-        color: red;
-        font-size: 0.9em;
-    }
-    .button {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-block;
-        margin-right: 10px;
-    }
-    .save-button {
-        background-color: #2ecc71;
-        color: white;
-    }
-    .cancel-button {
-        background-color: #95a5a6;
-        color: white;
     }
 </style>
 {% endblock %}
@@ -87,38 +95,122 @@
                         <form method="post" enctype="multipart/form-data" novalidate>
                             {% csrf_token %}
                             
-                            {% for field in form %}
-                                <div class="form-group {% if field.name in 'account_number,account_type,qr_code' %}transfer-fields{% endif %}">
-                                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                    {{ field }}
-                                    {% if field.errors %}
-                                        {% for error in field.errors %}
-                                            <p class="error-message">{{ error }}</p>
-                                        {% endfor %}
-                                    {% endif %}
-                                    {% if field.help_text %}
-                                        <small class="help-text">{{ field.help_text }}</small>
-                                    {% endif %}
-                                </div>
-                            {% endfor %}
-
-                            <div id="transfer-fields" class="transfer-fields">
-                                <h4 class="mb-3">Información de Transferencia</h4>
-                                
-                                <div class="mb-3">
-                                    {{ form.account_type.label_tag }}
-                                    {{ form.account_type|addclass:"form-control" }}
-                                </div>
-                                
-                                <div class="mb-3">
-                                    {{ form.account_number.label_tag }}
-                                    {{ form.account_number|addclass:"form-control" }}
-                                </div>
-                                
-                                <div class="mb-3">
-                                    {{ form.qr_code.label_tag }}
-                                    {{ form.qr_code|addclass:"form-control" }}
-                                </div>
+                            <!-- Nombre del producto -->
+                            <div class="mb-4">
+                                <label for="{{ form.name.id_for_label }}" class="form-label">
+                                    {{ form.name.label }}
+                                </label>
+                                {{ form.name|addclass:"form-control" }}
+                                {% if form.name.help_text %}
+                                    <div class="help-text">{{ form.name.help_text }}</div>
+                                {% endif %}
+                                {% if form.name.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.name.errors|join:", " }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Categoría -->
+                            <div class="mb-4">
+                                <label for="{{ form.category.id_for_label }}" class="form-label">
+                                    {{ form.category.label }}
+                                </label>
+                                {{ form.category|addclass:"form-control" }}
+                                {% if form.category.help_text %}
+                                    <div class="help-text">{{ form.category.help_text }}</div>
+                                {% endif %}
+                                {% if form.category.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.category.errors|join:", " }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Tipo de Comida (campo dinámico) -->
+                            <div class="mb-4 dynamic-field" id="food-type-field">
+                                <label for="{{ form.food_type.id_for_label }}" class="form-label">
+                                    {{ form.food_type.label }} *
+                                </label>
+                                {{ form.food_type|addclass:"form-control" }}
+                                {% if form.food_type.help_text %}
+                                    <div class="help-text">{{ form.food_type.help_text }}</div>
+                                {% endif %}
+                                {% if form.food_type.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.food_type.errors|join:", " }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Estado del producto (campo dinámico) -->
+                            <div class="mb-4 dynamic-field" id="condition-field">
+                                <label for="{{ form.condition.id_for_label }}" class="form-label">
+                                    {{ form.condition.label }} *
+                                </label>
+                                {{ form.condition|addclass:"form-control" }}
+                                {% if form.condition.help_text %}
+                                    <div class="help-text">{{ form.condition.help_text }}</div>
+                                {% endif %}
+                                {% if form.condition.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.condition.errors|join:", " }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Descripción -->
+                            <div class="mb-4">
+                                <label for="{{ form.description.id_for_label }}" class="form-label">
+                                    {{ form.description.label }}
+                                </label>
+                                {{ form.description|addclass:"form-control" }}
+                                {% if form.description.help_text %}
+                                    <div class="help-text">{{ form.description.help_text }}</div>
+                                {% endif %}
+                                {% if form.description.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.description.errors|join:", " }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Precio -->
+                            <div class="mb-4">
+                                <label for="{{ form.price.id_for_label }}" class="form-label">
+                                    {{ form.price.label }}
+                                </label>
+                                {{ form.price|addclass:"form-control" }}
+                                {% if form.price.help_text %}
+                                    <div class="help-text">{{ form.price.help_text }}</div>
+                                {% endif %}
+                                {% if form.price.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.price.errors|join:", " }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Imagen -->
+                            <div class="mb-4">
+                                <label for="{{ form.image.id_for_label }}" class="form-label">
+                                    {{ form.image.label }}
+                                </label>
+                                {{ form.image|addclass:"form-control" }}
+                                {% if form.image.help_text %}
+                                    <div class="help-text">{{ form.image.help_text }}</div>
+                                {% endif %}
+                                {% if form.image.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.image.errors|join:", " }}
+                                    </div>
+                                {% endif %}
+                                {% if product.image %}
+                                    <div class="mt-2">
+                                        <p>Imagen actual:</p>
+                                        <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width: 200px; max-height: 200px;" class="img-thumbnail">
+                                    </div>
+                                {% endif %}
                             </div>
                             
                             <div class="d-flex gap-3 mt-4">
@@ -139,22 +231,27 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const paymentMethod = document.querySelector('#id_payment_method');
-        const transferFields = document.querySelectorAll('.transfer-fields');
+        const categoryField = document.getElementById('id_category');
+        const foodTypeField = document.getElementById('food-type-field');
+        const conditionField = document.getElementById('condition-field');
         
-        function toggleTransferFields() {
-            const isTransfer = paymentMethod.value === 'Transferencia';
-            transferFields.forEach(field => {
-                if (isTransfer) {
-                    field.classList.add('active');
-                } else {
-                    field.classList.remove('active');
-                }
-            });
+        function handleCategoryChange() {
+            const selectedCategory = categoryField.value;
+            
+            if (selectedCategory === 'Comida') {
+                foodTypeField.style.display = 'block';
+                conditionField.style.display = 'none';
+            } else {
+                foodTypeField.style.display = 'none';
+                conditionField.style.display = 'block';
+            }
         }
         
-        paymentMethod.addEventListener('change', toggleTransferFields);
-        toggleTransferFields(); // Initial state
+        // Iniciar con el estado correcto
+        handleCategoryChange();
+        
+        // Escuchar cambios en la categoría
+        categoryField.addEventListener('change', handleCategoryChange);
     });
 </script>
 {% endblock %} 
