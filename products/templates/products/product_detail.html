@@ -1,260 +1,185 @@
 {% extends 'products/base.html' %}
+{% load humanize %}
 
 {% block title %}{{ product.name }} - EAFIT Trade{% endblock %}
 
 {% block extra_styles %}
 <style>
     .product-section {
+        padding: 3rem 0;
         background-color: #f8f9fa;
-        padding: 2rem 0;
+        min-height: calc(100vh - 56px);
     }
-    
+
     .product-card {
         background: white;
         border-radius: 1rem;
-        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        box-shadow: 0 0 20px rgba(0,0,0,0.08);
         overflow: hidden;
     }
-    
+
     .product-image {
         width: 100%;
-        height: 657px;
+        height: 400px;
         object-fit: cover;
+        border-radius: 0.5rem;
     }
-    
+
     .product-info {
         padding: 2rem;
     }
-    
-    .price {
-        font-size: 2rem;
-        font-weight: bold;
-        color: var(--primary-color);
-    }
-    
-    .seller-info {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.5rem 1rem;
-        background-color: #f8f9fa;
-        border-radius: 2rem;
-        margin: 1rem 0;
-    }
-    
-    .seller-avatar {
-        width: 30px;
-        height: 30px;
-        background-color: var(--primary-color);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        margin-right: 0.5rem;
-    }
-    
-    .payment-info {
-        background-color: #f8f9fa;
+
+    .product-category {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
         border-radius: 1rem;
-        padding: 1.5rem;
-        margin-top: 1.5rem;
-    }
-    
-    .category-badge {
-        background-color: var(--primary-color);
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 2rem;
+        background-color: #f0f2f5;
+        color: #495057;
         font-size: 0.875rem;
         margin-bottom: 1rem;
-        display: inline-block;
     }
-    
+
+    .product-title {
+        font-size: 1.75rem;
+        margin-bottom: 1rem;
+        color: #212529;
+    }
+
+    .product-price {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .availability-badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .badge-available {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .badge-unavailable {
+        background-color: #ffebee;
+        color: #c62828;
+    }
+
+    .product-rating {
+        margin: 1rem 0;
+        color: #6c757d;
+    }
+
+    .rating-value {
+        font-weight: 600;
+        color: #ffc107;
+    }
+
+    .product-description {
+        margin: 1.5rem 0;
+        color: #495057;
+        line-height: 1.6;
+    }
+
+    .seller-info {
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+        margin: 1.5rem 0;
+    }
+
+    .seller-link {
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+
+    .seller-link:hover {
+        text-decoration: underline;
+    }
+
     .action-buttons {
         display: flex;
         gap: 1rem;
-        margin: 1.5rem 0;
+        margin-top: 2rem;
     }
-    
+
     .btn-action {
         padding: 0.75rem 1.5rem;
         border-radius: 0.5rem;
         font-weight: 500;
-        transition: all 0.2s;
     }
-    
-    .btn-action:hover {
-        transform: translateY(-2px);
-    }
-    
-    .favorite-btn {
-        background: none;
-        border: none;
-        color: #dc3545;
-        font-size: 1.5rem;
-        transition: transform 0.2s;
-    }
-    
-    .favorite-btn:hover {
-        transform: scale(1.1);
-    }
-    
-    /* Comentarios */
+
     .comments-section {
-        margin-top: 2rem;
+        margin-top: 3rem;
+    }
+
+    .comment-form {
         background: white;
-        border-radius: 1rem;
-        padding: 2rem;
-        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
-    
-    .comment {
-        border-bottom: 1px solid #eee;
-        padding: 1rem 0;
+
+    .comment-list {
+        margin-top: 2rem;
     }
-    
-    .comment:last-child {
-        border-bottom: none;
+
+    .comment-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
-    
+
     .comment-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 0.5rem;
     }
-    
-    .comment-user {
+
+    .comment-author {
         font-weight: 500;
-        color: var(--primary-color);
+        color: #495057;
     }
-    
+
     .comment-date {
         font-size: 0.875rem;
-        color: var(--secondary-color);
+        color: #6c757d;
     }
-    
-    .comment-form textarea {
-        border-radius: 0.5rem;
-        padding: 1rem;
-        resize: none;
+
+    .comment-rating {
+        color: #ffc107;
+        margin-bottom: 0.5rem;
     }
-    
+
+    .comment-text {
+        color: #495057;
+        line-height: 1.5;
+    }
+
     @media (max-width: 767.98px) {
         .product-image {
             height: 300px;
         }
-        
+
         .product-info {
             padding: 1.5rem;
         }
-    }
-    
-    .star-rating {
-        color: #ffc107;
-        font-size: 1.2rem;
-    }
-    
-    .star-rating.interactive {
-        cursor: pointer;
-    }
-    
-    .star-rating .far.fa-star:hover,
-    .star-rating .far.fa-star:hover ~ .far.fa-star {
-        color: #ffc107;
-    }
-    
-    .rating-summary {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin: 1rem 0;
-    }
-    
-    .average-rating {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: var(--primary-color);
-    }
-    
-    .rating-count {
-        color: var(--secondary-color);
-        font-size: 0.9rem;
-    }
 
-    .payment-details {
-        border: 1px solid rgba(0,0,0,0.1);
-    }
+        .action-buttons {
+            flex-direction: column;
+        }
 
-    .qr-wrapper {
-        display: inline-block;
-        padding: 10px;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        cursor: pointer;
-        transition: transform 0.2s;
-    }
-
-    .qr-wrapper:hover {
-        transform: scale(1.05);
-    }
-
-    .qr-image {
-        width: 150px;
-        height: 150px;
-        object-fit: contain;
-    }
-
-    .qr-image-large {
-        width: 300px;
-        height: 300px;
-        object-fit: contain;
-    }
-
-    .transfer-info {
-        background: white;
-        padding: 15px;
-        border-radius: 8px;
-        margin-top: 10px;
-    }
-
-    .modal-content {
-        border-radius: 15px;
-        overflow: hidden;
-    }
-
-    .modal-header {
-        background: var(--primary-color);
-        color: white;
-    }
-
-    .modal-header .btn-close {
-        filter: brightness(0) invert(1);
-    }
-
-    .product-unavailable .product-image {
-        filter: grayscale(50%);
-        opacity: 0.8;
-    }
-    
-    .product-availability {
-        margin-top: -1rem;
-    }
-    
-    .alert {
-        border-radius: 1rem;
-        border: none;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    
-    .alert-danger {
-        background-color: #fff1f0;
-        color: #dc3545;
-    }
-    
-    .alert i {
-        font-size: 1.5rem;
+        .btn-action {
+            width: 100%;
+        }
     }
 </style>
 {% endblock %}
@@ -262,277 +187,147 @@
 {% block content %}
 <section class="product-section">
     <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <a href="{% url 'home' %}" class="btn btn-outline-primary mb-4">
-                    <i class="fas fa-arrow-left me-2"></i>Volver al Inicio
-                </a>
-            </div>
-        </div>
-        
         <div class="product-card">
             <div class="row g-0">
+                <!-- Columna de imagen -->
                 <div class="col-md-6">
                     {% if product.image %}
                         <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
-                    {% else %}
-                        <div class="product-image d-flex align-items-center justify-content-center bg-light">
-                            <i class="fas fa-image fa-3x text-secondary"></i>
-                        </div>
                     {% endif %}
                 </div>
+                
+                <!-- Columna de información -->
                 <div class="col-md-6">
                     <div class="product-info">
-                        <span class="category-badge">
-                            <i class="fas fa-tag me-2"></i>{{ product.get_category_display }}
+                        <!-- Categorías -->
+                        <div class="product-category">
+                            {{ product.get_category_display }}
+                            {% if product.food_type %}
+                                • {{ product.get_food_type_display }}
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Título y precio -->
+                        <h1 class="product-title">{{ product.name }}</h1>
+                        <div class="product-price">$ {{ product.price|floatformat:0|intcomma }}</div>
+                        
+                        <!-- Estado -->
+                        <span class="availability-badge {% if product.available %}badge-available{% else %}badge-unavailable{% endif %}">
+                            {% if product.available %}Disponible{% else %}No disponible{% endif %}
                         </span>
                         
-                        <h1 class="display-5 mb-3">{{ product.name }}</h1>
-                        <div class="d-flex align-items-center gap-2 mb-3">
-                            <p class="price mb-0">${{ product.price }}</p>
-                            {% if not product.available %}
-                                <span class="badge bg-danger">
-                                    <i class="fas fa-times-circle me-1"></i>No disponible
-                                </span>
-                            {% else %}
-                                <span class="badge bg-success">
-                                    <i class="fas fa-check-circle me-1"></i>Disponible
-                                </span>
-                            {% endif %}
-                        </div>
-                        
-                        <div class="product-availability mb-4">
-                            {% if not product.available %}
-                            <div class="alert alert-danger d-flex align-items-center" role="alert">
-                                <i class="fas fa-exclamation-circle fa-lg me-2"></i>
-                                <div>
-                                    <strong>Producto no disponible</strong>
-                                    <p class="mb-0">Este producto no está disponible para la venta en este momento.</p>
-                                </div>
+                        <!-- Calificación -->
+                        {% if product.total_ratings > 0 %}
+                            <div class="product-rating">
+                                <span class="rating-value">{{ product.average_rating }}</span>/5
+                                <span class="ms-2">({{ product.total_ratings }} reseñas)</span>
                             </div>
-                            {% endif %}
+                        {% endif %}
+                        
+                        <!-- Descripción -->
+                        <div class="product-description">
+                            {{ product.description|linebreaks }}
                         </div>
                         
+                        <!-- Información del vendedor -->
                         <div class="seller-info">
+                            Vendido por 
                             {% if seller_profile %}
-                                <a href="{% url 'view_profile' %}" class="text-decoration-none">
-                                    <div class="d-flex align-items-center">
-                                        {% if seller_profile.profile_image %}
-                                            <img src="{{ seller_profile.profile_image.url }}" 
-                                                 alt="{{ seller_profile.store_name }}"
-                                                 class="seller-avatar rounded-circle me-2"
-                                                 style="width: 40px; height: 40px; object-fit: cover;">
-                                        {% else %}
-                                            <div class="seller-avatar">
-                                                <i class="fas fa-store"></i>
-                                            </div>
-                                        {% endif %}
-                                        <div>
-                                            <strong class="d-block">{{ seller_profile.store_name }}</strong>
-                                            {% if seller_profile.slogan %}
-                                                <small class="text-muted">{{ seller_profile.slogan }}</small>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </a>
+                                <a href="{% url 'view_profile' %}" class="seller-link">{{ seller_profile.store_name }}</a>
                             {% else %}
-                                <div class="seller-avatar">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <span>{{ product.seller.username }}</span>
+                                {{ product.seller.username }}
                             {% endif %}
                         </div>
                         
-                        <div class="rating-summary">
-                            <div class="average-rating">{{ product.average_rating }}</div>
-                            <div class="star-rating">
-                                {% for i in "12345"|make_list %}
-                                    {% if forloop.counter <= product.average_rating %}
-                                        <i class="fas fa-star"></i>
-                                    {% else %}
-                                        <i class="far fa-star"></i>
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
-                            <div class="rating-count">({{ product.total_ratings }} calificaciones)</div>
-                        </div>
-                        
-                        <p class="lead mb-4">{{ product.description }}</p>
-                        
-                        <div class="additional-info mb-4">
-                            {% if product.category == 'Comida' and product.food_type %}
-                            <div class="info-item mb-2">
-                                <i class="fas fa-utensils me-2"></i>
-                                <strong>Tipo de comida:</strong> {{ product.get_food_type_display }}
-                            </div>
-                            {% elif product.condition %}
-                            <div class="info-item mb-2">
-                                <i class="fas fa-tag me-2"></i>
-                                <strong>Estado:</strong> {{ product.get_condition_display }}
-                            </div>
-                            {% endif %}
-                        </div>
-                        
+                        <!-- Botones de acción -->
                         <div class="action-buttons">
-                            {% if user.is_authenticated %}
-                                <button onclick="toggleFavorite({{ product.id }})" 
-                                        class="favorite-btn" 
-                                        id="favorite-btn-{{ product.id }}">
-                                    <i class="fas fa-heart {% if is_favorite %}text-danger{% else %}text-secondary{% endif %}"></i>
-                                </button>
-                            {% endif %}
-                            
                             {% if user == product.seller %}
-                                <a href="{% url 'edit_product' product.id %}" class="btn btn-outline-primary btn-action">
-                                    <i class="fas fa-edit me-2"></i>Editar
+                                <a href="{% url 'edit_product' product.id %}" class="btn btn-primary btn-action">
+                                    Editar producto
                                 </a>
                                 <a href="{% url 'delete_product' product.id %}" class="btn btn-outline-danger btn-action">
-                                    <i class="fas fa-trash me-2"></i>Eliminar
+                                    Eliminar producto
                                 </a>
+                            {% elif user.is_authenticated %}
+                                <button onclick="toggleFavorite(event, {{ product.id }})" 
+                                        class="btn {% if is_favorite %}btn-danger{% else %}btn-outline-danger{% endif %} btn-action">
+                                    {% if is_favorite %}Quitar de favoritos{% else %}Agregar a favoritos{% endif %}
+                                </button>
                             {% endif %}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Sección de Comentarios -->
+
+        <!-- Sección de comentarios -->
         <div class="comments-section">
-            <h3 class="mb-4">
-                <i class="fas fa-comments me-2"></i>Comentarios
-            </h3>
+            <h3 class="mb-4">Comentarios y Reseñas</h3>
             
-            {% if user.is_authenticated %}
-                <form method="post" action="{% url 'add_comment' product.id %}" class="comment-form mb-4">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label class="form-label">Tu calificación</label>
-                        <div class="star-rating interactive mb-2">
-                            {% for i in "12345"|make_list %}
-                                <i class="far fa-star" data-rating="{{ forloop.counter }}"></i>
-                            {% endfor %}
+            {% if user.is_authenticated and user != product.seller %}
+                <div class="comment-form">
+                    <form method="post" action="{% url 'add_comment' product.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ comment_form.text }}
                         </div>
-                        <input type="hidden" name="rating" id="id_rating" value="">
-                        {{ comment_form.text }}
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-action">
-                        <i class="fas fa-paper-plane me-2"></i>Comentar
-                    </button>
-                </form>
+                        <div class="mb-3">
+                            <label class="form-label">Calificación</label>
+                            {{ comment_form.rating }}
+                        </div>
+                        <button type="submit" class="btn btn-primary">Publicar comentario</button>
+                    </form>
+                </div>
             {% endif %}
             
-            {% for comment in comments %}
-                <div class="comment">
-                    <div class="comment-header">
-                        <div>
-                            <span class="comment-user">
-                                <i class="fas fa-user-circle me-2"></i>{{ comment.user.username }}
-                            </span>
-                            <div class="star-rating">
-                                {% for i in "12345"|make_list %}
-                                    {% if forloop.counter <= comment.rating %}
-                                        <i class="fas fa-star"></i>
-                                    {% else %}
-                                        <i class="far fa-star"></i>
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
+            <div class="comment-list">
+                {% for comment in comments %}
+                    <div class="comment-card">
+                        <div class="comment-header">
+                            <span class="comment-author">{{ comment.user.username }}</span>
+                            <span class="comment-date">{{ comment.created_at|date:"d/m/Y H:i" }}</span>
                         </div>
-                        <span class="comment-date">
-                            <i class="fas fa-clock me-1"></i>{{ comment.created_at|date:"d/m/Y H:i" }}
-                        </span>
+                        <div class="comment-rating">
+                            {{ comment.rating }}/5
+                        </div>
+                        <p class="comment-text">{{ comment.text }}</p>
+                        {% if user == comment.user %}
+                            <form method="post" action="{% url 'delete_comment' comment.id %}" class="mt-2">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                            </form>
+                        {% endif %}
                     </div>
-                    <p class="mb-2">{{ comment.text }}</p>
-                    {% if user == comment.user %}
-                        <form method="post" action="{% url 'delete_comment' comment.id %}" class="d-inline">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-sm btn-link text-danger p-0" 
-                                    onclick="return confirm('¿Estás seguro de que quieres eliminar este comentario?')">
-                                <i class="fas fa-trash-alt me-1"></i>Eliminar
-                            </button>
-                        </form>
-                    {% endif %}
-                </div>
-            {% empty %}
-                <p class="text-muted text-center">No hay comentarios aún. ¡Sé el primero en comentar!</p>
-            {% endfor %}
+                {% empty %}
+                    <p class="text-muted">No hay comentarios aún.</p>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </section>
 
-{% block extra_scripts %}
 <script>
-    function toggleFavorite(productId) {
-        fetch(`/favorite/toggle/${productId}/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-                'Content-Type': 'application/json'
-            },
-            credentials: 'same-origin'
-        })
-        .then(response => response.json())
-        .then(data => {
-            const button = document.querySelector(`#favorite-btn-${productId} i`);
-            if (data.status === 'added') {
-                button.classList.remove('text-secondary');
-                button.classList.add('text-danger');
-            } else {
-                button.classList.remove('text-danger');
-                button.classList.add('text-secondary');
-            }
-        });
-    }
-
-    // Sistema de calificación interactivo
-    document.addEventListener('DOMContentLoaded', function() {
-        const stars = document.querySelectorAll('.star-rating.interactive .fa-star');
-        const ratingInput = document.getElementById('id_rating');
-        
-        stars.forEach(star => {
-            star.addEventListener('mouseover', function() {
-                const rating = this.dataset.rating;
-                stars.forEach((s, index) => {
-                    if (index < rating) {
-                        s.classList.remove('far');
-                        s.classList.add('fas');
-                    } else {
-                        s.classList.remove('fas');
-                        s.classList.add('far');
-                    }
-                });
-            });
-            
-            star.addEventListener('click', function() {
-                const rating = this.dataset.rating;
-                ratingInput.value = rating;
-            });
-        });
-        
-        const starRatingContainer = document.querySelector('.star-rating.interactive');
-        starRatingContainer.addEventListener('mouseleave', function() {
-            const currentRating = ratingInput.value;
-            stars.forEach((star, index) => {
-                if (index < currentRating) {
-                    star.classList.remove('far');
-                    star.classList.add('fas');
-                } else {
-                    star.classList.remove('fas');
-                    star.classList.add('far');
-                }
-            });
-        });
-    });
-
-    // Inicializar tooltips de Bootstrap
-    document.addEventListener('DOMContentLoaded', function() {
-        const qrImage = document.querySelector('.qr-wrapper');
-        if (qrImage) {
-            qrImage.addEventListener('mouseover', function() {
-                this.title = 'Click para ampliar';
-            });
+function toggleFavorite(event, productId) {
+    event.preventDefault();
+    fetch(`/favorite/toggle/${productId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const button = event.target;
+        if (data.status === 'added') {
+            button.classList.remove('btn-outline-danger');
+            button.classList.add('btn-danger');
+            button.textContent = 'Quitar de favoritos';
+        } else {
+            button.classList.remove('btn-danger');
+            button.classList.add('btn-outline-danger');
+            button.textContent = 'Agregar a favoritos';
         }
     });
+}
 </script>
-{% endblock %}
 {% endblock %} 
