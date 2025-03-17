@@ -309,6 +309,56 @@
     .seller-info {
         cursor: pointer;
     }
+
+    /* Estilos para la sección de comentarios */
+    .comments-section {
+        background-color: #fff;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+
+    .comment-form-card {
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+    }
+
+    .star-rating {
+        display: inline-flex;
+        gap: 0.5rem;
+        font-size: 1.5rem;
+    }
+
+    .rating-star {
+        cursor: pointer;
+        color: #dee2e6;
+        transition: color 0.2s;
+    }
+
+    .rating-star.active {
+        color: #ffc107;
+    }
+
+    .rating-star:hover {
+        color: #ffc107;
+    }
+
+    .comment-card {
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+        padding: 1rem;
+    }
+
+    .rating-display {
+        font-size: 0.875rem;
+        margin: 0.25rem 0;
+    }
+
+    .comment-text {
+        margin-top: 0.5rem;
+        color: #495057;
+    }
 </style>
 {% endblock %}
 
@@ -405,56 +455,65 @@
         </div>
 
         <!-- Sección de comentarios -->
-        <div class="comments-section">
-            <h3 class="mb-4">Comentarios y Reseñas</h3>
-            
-            {% if user.is_authenticated and user != product.seller %}
-                <div class="comment-form">
-                    <form method="post" action="{% url 'add_comment' product.id %}" id="commentForm">
+        <div class="comments-section mt-5">
+            <h3 class="mb-4">
+                <i class="fas fa-comments me-2"></i>Comentarios y Calificaciones
+            </h3>
+
+            {% if user.is_authenticated %}
+                <div class="comment-form-card mb-4">
+                    <form method="post" action="{% url 'add_comment' product.id %}" class="comment-form">
                         {% csrf_token %}
-                        <div class="mb-3">
-                            <label class="form-label">Tu calificación</label>
-                            <div class="rating-stars" id="ratingStars">
+                        <div class="rating-selector mb-3">
+                            <label class="form-label">Calificación:</label>
+                            <div class="star-rating">
                                 {% for i in "12345" %}
-                                    <span class="star-rating" data-rating="{{ i }}">★</span>
+                                    <i class="far fa-star rating-star" data-rating="{{ i }}"></i>
                                 {% endfor %}
                             </div>
-                            {{ comment_form.rating }}
+                            <input type="hidden" name="rating" id="selected-rating" value="">
                         </div>
                         <div class="mb-3">
-                            {{ comment_form.text }}
+                            <textarea name="text" class="form-control" rows="3" placeholder="Escribe tu comentario aquí..." required></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary">
-                            Publicar comentario
+                            <i class="fas fa-paper-plane me-2"></i>Publicar Comentario
                         </button>
                     </form>
                 </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <a href="{% url 'login' %}" class="alert-link">Inicia sesión</a> para dejar un comentario.
+                </div>
             {% endif %}
-            
-            <div class="comment-list">
+
+            <div class="comments-list">
                 {% for comment in comments %}
-                    <div class="comment-card">
-                        <div class="comment-header">
-                            <span class="comment-author">{{ comment.user.username }}</span>
-                            <span class="comment-date">{{ comment.created_at|date:"d/m/Y H:i" }}</span>
+                    <div class="comment-card mb-3">
+                        <div class="comment-header d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-0">{{ comment.user.username }}</h6>
+                                <div class="rating-display">
+                                    {% for i in "12345" %}
+                                        <i class="fas fa-star {% if i|add:'0' <= comment.rating %}text-warning{% else %}text-muted{% endif %}"></i>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <small class="text-muted">{{ comment.created_at|date:"d M Y, H:i" }}</small>
                         </div>
-                        <div class="comment-rating">
-                            {% for i in "12345" %}
-                                <span class="star-rating" style="cursor: default; color: {% if i|add:"0" <= comment.rating %}#ffc107{% else %}#e4e5e9{% endif %}">★</span>
-                            {% endfor %}
-                        </div>
-                        <p class="comment-text">{{ comment.text }}</p>
+                        <p class="comment-text mb-1">{{ comment.text }}</p>
                         {% if user == comment.user %}
-                            <form method="post" action="{% url 'delete_comment' comment.id %}" class="mt-2">
+                            <form action="{% url 'delete_comment' comment.id %}" method="post" class="d-inline">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-outline-danger">
-                                    Eliminar
+                                <button type="submit" class="btn btn-link text-danger p-0">
+                                    <i class="fas fa-trash-alt"></i> Eliminar
                                 </button>
                             </form>
                         {% endif %}
                     </div>
                 {% empty %}
-                    <p class="text-muted">No hay comentarios aún.</p>
+                    <p class="text-muted text-center">No hay comentarios aún. ¡Sé el primero en comentar!</p>
                 {% endfor %}
             </div>
         </div>
@@ -470,22 +529,56 @@
 <script>
 // Sistema de calificación
 document.addEventListener('DOMContentLoaded', function() {
-    const ratingStars = document.querySelectorAll('#ratingStars .star-rating');
-    const ratingInput = document.querySelector('#id_rating');
-    
+    const ratingStars = document.querySelectorAll('.rating-star');
+    const ratingInput = document.getElementById('selected-rating');
+
+    function setRating(rating) {
+        ratingInput.value = rating;
+        ratingStars.forEach((star, index) => {
+            if (index < rating) {
+                star.classList.remove('far');
+                star.classList.add('fas');
+                star.classList.add('active');
+            } else {
+                star.classList.add('far');
+                star.classList.remove('fas');
+                star.classList.remove('active');
+            }
+        });
+    }
+
     ratingStars.forEach(star => {
         star.addEventListener('click', function() {
             const rating = this.dataset.rating;
-            ratingInput.value = rating;
-            
-            ratingStars.forEach(s => {
-                if (s.dataset.rating <= rating) {
-                    s.style.color = '#ffc107';
+            setRating(rating);
+        });
+
+        star.addEventListener('mouseover', function() {
+            const rating = this.dataset.rating;
+            ratingStars.forEach((s, index) => {
+                if (index < rating) {
+                    s.classList.remove('far');
+                    s.classList.add('fas');
                 } else {
-                    s.style.color = '#e4e5e9';
+                    s.classList.add('far');
+                    s.classList.remove('fas');
                 }
             });
         });
+    });
+
+    const ratingContainer = document.querySelector('.star-rating');
+    ratingContainer.addEventListener('mouseleave', function() {
+        const currentRating = ratingInput.value;
+        if (!currentRating) {
+            ratingStars.forEach(star => {
+                star.classList.add('far');
+                star.classList.remove('fas');
+                star.classList.remove('active');
+            });
+        } else {
+            setRating(currentRating);
+        }
     });
 });
 
