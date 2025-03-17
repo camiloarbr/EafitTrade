@@ -58,22 +58,36 @@ class Schedule(models.Model):
         choices=DAYS_OF_WEEK,
         verbose_name='Día'
     )
+    is_available = models.BooleanField(
+        default=True,
+        verbose_name='Disponible'
+    )
     start_time = models.TimeField(
-        verbose_name='Hora de inicio'
+        verbose_name='Hora de inicio',
+        null=True,
+        blank=True
     )
     end_time = models.TimeField(
-        verbose_name='Hora de cierre'
+        verbose_name='Hora de cierre',
+        null=True,
+        blank=True
     )
 
     class Meta:
-        verbose_name = 'Horario'
-        verbose_name_plural = 'Horarios'
         ordering = ['day']
         unique_together = ['profile', 'day']
 
     def clean(self):
-        if self.start_time and self.end_time and self.start_time >= self.end_time:
-            raise ValidationError('La hora de inicio debe ser anterior a la hora de cierre')
+        if self.is_available:
+            if not self.start_time or not self.end_time:
+                raise ValidationError('Debe especificar hora de inicio y cierre cuando el día está disponible')
+            if self.start_time >= self.end_time:
+                raise ValidationError('La hora de inicio debe ser anterior a la hora de cierre')
+        else:
+            self.start_time = None
+            self.end_time = None
 
     def __str__(self):
+        if not self.is_available:
+            return f"{self.day}: No disponible"
         return f"{self.day}: {self.start_time.strftime('%H:%M')} - {self.end_time.strftime('%H:%M')}"

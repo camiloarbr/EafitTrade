@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import SellerProfile, Schedule
-from .forms import SellerProfileForm, ScheduleFormSet
+from .forms import SellerProfileForm, ScheduleInlineFormSet
 from django.db import transaction
 
 # Create your views here.
@@ -23,7 +23,7 @@ def create_profile(request):
 
     if request.method == 'POST':
         form = SellerProfileForm(request.POST, request.FILES)
-        schedule_formset = ScheduleFormSet(request.POST)
+        schedule_formset = ScheduleInlineFormSet(request.POST)
         
         if form.is_valid() and schedule_formset.is_valid():
             with transaction.atomic():
@@ -31,16 +31,14 @@ def create_profile(request):
                 profile.user = request.user
                 profile.save()
                 
-                schedules = schedule_formset.save(commit=False)
-                for schedule in schedules:
-                    schedule.profile = profile
-                    schedule.save()
+                schedule_formset.instance = profile
+                schedule_formset.save()
                 
                 messages.success(request, '¡Perfil creado exitosamente!')
                 return redirect('view_profile')
     else:
         form = SellerProfileForm()
-        schedule_formset = ScheduleFormSet()
+        schedule_formset = ScheduleInlineFormSet()
     
     return render(request, 'seller_profiles/create_profile.html', {
         'form': form,
@@ -53,7 +51,7 @@ def edit_profile(request):
     
     if request.method == 'POST':
         form = SellerProfileForm(request.POST, request.FILES, instance=profile)
-        schedule_formset = ScheduleFormSet(request.POST, instance=profile)
+        schedule_formset = ScheduleInlineFormSet(request.POST, instance=profile)
         
         if form.is_valid() and schedule_formset.is_valid():
             with transaction.atomic():
@@ -63,7 +61,7 @@ def edit_profile(request):
                 return redirect('view_profile')
     else:
         form = SellerProfileForm(instance=profile)
-        schedule_formset = ScheduleFormSet(instance=profile)
+        schedule_formset = ScheduleInlineFormSet(instance=profile)
     
     return render(request, 'seller_profiles/edit_profile.html', {
         'form': form,

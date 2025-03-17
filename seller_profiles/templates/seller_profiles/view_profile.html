@@ -38,26 +38,67 @@
                         <h3 class="mb-4">
                             <i class="fas fa-clock me-2"></i>Horario de Atención
                         </h3>
-                        <table class="schedule-table">
-                            <thead>
-                                <tr>
-                                    <th>Día</th>
-                                    <th>Horario</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for schedule in profile.schedules.all %}
-                                <tr>
-                                    <td>{{ schedule.get_day_display }}</td>
-                                    <td>{{ schedule.start_time|time:"H:i" }} - {{ schedule.end_time|time:"H:i" }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                        <div class="schedule-table-wrapper">
+                            <table class="table schedule-table">
+                                <thead>
+                                    <tr>
+                                        <th>Día</th>
+                                        <th>Horario</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for schedule in profile.schedules.all %}
+                                    <tr>
+                                        <td>{{ schedule.get_day_display }}</td>
+                                        <td>
+                                            {% if schedule.is_available %}
+                                                <span class="text-success">
+                                                    <i class="fas fa-clock me-2"></i>
+                                                    {{ schedule.start_time|time:"H:i" }} - {{ schedule.end_time|time:"H:i" }}
+                                                </span>
+                                            {% else %}
+                                                <span class="text-muted">
+                                                    <i class="fas fa-times-circle me-2"></i>
+                                                    No disponible
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<style>
+.schedule-table-wrapper {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.schedule-table {
+    margin-bottom: 0;
+}
+
+.schedule-table thead {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.schedule-table th,
+.schedule-table td {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+.schedule-table tbody tr:nth-child(even) {
+    background-color: rgba(0,0,0,0.02);
+}
+</style>
 {% endblock %} 

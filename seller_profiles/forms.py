@@ -19,24 +19,44 @@ class SellerProfileForm(forms.ModelForm):
 class ScheduleForm(forms.ModelForm):
     class Meta:
         model = Schedule
-        fields = ['day', 'start_time', 'end_time']
+        fields = ['day', 'is_available', 'start_time', 'end_time']
         widgets = {
-            'day': forms.Select(attrs={'class': 'form-control'}),
+            'day': forms.HiddenInput(),
+            'is_available': forms.CheckboxInput(attrs={
+                'class': 'form-check-input availability-toggle',
+                'role': 'switch'
+            }),
             'start_time': forms.TimeInput(attrs={
-                'class': 'form-control',
-                'type': 'time'
+                'class': 'form-control time-input',
+                'type': 'time',
+                'min': '07:00',
+                'max': '22:00'
             }),
             'end_time': forms.TimeInput(attrs={
-                'class': 'form-control',
-                'type': 'time'
+                'class': 'form-control time-input',
+                'type': 'time',
+                'min': '07:00',
+                'max': '22:00'
             }),
         }
 
-ScheduleFormSet = inlineformset_factory(
+class ScheduleFormSet(forms.BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.instance.pk:  # Si es un nuevo perfil
+            self.initial = [
+                {'day': day[0]} for day in Schedule.DAYS_OF_WEEK
+            ]
+
+ScheduleInlineFormSet = inlineformset_factory(
     SellerProfile,
     Schedule,
+    formset=ScheduleFormSet,
     form=ScheduleForm,
-    extra=5,
+    extra=0,
+    min_num=5,
     max_num=5,
+    validate_min=True,
+    validate_max=True,
     can_delete=False
 ) 
