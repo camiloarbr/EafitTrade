@@ -1,4 +1,5 @@
 {% extends 'products/base.html' %}
+{% load humanize %}
 
 {% block title %}Mis Favoritos - EAFIT Trade{% endblock %}
 
@@ -20,89 +21,134 @@
         font-size: 2.5rem;
         margin-bottom: 1rem;
     }
-    
+
+    /* Estilos de tarjeta de producto idénticos al home */
     .product-card {
-        background: white;
-        border-radius: 1rem;
-        box-shadow: 0 0 15px rgba(0,0,0,0.1);
-        overflow: hidden;
-        transition: transform 0.2s;
         height: 100%;
-        position: relative;
+        transition: all 0.2s;
+        border: none;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        max-width: 280px;
+        margin: 0 auto;
     }
     
     .product-card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-3px);
+        box-shadow: 0 3px 6px rgba(0,0,0,0.12);
     }
     
     .product-image {
-        width: 100%;
-        height: 200px;
+        height: 160px;
         object-fit: cover;
     }
     
-    .product-info {
-        padding: 1.5rem;
+    .card-body {
+        padding: 0.75rem;
     }
     
-    .product-price {
-        font-size: 1.5rem;
-        font-weight: bold;
+    .card-title {
+        font-size: 0.9rem;
+        font-weight: 500;
+        line-height: 1.2;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 0.25rem;
+    }
+    
+    .price {
+        font-size: 1rem;
+        font-weight: 600;
         color: var(--primary-color);
-    }
-    
-    .product-seller {
-        font-size: 0.875rem;
-        color: var(--secondary-color);
-        display: flex;
-        align-items: center;
-        margin: 0.5rem 0;
-    }
-    
-    .seller-avatar {
-        width: 24px;
-        height: 24px;
-        background-color: var(--primary-color);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        margin-right: 0.5rem;
-        font-size: 0.75rem;
     }
     
     .category-badge {
         position: absolute;
-        top: 1rem;
-        right: 1rem;
+        top: 8px;
+        right: 8px;
         background-color: rgba(255,255,255,0.9);
-        padding: 0.25rem 0.75rem;
-        border-radius: 1rem;
-        font-size: 0.875rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        padding: 0.2rem 0.5rem;
+        border-radius: 16px;
+        font-size: 0.7rem;
+        color: var(--primary-color);
     }
     
-    .btn-remove {
-        background: none;
-        border: none;
-        color: #dc3545;
+    .favorite-btn {
         padding: 0;
-        transition: all 0.2s;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.9);
+        border: none;
+        z-index: 2;
     }
     
-    .btn-remove:hover {
-        transform: scale(1.1);
+    .product-unavailable {
+        opacity: 0.7;
     }
     
-    .btn-view {
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        transition: all 0.2s;
+    .grayscale {
+        filter: grayscale(50%);
     }
     
-    .btn-view:hover {
-        transform: translateY(-2px);
+    .star-rating {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        margin-top: 0.25rem;
+        font-size: 0.8rem;
+        color: #ffc107;
+    }
+    
+    .rating-value {
+        font-weight: 600;
+    }
+    
+    .rating-count {
+        color: var(--secondary-color);
+        font-size: 0.7rem;
+    }
+    
+    .availability-badge {
+        font-size: 0.7rem;
+        font-weight: 500;
+    }
+    
+    .text-success {
+        color: #198754 !important;
+    }
+    
+    .text-danger {
+        color: #dc3545 !important;
+    }
+
+    /* Ajustes responsivos */
+    @media (max-width: 768px) {
+        .product-card {
+            max-width: 100%;
+        }
+        
+        .product-image {
+            height: 140px;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .product-image {
+            height: 120px;
+        }
+        
+        .card-body {
+            padding: 0.5rem;
+        }
+        
+        .card-title {
+            font-size: 0.85rem;
+        }
     }
     
     .empty-favorites {
@@ -115,10 +161,12 @@
         color: var(--secondary-color);
         margin-bottom: 1rem;
     }
-    
-    @media (max-width: 767.98px) {
-        .product-card {
-            margin-bottom: 1rem;
+
+    /* Ajuste para 5 tarjetas por fila en pantallas grandes */
+    @media (min-width: 1200px) {
+        .col-xl-3 {
+            flex: 0 0 auto;
+            width: 20%;
         }
     }
 </style>
@@ -135,41 +183,51 @@
         {% if favorites %}
         <div class="row g-4">
             {% for favorite in favorites %}
-            <div class="col-12 col-md-6 col-lg-4" id="favorite-{{ favorite.product.id }}">
-                <div class="product-card">
-                    <span class="category-badge">
-                        <i class="fas fa-tag me-1"></i>{{ favorite.product.get_category_display }}
-                    </span>
-                    
-                    {% if favorite.product.image %}
-                        <img src="{{ favorite.product.image.url }}" alt="{{ favorite.product.name }}" class="product-image">
-                    {% else %}
-                        <div class="product-image d-flex align-items-center justify-content-center bg-light">
-                            <i class="fas fa-image fa-3x text-secondary"></i>
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3" id="favorite-{{ favorite.product.id }}">
+                <a href="{% url 'product_detail' favorite.product.id %}" class="text-decoration-none">
+                    <div class="card product-card {% if not favorite.product.available %}product-unavailable{% endif %}">
+                        <div class="position-relative">
+                            {% if favorite.product.image %}
+                            <img src="{{ favorite.product.image.url }}" 
+                                 class="card-img-top product-image {% if not favorite.product.available %}grayscale{% endif %}" 
+                                 alt="{{ favorite.product.name }}">
+                            {% endif %}
+                            <span class="category-badge">{{ favorite.product.get_category_display }}</span>
                         </div>
-                    {% endif %}
-                    
-                    <div class="product-info">
-                        <h5 class="mb-2">{{ favorite.product.name }}</h5>
-                        <p class="product-price mb-2">${{ favorite.product.price }}</p>
                         
-                        <div class="product-seller">
-                            <div class="seller-avatar">
-                                <i class="fas fa-user"></i>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title text-dark mb-0">{{ favorite.product.name }}</h5>
+                                <button 
+                                    onclick="toggleFavorite(event, {{ favorite.product.id }})"
+                                    class="favorite-btn"
+                                    title="Eliminar de favoritos"
+                                >
+                                    <i class="fas fa-heart text-danger"></i>
+                                </button>
                             </div>
-                            <span>{{ favorite.product.seller.username }}</span>
-                        </div>
-                        
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <a href="{% url 'product_detail' favorite.product.id %}" class="btn btn-outline-primary btn-view">
-                                <i class="fas fa-eye me-2"></i>Ver Detalles
-                            </a>
-                            <button onclick="toggleFavorite({{ favorite.product.id }})" class="btn-remove">
-                                <i class="fas fa-heart-broken fa-lg"></i>
-                            </button>
+
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <p class="price mb-0">$ {{ favorite.product.price|floatformat:0|intcomma }}</p>
+                                <span class="availability-badge {% if favorite.product.available %}text-success{% else %}text-danger{% endif %}">
+                                    {% if favorite.product.available %}
+                                        <i class="fas fa-check-circle me-1"></i>Disponible
+                                    {% else %}
+                                        <i class="fas fa-times-circle me-1"></i>No disponible
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                            {% if favorite.product.total_ratings > 0 %}
+                            <div class="star-rating">
+                                <span class="rating-value">{{ favorite.product.average_rating }}</span>
+                                <i class="fas fa-star"></i>
+                                <span class="rating-count">({{ favorite.product.total_ratings }})</span>
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
             {% endfor %}
         </div>
@@ -186,10 +244,10 @@
     </div>
 </section>
 
-
 {% block extra_scripts %}
 <script>
-    function toggleFavorite(productId) {
+    function toggleFavorite(event, productId) {
+        event.preventDefault();
         fetch(`/favorite/toggle/${productId}/`, {
             method: 'POST',
             headers: {
