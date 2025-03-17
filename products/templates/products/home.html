@@ -266,6 +266,60 @@
         border-color: var(--primary-color);
         box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
     }
+    
+    /* Estilos para los filtros de precio */
+    .price-range-inputs .input-group {
+        flex: 1;
+    }
+    
+    .price-range-inputs .input-group-text {
+        border: 1px solid #dee2e6;
+        border-right: none;
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .price-range-inputs .form-control {
+        border-left: none;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    .price-range-inputs .form-control:focus {
+        border-color: #dee2e6;
+        box-shadow: none;
+    }
+    
+    .price-range-inputs .input-group:focus-within {
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        border-radius: 0.375rem;
+    }
+    
+    .price-range-inputs .input-group:focus-within .input-group-text,
+    .price-range-inputs .input-group:focus-within .form-control {
+        border-color: var(--primary-color);
+    }
+    
+    /* Ajustes responsivos */
+    @media (max-width: 767.98px) {
+        .price-range-inputs {
+            margin-bottom: 1rem;
+        }
+        
+        .price-range-inputs .d-flex {
+            gap: 0.5rem !important;
+        }
+    }
+    
+    /* Prevenir flechas en inputs numéricos */
+    .price-range-inputs input[type="number"]::-webkit-inner-spin-button,
+    .price-range-inputs input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    
+    .price-range-inputs input[type="number"] {
+        -moz-appearance: textfield;
+    }
 </style>
 {% endblock %}
 
@@ -315,26 +369,35 @@
                     </div>
                     
                     <!-- Filtros de precio -->
-                    <div class="col-12 col-md-2">
-                        <div class="input-group">
-                            <span class="input-group-text">$</span>
-                            <input type="number" 
-                                   name="min_price" 
-                                   class="form-control" 
-                                   placeholder="Precio mín." 
-                                   value="{{ min_price }}"
-                                   min="0">
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-2">
-                        <div class="input-group">
-                            <span class="input-group-text">$</span>
-                            <input type="number" 
-                                   name="max_price" 
-                                   class="form-control" 
-                                   placeholder="Precio máx." 
-                                   value="{{ max_price }}"
-                                   min="0">
+                    <div class="col-12 col-md-4">
+                        <div class="price-range-inputs">
+                            <label class="form-label mb-2">Rango de precios</label>
+                            <div class="d-flex gap-2">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="fas fa-dollar-sign"></i>
+                                    </span>
+                                    <input type="number" 
+                                           name="min_price" 
+                                           class="form-control" 
+                                           placeholder="Ej: 5000" 
+                                           value="{{ min_price }}"
+                                           min="0"
+                                           aria-label="Precio mínimo">
+                                </div>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="fas fa-dollar-sign"></i>
+                                    </span>
+                                    <input type="number" 
+                                           name="max_price" 
+                                           class="form-control" 
+                                           placeholder="Ej: 50000" 
+                                           value="{{ max_price }}"
+                                           min="0"
+                                           aria-label="Precio máximo">
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
