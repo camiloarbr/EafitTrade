@@ -292,6 +292,23 @@
             width: 100%;
         }
     }
+
+    .seller-link-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.2s;
+    }
+
+    .seller-link-wrapper:hover {
+        transform: translateY(-2px);
+    }
+
+    .seller-info {
+        cursor: pointer;
+    }
 </style>
 {% endblock %}
 
@@ -345,23 +362,25 @@
                         
                         <!-- Información del vendedor -->
                         <div class="seller-info">
-                            {% if seller_profile.profile_image %}
-                                <img src="{{ seller_profile.profile_image.url }}" 
-                                     alt="{{ seller_profile.store_name }}" 
-                                     class="seller-image">
-                            {% else %}
-                                <div class="seller-image d-flex align-items-center justify-content-center bg-secondary">
-                                    <i class="fas fa-store text-white"></i>
-                                </div>
-                            {% endif %}
-                            <div class="seller-details">
-                                <a href="{% url 'view_profile' %}" class="seller-name">
-                                    {{ seller_profile.store_name|default:product.seller.username }}
-                                </a>
-                                {% if seller_profile.slogan %}
-                                    <p class="seller-slogan">{{ seller_profile.slogan }}</p>
+                            <a href="{% url 'public_profile' product.seller.id %}" class="seller-link-wrapper">
+                                {% if seller_profile.profile_image %}
+                                    <img src="{{ seller_profile.profile_image.url }}" 
+                                         alt="{{ seller_profile.store_name }}" 
+                                         class="seller-image">
+                                {% else %}
+                                    <div class="seller-image d-flex align-items-center justify-content-center bg-secondary">
+                                        <i class="fas fa-store text-white"></i>
+                                    </div>
                                 {% endif %}
-                            </div>
+                                <div class="seller-details">
+                                    <span class="seller-name">
+                                        {{ seller_profile.store_name|default:product.seller.username }}
+                                    </span>
+                                    {% if seller_profile.slogan %}
+                                        <p class="seller-slogan">{{ seller_profile.slogan }}</p>
+                                    {% endif %}
+                                </div>
+                            </a>
                         </div>
                         
                         <!-- Botones de acción -->

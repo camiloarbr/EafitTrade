@@ -49,6 +49,7 @@ urlpatterns = [
     path('profile/', profile_views.view_profile, name='view_profile'),
     path('profile/create/', profile_views.create_profile, name='create_profile'),
     path('profile/edit/', profile_views.edit_profile, name='edit_profile'),
+    path('seller/<int:user_id>/', profile_views.public_profile, name='public_profile'),
 ]
 
 if settings.DEBUG:

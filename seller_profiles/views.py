@@ -4,6 +4,7 @@ from django.contrib import messages
 from .models import SellerProfile, Schedule
 from .forms import SellerProfileForm, ScheduleInlineFormSet
 from django.db import transaction
+from django.contrib.auth.models import User
 
 # Create your views here.
 
@@ -83,3 +84,27 @@ def edit_profile(request):
 
 def has_seller_profile(user):
     return hasattr(user, 'seller_profile')
+
+def public_profile(request, user_id):
+    seller = get_object_or_404(User, id=user_id)
+    try:
+        profile = seller.seller_profile
+        # Si el usuario es el dueño del perfil, redirigir a la vista privada
+        if request.user == seller:
+            return redirect('view_profile')
+        return render(request, 'seller_profiles/public_profile.html', {'profile': profile})
+    except SellerProfile.DoesNotExist:
+        if request.user == seller:
+            messages.warning(request, 'Necesitas crear tu perfil de vendedor primero.')
+            return redirect('create_profile')
+        messages.error(request, 'Este vendedor aún no ha creado su perfil.')
+        return redirect('home')
+
+# Actualizar la vista del producto para incluir el perfil del vendedor
+@login_required
+def add_product(request):
+    # Verificar si el usuario tiene perfil de vendedor
+    if not hasattr(request.user, 'seller_profile'):
+        messages.warning(request, 'Necesitas crear un perfil de vendedor antes de publicar productos.')
+        return redirect('create_profile')
+    # ... resto del código existente ...
