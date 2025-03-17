@@ -170,10 +170,24 @@ def product_detail(request, product_id):
     comments = product.comments.all().order_by('-created_at')
     comment_form = CommentForm() if request.user.is_authenticated else None
     
+    # Verificar si el producto está en favoritos
+    is_favorite = False
+    if request.user.is_authenticated:
+        is_favorite = Favorite.objects.filter(user=request.user, product=product).exists()
+    
+    # Obtener el perfil del vendedor si existe
+    seller_profile = None
+    try:
+        seller_profile = product.seller.seller_profile
+    except:
+        pass
+    
     return render(request, 'products/product_detail.html', {
         'product': product,
         'comments': comments,
-        'comment_form': comment_form
+        'comment_form': comment_form,
+        'is_favorite': is_favorite,
+        'seller_profile': seller_profile
     })
 
 # Create your views here.

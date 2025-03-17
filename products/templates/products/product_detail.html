@@ -314,10 +314,33 @@
                         </div>
                         
                         <div class="seller-info">
-                            <div class="seller-avatar">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <span>{{ product.seller.username }}</span>
+                            {% if seller_profile %}
+                                <a href="{% url 'view_profile' %}" class="text-decoration-none">
+                                    <div class="d-flex align-items-center">
+                                        {% if seller_profile.profile_image %}
+                                            <img src="{{ seller_profile.profile_image.url }}" 
+                                                 alt="{{ seller_profile.store_name }}"
+                                                 class="seller-avatar rounded-circle me-2"
+                                                 style="width: 40px; height: 40px; object-fit: cover;">
+                                        {% else %}
+                                            <div class="seller-avatar">
+                                                <i class="fas fa-store"></i>
+                                            </div>
+                                        {% endif %}
+                                        <div>
+                                            <strong class="d-block">{{ seller_profile.store_name }}</strong>
+                                            {% if seller_profile.slogan %}
+                                                <small class="text-muted">{{ seller_profile.slogan }}</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </a>
+                            {% else %}
+                                <div class="seller-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <span>{{ product.seller.username }}</span>
+                            {% endif %}
                         </div>
                         
                         <div class="rating-summary">

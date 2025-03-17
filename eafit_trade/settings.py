@@ -51,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'seller_profiles.middleware.SellerProfileMiddleware',
 ]
 
 ROOT_URLCONF = 'eafit_trade.urls'

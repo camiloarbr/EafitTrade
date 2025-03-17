@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from products import views as products_views
+from seller_profiles import views as profile_views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
@@ -43,6 +44,11 @@ urlpatterns = [
     
     # Product detail URL
     path('product/<int:product_id>/', products_views.product_detail, name='product_detail'),
+    
+    # URLs para perfiles de vendedor
+    path('profile/', profile_views.view_profile, name='view_profile'),
+    path('profile/create/', profile_views.create_profile, name='create_profile'),
+    path('profile/edit/', profile_views.edit_profile, name='edit_profile'),
 ]
 
 if settings.DEBUG:
