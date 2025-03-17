@@ -7,7 +7,6 @@ from .forms import ProductForm, CommentForm, CustomUserCreationForm
 from django.views.decorators.http import require_POST
 
 def home(request):
-    # Quitamos el filtro de available=True para mostrar todos los productos
     products = Product.objects.all()
     
     # Búsqueda por nombre
@@ -20,15 +19,33 @@ def home(request):
     if category:
         products = products.filter(category=category)
     
-    # Filtro por tipo de comida (solo si la categoría es Comida)
+    # Filtro por tipo de comida
     food_type = request.GET.get('food_type', '')
     if category == 'Comida' and food_type:
         products = products.filter(food_type=food_type)
     
+    # Filtro por rango de precios
+    min_price = request.GET.get('min_price', '')
+    max_price = request.GET.get('max_price', '')
+    
+    if min_price:
+        try:
+            min_price = float(min_price)
+            products = products.filter(price__gte=min_price)
+        except ValueError:
+            pass
+    
+    if max_price:
+        try:
+            max_price = float(max_price)
+            products = products.filter(price__lte=max_price)
+        except ValueError:
+            pass
+    
     # Ordenar por fecha de publicación
     products = products.order_by('-published_at')
     
-    # Si el usuario está autenticado, obtener sus favoritos
+    # Obtener favoritos del usuario
     user_favorites = []
     if request.user.is_authenticated:
         user_favorites = Favorite.objects.filter(user=request.user).values_list('product_id', flat=True)
@@ -39,6 +56,8 @@ def home(request):
         'search_query': search_query,
         'selected_category': category,
         'selected_food_type': food_type,
+        'min_price': min_price,
+        'max_price': max_price,
         'categories': Product.CATEGORY_CHOICES,
         'food_types': Product.FOOD_TYPE_CHOICES,
     }

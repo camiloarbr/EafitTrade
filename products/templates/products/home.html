@@ -239,6 +239,33 @@
     .text-danger {
         color: #dc3545 !important;
     }
+    
+    .search-filters {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .input-group-text {
+        background-color: transparent;
+        border-right: none;
+    }
+    
+    .input-group .form-control {
+        border-left: none;
+    }
+    
+    .input-group .form-control:focus {
+        border-color: #dee2e6;
+        box-shadow: none;
+    }
+    
+    .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
 </style>
 {% endblock %}
 
@@ -285,6 +312,30 @@
                             </option>
                             {% endfor %}
                         </select>
+                    </div>
+                    
+                    <!-- Filtros de precio -->
+                    <div class="col-12 col-md-2">
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" 
+                                   name="min_price" 
+                                   class="form-control" 
+                                   placeholder="Precio mín." 
+                                   value="{{ min_price }}"
+                                   min="0">
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-2">
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" 
+                                   name="max_price" 
+                                   class="form-control" 
+                                   placeholder="Precio máx." 
+                                   value="{{ max_price }}"
+                                   min="0">
+                        </div>
                     </div>
                     
                     <!-- Botones -->
