@@ -1,3 +1,74 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import SellerProfile, Schedule
+from .forms import SellerProfileForm, ScheduleFormSet
+from django.db import transaction
 
 # Create your views here.
+
+@login_required
+def view_profile(request):
+    try:
+        profile = request.user.seller_profile
+        return render(request, 'seller_profiles/view_profile.html', {'profile': profile})
+    except SellerProfile.DoesNotExist:
+        messages.warning(request, 'Necesitas crear tu perfil de vendedor primero.')
+        return redirect('create_profile')
+
+@login_required
+def create_profile(request):
+    if hasattr(request.user, 'seller_profile'):
+        return redirect('edit_profile')
+
+    if request.method == 'POST':
+        form = SellerProfileForm(request.POST, request.FILES)
+        schedule_formset = ScheduleFormSet(request.POST)
+        
+        if form.is_valid() and schedule_formset.is_valid():
+            with transaction.atomic():
+                profile = form.save(commit=False)
+                profile.user = request.user
+                profile.save()
+                
+                schedules = schedule_formset.save(commit=False)
+                for schedule in schedules:
+                    schedule.profile = profile
+                    schedule.save()
+                
+                messages.success(request, '¡Perfil creado exitosamente!')
+                return redirect('view_profile')
+    else:
+        form = SellerProfileForm()
+        schedule_formset = ScheduleFormSet()
+    
+    return render(request, 'seller_profiles/create_profile.html', {
+        'form': form,
+        'schedule_formset': schedule_formset
+    })
+
+@login_required
+def edit_profile(request):
+    profile = get_object_or_404(SellerProfile, user=request.user)
+    
+    if request.method == 'POST':
+        form = SellerProfileForm(request.POST, request.FILES, instance=profile)
+        schedule_formset = ScheduleFormSet(request.POST, instance=profile)
+        
+        if form.is_valid() and schedule_formset.is_valid():
+            with transaction.atomic():
+                form.save()
+                schedule_formset.save()
+                messages.success(request, '¡Perfil actualizado exitosamente!')
+                return redirect('view_profile')
+    else:
+        form = SellerProfileForm(instance=profile)
+        schedule_formset = ScheduleFormSet(instance=profile)
+    
+    return render(request, 'seller_profiles/edit_profile.html', {
+        'form': form,
+        'schedule_formset': schedule_formset
+    })
+
+def has_seller_profile(user):
+    return hasattr(user, 'seller_profile')
