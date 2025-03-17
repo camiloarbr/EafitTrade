@@ -1,0 +1,63 @@
+{% extends 'seller_profiles/profile_base.html' %}
+
+{% block content %}
+<section class="profile-section">
+    <div class="container">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-image-wrapper">
+                    {% if profile.profile_image %}
+                        <img src="{{ profile.profile_image.url }}" alt="{{ profile.store_name }}" class="profile-image">
+                    {% else %}
+                        <div class="profile-image d-flex align-items-center justify-content-center bg-secondary">
+                            <i class="fas fa-store fa-3x text-white"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <h1 class="store-name">{{ profile.store_name }}</h1>
+                {% if profile.slogan %}
+                    <p class="store-slogan">{{ profile.slogan }}</p>
+                {% endif %}
+                {% if user == profile.user %}
+                    <a href="{% url 'edit_profile' %}" class="edit-button">
+                        <i class="fas fa-edit me-2"></i>Editar Perfil
+                    </a>
+                {% endif %}
+            </div>
+            
+            <div class="profile-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h3 class="mb-4">
+                            <i class="fas fa-info-circle me-2"></i>Descripción
+                        </h3>
+                        <p class="lead">{{ profile.description }}</p>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h3 class="mb-4">
+                            <i class="fas fa-clock me-2"></i>Horario de Atención
+                        </h3>
+                        <table class="schedule-table">
+                            <thead>
+                                <tr>
+                                    <th>Día</th>
+                                    <th>Horario</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for schedule in profile.schedules.all %}
+                                <tr>
+                                    <td>{{ schedule.get_day_display }}</td>
+                                    <td>{{ schedule.start_time|time:"H:i" }} - {{ schedule.end_time|time:"H:i" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %} 

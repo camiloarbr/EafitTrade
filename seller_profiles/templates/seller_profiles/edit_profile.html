@@ -1,0 +1,130 @@
+{% extends 'seller_profiles/profile_base.html' %}
+
+{% block content %}
+<section class="profile-section">
+    <div class="container">
+        <div class="form-section">
+            <div class="profile-card">
+                <div class="profile-header">
+                    <h2 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>
+                        {% if profile %}Editar{% else %}Crear{% endif %} Perfil de Vendedor
+                    </h2>
+                </div>
+                
+                <div class="profile-body">
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Imagen de perfil -->
+                        <div class="mb-4">
+                            <label for="{{ form.profile_image.id_for_label }}" class="form-label">
+                                {{ form.profile_image.label }}
+                            </label>
+                            {{ form.profile_image }}
+                            {% if form.profile_image.help_text %}
+                                <div class="help-text">{{ form.profile_image.help_text }}</div>
+                            {% endif %}
+                            {% if form.profile_image.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.profile_image.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                            {% if profile.profile_image %}
+                                <div class="mt-2">
+                                    <p>Imagen actual:</p>
+                                    <img src="{{ profile.profile_image.url }}" alt="{{ profile.store_name }}" 
+                                         style="max-width: 150px; border-radius: 50%;" class="img-thumbnail">
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Nombre de la tienda -->
+                        <div class="mb-4">
+                            <label for="{{ form.store_name.id_for_label }}" class="form-label">
+                                {{ form.store_name.label }}
+                            </label>
+                            {{ form.store_name }}
+                            {% if form.store_name.help_text %}
+                                <div class="help-text">{{ form.store_name.help_text }}</div>
+                            {% endif %}
+                            {% if form.store_name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.store_name.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Slogan -->
+                        <div class="mb-4">
+                            <label for="{{ form.slogan.id_for_label }}" class="form-label">
+                                {{ form.slogan.label }}
+                            </label>
+                            {{ form.slogan }}
+                            {% if form.slogan.help_text %}
+                                <div class="help-text">{{ form.slogan.help_text }}</div>
+                            {% endif %}
+                            {% if form.slogan.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.slogan.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Descripción -->
+                        <div class="mb-4">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">
+                                {{ form.description.label }}
+                            </label>
+                            {{ form.description }}
+                            {% if form.description.help_text %}
+                                <div class="help-text">{{ form.description.help_text }}</div>
+                            {% endif %}
+                            {% if form.description.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.description.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Horarios -->
+                        <div class="schedule-formset">
+                            <h3 class="mb-4">
+                                <i class="fas fa-clock me-2"></i>Horario de Atención
+                            </h3>
+                            {{ schedule_formset.management_form }}
+                            {% for schedule_form in schedule_formset %}
+                                <div class="schedule-form">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label">{{ schedule_form.day.label }}</label>
+                                            {{ schedule_form.day }}
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">{{ schedule_form.start_time.label }}</label>
+                                            {{ schedule_form.start_time }}
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">{{ schedule_form.end_time.label }}</label>
+                                            {{ schedule_form.end_time }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="d-flex gap-3 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg flex-grow-1">
+                                <i class="fas fa-save me-2"></i>Guardar Perfil
+                            </button>
+                            <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-times me-2"></i>Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %} 
