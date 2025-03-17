@@ -54,18 +54,31 @@ def edit_profile(request):
         schedule_formset = ScheduleInlineFormSet(request.POST, instance=profile)
         
         if form.is_valid() and schedule_formset.is_valid():
-            with transaction.atomic():
-                form.save()
-                schedule_formset.save()
-                messages.success(request, '¡Perfil actualizado exitosamente!')
-                return redirect('view_profile')
+            try:
+                with transaction.atomic():
+                    # Guardar el perfil
+                    profile = form.save()
+                    
+                    # Guardar los horarios
+                    schedules = schedule_formset.save(commit=False)
+                    for schedule in schedules:
+                        if not schedule.is_available:
+                            schedule.start_time = None
+                            schedule.end_time = None
+                        schedule.save()
+                    
+                    messages.success(request, '¡Perfil actualizado exitosamente!')
+                    return redirect('view_profile')
+            except Exception as e:
+                messages.error(request, f'Error al actualizar el perfil: {str(e)}')
     else:
         form = SellerProfileForm(instance=profile)
         schedule_formset = ScheduleInlineFormSet(instance=profile)
     
     return render(request, 'seller_profiles/edit_profile.html', {
         'form': form,
-        'schedule_formset': schedule_formset
+        'schedule_formset': schedule_formset,
+        'profile': profile
     })
 
 def has_seller_profile(user):
