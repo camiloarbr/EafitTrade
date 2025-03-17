@@ -4,6 +4,7 @@
 {% block title %}{{ product.name }} - EAFIT Trade{% endblock %}
 
 {% block extra_styles %}
+{{ block.super }}
 <style>
     .product-section {
         padding: 3rem 0;
@@ -87,19 +88,38 @@
     }
 
     .seller-info {
-        padding: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.5rem;
         background-color: #f8f9fa;
         border-radius: 0.5rem;
         margin: 1.5rem 0;
     }
 
-    .seller-link {
-        color: var(--primary-color);
-        text-decoration: none;
+    .seller-image {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
     }
 
-    .seller-link:hover {
-        text-decoration: underline;
+    .seller-details {
+        flex: 1;
+    }
+
+    .seller-name {
+        font-weight: 500;
+        color: var(--primary-color);
+        text-decoration: none;
+        margin-bottom: 0.25rem;
+        display: block;
+    }
+
+    .seller-slogan {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin: 0;
     }
 
     .action-buttons {
@@ -164,6 +184,97 @@
         line-height: 1.5;
     }
 
+    .rating-stars {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .star-rating {
+        display: inline-block;
+        font-size: 1.5rem;
+        color: #ffc107;
+        cursor: pointer;
+    }
+
+    .star-rating:hover,
+    .star-rating:hover ~ .star-rating {
+        color: #ffdb4d;
+    }
+
+    .comment-form textarea {
+        width: 100%;
+        padding: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .comment-form textarea:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        outline: none;
+    }
+
+    .product-image {
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .product-image:hover {
+        transform: scale(1.02);
+    }
+
+    .image-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        z-index: 1050;
+        backdrop-filter: blur(5px);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .image-modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 1;
+    }
+
+    .modal-image {
+        max-width: 90%;
+        max-height: 90vh;
+        border-radius: 0.5rem;
+        box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+    }
+
+    .image-modal.show .modal-image {
+        transform: scale(1);
+    }
+
+    .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        color: white;
+        font-size: 2rem;
+        cursor: pointer;
+        opacity: 0.8;
+        transition: opacity 0.2s;
+    }
+
+    .modal-close:hover {
+        opacity: 1;
+    }
+
     @media (max-width: 767.98px) {
         .product-image {
             height: 300px;
@@ -192,7 +303,10 @@
                 <!-- Columna de imagen -->
                 <div class="col-md-6">
                     {% if product.image %}
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                        <img src="{{ product.image.url }}" 
+                             alt="{{ product.name }}" 
+                             class="product-image"
+                             onclick="openImageModal('{{ product.image.url }}')">
                     {% endif %}
                 </div>
                 
@@ -231,12 +345,23 @@
                         
                         <!-- Información del vendedor -->
                         <div class="seller-info">
-                            Vendido por 
-                            {% if seller_profile %}
-                                <a href="{% url 'view_profile' %}" class="seller-link">{{ seller_profile.store_name }}</a>
+                            {% if seller_profile.profile_image %}
+                                <img src="{{ seller_profile.profile_image.url }}" 
+                                     alt="{{ seller_profile.store_name }}" 
+                                     class="seller-image">
                             {% else %}
-                                {{ product.seller.username }}
+                                <div class="seller-image d-flex align-items-center justify-content-center bg-secondary">
+                                    <i class="fas fa-store text-white"></i>
+                                </div>
                             {% endif %}
+                            <div class="seller-details">
+                                <a href="{% url 'view_profile' %}" class="seller-name">
+                                    {{ seller_profile.store_name|default:product.seller.username }}
+                                </a>
+                                {% if seller_profile.slogan %}
+                                    <p class="seller-slogan">{{ seller_profile.slogan }}</p>
+                                {% endif %}
+                            </div>
                         </div>
                         
                         <!-- Botones de acción -->
@@ -266,16 +391,23 @@
             
             {% if user.is_authenticated and user != product.seller %}
                 <div class="comment-form">
-                    <form method="post" action="{% url 'add_comment' product.id %}">
+                    <form method="post" action="{% url 'add_comment' product.id %}" id="commentForm">
                         {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Tu calificación</label>
+                            <div class="rating-stars" id="ratingStars">
+                                {% for i in "12345" %}
+                                    <span class="star-rating" data-rating="{{ i }}">★</span>
+                                {% endfor %}
+                            </div>
+                            {{ comment_form.rating }}
+                        </div>
                         <div class="mb-3">
                             {{ comment_form.text }}
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Calificación</label>
-                            {{ comment_form.rating }}
-                        </div>
-                        <button type="submit" class="btn btn-primary">Publicar comentario</button>
+                        <button type="submit" class="btn btn-primary">
+                            Publicar comentario
+                        </button>
                     </form>
                 </div>
             {% endif %}
@@ -288,13 +420,17 @@
                             <span class="comment-date">{{ comment.created_at|date:"d/m/Y H:i" }}</span>
                         </div>
                         <div class="comment-rating">
-                            {{ comment.rating }}/5
+                            {% for i in "12345" %}
+                                <span class="star-rating" style="cursor: default; color: {% if i|add:"0" <= comment.rating %}#ffc107{% else %}#e4e5e9{% endif %}">★</span>
+                            {% endfor %}
                         </div>
                         <p class="comment-text">{{ comment.text }}</p>
                         {% if user == comment.user %}
                             <form method="post" action="{% url 'delete_comment' comment.id %}" class="mt-2">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    Eliminar
+                                </button>
                             </form>
                         {% endif %}
                     </div>
@@ -306,7 +442,60 @@
     </div>
 </section>
 
+<!-- Modal para la imagen -->
+<div class="image-modal" id="imageModal" onclick="closeImageModal(event)">
+    <span class="modal-close" onclick="closeImageModal(event)">&times;</span>
+    <img src="" alt="Imagen ampliada" class="modal-image" onclick="event.stopPropagation()">
+</div>
+
 <script>
+// Sistema de calificación
+document.addEventListener('DOMContentLoaded', function() {
+    const ratingStars = document.querySelectorAll('#ratingStars .star-rating');
+    const ratingInput = document.querySelector('#id_rating');
+    
+    ratingStars.forEach(star => {
+        star.addEventListener('click', function() {
+            const rating = this.dataset.rating;
+            ratingInput.value = rating;
+            
+            ratingStars.forEach(s => {
+                if (s.dataset.rating <= rating) {
+                    s.style.color = '#ffc107';
+                } else {
+                    s.style.color = '#e4e5e9';
+                }
+            });
+        });
+    });
+});
+
+// Modal de imagen
+function openImageModal(imageUrl) {
+    const modal = document.getElementById('imageModal');
+    const modalImage = modal.querySelector('.modal-image');
+    modalImage.src = imageUrl;
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeImageModal(event) {
+    if (event) {
+        event.preventDefault();
+    }
+    const modal = document.getElementById('imageModal');
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+// Cerrar modal con la tecla Escape
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeImageModal();
+    }
+});
+
+// Función existente de favoritos
 function toggleFavorite(event, productId) {
     event.preventDefault();
     fetch(`/favorite/toggle/${productId}/`, {
