@@ -370,11 +370,18 @@
 <script>
     // Expandir automáticamente el filtro si hay categorías seleccionadas
     document.addEventListener('DOMContentLoaded', function() {
-        const hasSelectedCategories = {% if selected_categories %}true{% else %}false{% endif %};
+        // Verificar si hay categorías seleccionadas
+        var hasSelectedCategories = {% if selected_categories %}true{% else %}false{% endif %};
+        
+        // Si hay categorías seleccionadas, expandir el filtro
         if (hasSelectedCategories) {
-            const filterCollapse = new bootstrap.Collapse(document.getElementById('filterOptions'), {
-                toggle: true
-            });
+            var filterElement = document.getElementById('filterOptions');
+            if (filterElement && window.bootstrap) {
+                var filterCollapse = new bootstrap.Collapse(filterElement, {
+                    toggle: false
+                });
+                filterCollapse.show();
+            }
         }
     });
 </script>
