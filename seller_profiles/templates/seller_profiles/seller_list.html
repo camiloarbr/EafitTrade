@@ -3,110 +3,35 @@
 
 {% block title %}Vendedores - EAFIT Trade{% endblock %}
 
-{% block extra_styles %}
-<style>
-    .sellers-section {
-        padding: 3rem 0;
-        background-color: #f8f9fa;
-        min-height: calc(100vh - 56px);
-    }
-    
-    .search-filters {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 1rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        margin-bottom: 2rem;
-    }
-    
-    .seller-card {
-        background: white;
-        border-radius: 1rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        transition: transform 0.2s;
-        height: 100%;
-        overflow: hidden;
-    }
-    
-    .seller-card:hover {
-        transform: translateY(-5px);
-    }
-    
-    .seller-image {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        object-fit: cover;
-        margin: 1.5rem auto;
-        border: 4px solid #f8f9fa;
-    }
-    
-    .seller-info {
-        padding: 1.5rem;
-        text-align: center;
-    }
-    
-    .store-name {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: var(--primary-color);
-        margin-bottom: 0.5rem;
-    }
-    
-    .store-slogan {
-        font-size: 0.9rem;
-        color: #6c757d;
-        margin-bottom: 1rem;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-    
-    .category-badge {
-        font-size: 0.8rem;
-        padding: 0.25rem 0.5rem;
-        border-radius: 1rem;
-        background-color: #e9ecef;
-        color: #495057;
-        margin: 0.25rem;
-        display: inline-block;
-    }
-    
-    .form-check-input:checked {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color);
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="container py-4">
-    <!-- Barra de búsqueda compacta y estilizada -->
+<div class="container py-5">
+    <div class="section-header mb-4">
+        <h1 class="display-5 text-center fw-bold">Explora Nuestros Vendedores</h1>
+        <p class="text-center text-muted mb-0">Descubre la variedad de tiendas y productos disponibles en EAFIT Trade</p>
+    </div>
+    
+    <!-- Barra de búsqueda mejorada -->
     <div class="search-container mb-4">
         <form method="get" id="searchForm">
             <div class="search-bar-wrapper">
-                <div class="row g-2 align-items-center">
+                <div class="row g-3 align-items-center justify-content-center">
                     <!-- Barra de búsqueda -->
                     <div class="col-md-8 col-lg-6">
-                        <div class="input-group">
-                            <span class="input-group-text border-end-0 bg-white">
-                                <i class="fas fa-search text-primary"></i>
-                            </span>
+                        <div class="search-input-container">
                             <input type="text" 
                                 name="search" 
-                                class="form-control border-start-0"
+                                class="form-control search-input"
                                 placeholder="Buscar vendedores..."
                                 value="{{ search_query }}">
-                            <button type="submit" class="btn btn-primary d-none d-md-inline-block">
-                                Buscar
+                            <button type="submit" class="btn btn-primary search-btn">
+                                <i class="fas fa-search"></i>
                             </button>
                         </div>
                     </div>
                     
                     <!-- Botón de filtros -->
                     <div class="col-auto">
-                        <button class="btn btn-outline-primary" 
+                        <button class="btn btn-outline-primary filter-toggle-btn" 
                                 type="button" 
                                 data-bs-toggle="collapse" 
                                 data-bs-target="#filterOptions" 
@@ -121,29 +46,31 @@
                 </div>
                 
                 <!-- Opciones de filtro colapsables -->
-                <div class="collapse mt-3" id="filterOptions">
-                    <div class="filter-card p-3">
-                        <h6 class="mb-3 text-muted">
+                <div class="collapse mt-4" id="filterOptions">
+                    <div class="filter-card">
+                        <div class="filter-card-header">
                             <i class="fas fa-tags me-2"></i>Filtrar por categorías de productos
-                        </h6>
-                        <div class="category-selection">
-                            <select name="categories" class="form-select" multiple size="5">
-                                {% for category in all_categories %}
-                                    <option value="{{ category }}" 
-                                            {% if category in selected_categories %}selected{% endif %}>
-                                        {{ category }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                            <div class="form-text mb-3">Selecciona múltiples categorías con la tecla Ctrl</div>
                         </div>
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-check me-2"></i>Aplicar filtros
-                            </button>
-                            <a href="{% url 'seller_list' %}" class="btn btn-outline-secondary">
-                                <i class="fas fa-undo me-2"></i>Limpiar filtros
-                            </a>
+                        <div class="filter-card-body">
+                            <div class="category-selection">
+                                <select name="categories" class="form-select" multiple size="5">
+                                    {% for category in all_categories %}
+                                        <option value="{{ category }}" 
+                                                {% if category in selected_categories %}selected{% endif %}>
+                                            {{ category }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="form-text mb-3">Selecciona múltiples categorías con la tecla Ctrl</div>
+                            </div>
+                            <div class="filter-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-check me-2"></i>Aplicar filtros
+                                </button>
+                                <a href="{% url 'seller_list' %}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-undo me-2"></i>Limpiar filtros
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -157,9 +84,8 @@
             <div class="col-md-6 col-lg-4">
                 <a href="{% url 'public_profile' seller_data.profile.user.id %}" class="text-decoration-none">
                     <div class="seller-card">
-                        <!-- Contenido del vendedor clickeable -->
-                        <div class="seller-content">
-                            <div class="seller-image-wrapper">
+                        <div class="seller-header">
+                            <div class="seller-image-container">
                                 {% if seller_data.profile.profile_image %}
                                     <img src="{{ seller_data.profile.profile_image.url }}" 
                                          alt="{{ seller_data.profile.store_name }}"
@@ -170,35 +96,32 @@
                                     </div>
                                 {% endif %}
                             </div>
-                            
-                            <div class="seller-info">
-                                <h3 class="store-name">{{ seller_data.profile.store_name }}</h3>
-                                {% if seller_data.profile.slogan %}
-                                    <p class="store-slogan">{{ seller_data.profile.slogan }}</p>
-                                {% endif %}
-                            </div>
                         </div>
-
-                        <!-- Categorías de productos mejoradas -->
-                        {% if seller_data.categories %}
-                            <div class="categories-section">
-                                <div class="categories-label">Categorías:</div>
-                                <div class="categories-tags">
+                        
+                        <div class="seller-content">
+                            <h3 class="seller-name">{{ seller_data.profile.store_name }}</h3>
+                            {% if seller_data.profile.slogan %}
+                                <p class="seller-slogan">{{ seller_data.profile.slogan }}</p>
+                            {% endif %}
+                            
+                            <!-- Categorías de productos -->
+                            {% if seller_data.categories %}
+                                <div class="seller-categories">
                                     {% for category in seller_data.categories %}
-                                        <span class="category-tag">{{ category }}</span>
+                                        <span class="category-badge">{{ category }}</span>
                                     {% endfor %}
                                 </div>
-                            </div>
-                        {% endif %}
+                            {% endif %}
+                        </div>
                     </div>
                 </a>
             </div>
         {% empty %}
-            <div class="col-12 text-center py-5">
-                <i class="fas fa-store-alt-slash fa-3x text-secondary mb-3"></i>
+            <div class="col-12 empty-state">
+                <i class="fas fa-store-alt-slash"></i>
                 <h3>No se encontraron vendedores</h3>
                 {% if search_query or selected_categories %}
-                    <p class="text-muted">Intenta con otros términos de búsqueda o filtros</p>
+                    <p>Intenta con otros términos de búsqueda o filtros</p>
                     <a href="{% url 'seller_list' %}" class="btn btn-outline-primary mt-3">
                         <i class="fas fa-undo me-2"></i>Ver todos los vendedores
                     </a>
@@ -209,77 +132,122 @@
 </div>
 
 <style>
-    /* Estilos para la barra de búsqueda */
+    /* Estilos para título de sección */
+    .section-header {
+        margin-bottom: 2.5rem;
+    }
+    
+    .section-header h1 {
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        color: #2c3e50;
+    }
+    
+    /* Barra de búsqueda estilizada */
     .search-container {
-        margin-bottom: 2rem;
+        margin-bottom: 2.5rem;
     }
     
-    .search-bar-wrapper {
-        background-color: transparent;
-    }
-    
-    .input-group {
+    .search-input-container {
+        position: relative;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         border-radius: 50px;
         overflow: hidden;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     }
     
-    .input-group .form-control {
-        border-radius: 0;
-        height: 46px;
-        font-size: 0.95rem;
-    }
-    
-    .input-group .input-group-text {
-        border-radius: 50px 0 0 50px;
-        padding-left: 1.25rem;
-    }
-    
-    .input-group .btn {
-        border-radius: 0 50px 50px 0;
+    .search-input {
+        height: 56px;
+        border-radius: 50px;
         padding-left: 1.5rem;
-        padding-right: 1.5rem;
+        padding-right: 4rem;
+        font-size: 1rem;
+        border: none;
     }
     
-    /* Estilos para el panel de filtros */
+    .search-input:focus {
+        box-shadow: none;
+        border: 1px solid var(--primary-color);
+    }
+    
+    .search-btn {
+        position: absolute;
+        right: 5px;
+        top: 5px;
+        bottom: 5px;
+        border-radius: 50px;
+        width: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .filter-toggle-btn {
+        height: 56px;
+        border-radius: 50px;
+        font-weight: 500;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s;
+    }
+    
+    .filter-toggle-btn:hover {
+        transform: translateY(-2px);
+    }
+    
     .filter-card {
-        background-color: white;
-        border-radius: 1rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+    
+    .filter-card-header {
+        background-color: rgba(0,0,0,0.02);
+        padding: 1.25rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        color: #4a5568;
+    }
+    
+    .filter-card-body {
+        padding: 1.5rem;
     }
     
     .category-selection .form-select {
         border-radius: 0.5rem;
     }
     
-    /* Estilos para las tarjetas de vendedor */
+    .filter-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    /* Tarjetas de vendedor */
     .seller-card {
         background: white;
-        border-radius: 1rem;
-        padding: 1.5rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        transition: all 0.3s;
         height: 100%;
-        display: flex;
-        flex-direction: column;
+        overflow: hidden;
     }
     
     .seller-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transform: translateY(-7px);
+        box-shadow: var(--hover-shadow);
     }
     
-    .seller-content {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 1rem;
+    .seller-header {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 1.5rem;
+        text-align: center;
     }
     
-    .seller-image-wrapper {
-        width: 80px;
-        height: 80px;
-        flex-shrink: 0;
+    .seller-image-container {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto;
     }
     
     .seller-image {
@@ -287,86 +255,106 @@
         height: 100%;
         border-radius: 50%;
         object-fit: cover;
+        border: 4px solid white;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
     
     .seller-image-placeholder {
         width: 100%;
         height: 100%;
         border-radius: 50%;
-        background-color: var(--primary-color);
+        background: var(--primary-color);
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-size: 1.5rem;
+        font-size: 2.5rem;
+        border: 4px solid white;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
     
-    .seller-info {
-        flex-grow: 1;
+    .seller-content {
+        padding: 1.5rem;
+        text-align: center;
     }
     
-    .store-name {
-        font-size: 1.25rem;
-        font-weight: 600;
+    .seller-name {
+        font-size: 1.4rem;
+        font-weight: 700;
         color: #2c3e50;
-        margin-bottom: 0.25rem;
-    }
-    
-    .store-slogan {
-        font-size: 0.9rem;
-        color: #6c757d;
-        margin-bottom: 0;
-    }
-    
-    /* Estilos mejorados para las categorías */
-    .categories-section {
-        margin-top: auto;
-        padding-top: 1rem;
-        border-top: 1px solid rgba(0,0,0,0.05);
-    }
-    
-    .categories-label {
-        font-size: 0.85rem;
-        color: #6c757d;
         margin-bottom: 0.5rem;
-        font-weight: 600;
     }
     
-    .categories-tags {
+    .seller-slogan {
+        font-size: 0.95rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 2.8rem;
+    }
+    
+    .seller-categories {
         display: flex;
         flex-wrap: wrap;
         gap: 0.5rem;
+        justify-content: center;
     }
     
-    .category-tag {
+    .category-badge {
         display: inline-block;
-        padding: 0.3rem 0.8rem;
+        padding: 0.3rem 0.75rem;
         border-radius: 50px;
-        background-color: #f0f4f8;
-        color: var(--primary-color);
         font-size: 0.75rem;
         font-weight: 600;
-        white-space: nowrap;
+        background-color: #f0f4f8;
+        color: var(--primary-color);
     }
     
-    /* Ajustes responsivos */
+    /* Estado vacío */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 1rem;
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        color: #cbd5e0;
+        margin-bottom: 1.5rem;
+    }
+    
+    .empty-state h3 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #4a5568;
+    }
+    
+    .empty-state p {
+        font-size: 1.1rem;
+        color: #718096;
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Responsive */
     @media (max-width: 768px) {
+        .seller-header {
+            padding: 1.25rem;
+        }
+        
+        .seller-image-container {
+            width: 100px;
+            height: 100px;
+        }
+        
         .seller-content {
-            flex-direction: column;
-            text-align: center;
-        }
-        
-        .seller-image-wrapper {
-            margin-bottom: 1rem;
-        }
-        
-        .categories-tags {
-            justify-content: center;
+            padding: 1.25rem;
         }
     }
 </style>
 
-{% block extra_scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Verificar si hay categorías seleccionadas usando JavaScript puro
@@ -387,5 +375,4 @@
         }
     });
 </script>
-{% endblock %}
 {% endblock %} 
