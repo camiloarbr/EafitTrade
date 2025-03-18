@@ -5,6 +5,8 @@ from .models import SellerProfile, Schedule
 from .forms import SellerProfileForm, ScheduleInlineFormSet
 from django.db import transaction
 from django.contrib.auth.models import User
+from django.db.models import Q
+from products.models import Product
 
 # Create your views here.
 
@@ -108,3 +110,41 @@ def add_product(request):
         messages.warning(request, 'Necesitas crear un perfil de vendedor antes de publicar productos.')
         return redirect('create_profile')
     # ... resto del código existente ...
+
+def seller_list(request):
+    sellers = SellerProfile.objects.all()
+    # Convert CATEGORY_CHOICES to a list of tuples
+    categories = [choice[0] for choice in Product.CATEGORY_CHOICES]
+    
+    # Búsqueda por nombre
+    search_query = request.GET.get('search', '')
+    if search_query:
+        sellers = sellers.filter(
+            Q(store_name__icontains=search_query) |
+            Q(user__username__icontains=search_query)
+        )
+    
+    # Filtro por categorías
+    selected_categories = request.GET.getlist('categories')
+    if selected_categories:
+        sellers = sellers.filter(
+            user__products__category__in=selected_categories
+        ).distinct()
+    
+    # Preparar los datos de los vendedores con sus categorías
+    sellers_data = []
+    for seller in sellers:
+        # Get unique categories for each seller's products
+        seller_categories = seller.user.products.values_list('category', flat=True).distinct()
+        sellers_data.append({
+            'profile': seller,
+            'categories': list(seller_categories)
+        })
+    
+    context = {
+        'sellers': sellers_data,
+        'all_categories': categories,  # Changed from categories to all_categories
+        'search_query': search_query,
+        'selected_categories': selected_categories,
+    }
+    return render(request, 'seller_profiles/seller_list.html', context)

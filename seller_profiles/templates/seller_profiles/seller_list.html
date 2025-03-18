@@ -1,0 +1,168 @@
+{% extends 'products/base.html' %}
+{% load humanize %}
+
+{% block title %}Vendedores - EAFIT Trade{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .sellers-section {
+        padding: 3rem 0;
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 56px);
+    }
+    
+    .search-filters {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .seller-card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    .seller-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .seller-image {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin: 1.5rem auto;
+        border: 4px solid #f8f9fa;
+    }
+    
+    .seller-info {
+        padding: 1.5rem;
+        text-align: center;
+    }
+    
+    .store-name {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .store-slogan {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .category-badge {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 1rem;
+        background-color: #e9ecef;
+        color: #495057;
+        margin: 0.25rem;
+        display: inline-block;
+    }
+    
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="sellers-section">
+    <div class="container">
+        <!-- Filter section -->
+        <div class="filter-section mb-4">
+            <form method="get" class="filter-form">
+                <div class="row g-3">
+                    <!-- Search input -->
+                    <div class="col-12 col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" 
+                                   name="search" 
+                                   class="form-control" 
+                                   placeholder="Buscar vendedores..."
+                                   value="{{ search_query }}">
+                        </div>
+                    </div>
+                    
+                    <!-- Category filter -->
+                    <div class="col-12 col-md-6">
+                        <select name="categories" class="form-select" multiple>
+                            {% for category in all_categories %}
+                                <option value="{{ category }}" 
+                                        {% if category in selected_categories %}selected{% endif %}>
+                                    {{ category }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Sellers grid -->
+        <div class="row g-4">
+            {% for seller_data in sellers %}
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                <a href="{% url 'public_profile' seller_data.profile.user.id %}" class="text-decoration-none">
+                    <div class="seller-card">
+                        <div class="text-center">
+                            {% if seller_data.profile.profile_image %}
+                                <img src="{{ seller_data.profile.profile_image.url }}" 
+                                     alt="{{ seller_data.profile.store_name }}" 
+                                     class="seller-image">
+                            {% else %}
+                                <div class="seller-image d-flex align-items-center justify-content-center bg-secondary">
+                                    <i class="fas fa-store fa-3x text-white"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="seller-info">
+                            <h3 class="store-name">{{ seller_data.profile.store_name }}</h3>
+                            {% if seller_data.profile.slogan %}
+                                <p class="store-slogan">{{ seller_data.profile.slogan }}</p>
+                            {% endif %}
+                            
+                            <!-- Categorías de productos -->
+                            <div class="seller-categories">
+                                {% for category in seller_data.categories %}
+                                    <span class="category-badge">{{ category }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-store-alt-slash fa-3x text-secondary mb-3"></i>
+                <h3>No se encontraron vendedores</h3>
+                {% if search_query or selected_categories %}
+                    <p class="text-muted">Intenta con otros términos de búsqueda o filtros</p>
+                    <a href="{% url 'seller_list' %}" class="btn btn-outline-primary mt-3">
+                        <i class="fas fa-undo me-2"></i>Ver todos los vendedores
+                    </a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %} 

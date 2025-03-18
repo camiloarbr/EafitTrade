@@ -50,6 +50,7 @@ urlpatterns = [
     path('profile/create/', profile_views.create_profile, name='create_profile'),
     path('profile/edit/', profile_views.edit_profile, name='edit_profile'),
     path('seller/<int:user_id>/', profile_views.public_profile, name='public_profile'),
+    path('sellers/', profile_views.seller_list, name='seller_list'),
 ]
 
 if settings.DEBUG:
