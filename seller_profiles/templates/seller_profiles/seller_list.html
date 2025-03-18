@@ -356,23 +356,43 @@
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Verificar si hay categorías seleccionadas usando JavaScript puro
-        var hasSelectedCategories = false;
-        {% if selected_categories %}
-            hasSelectedCategories = true;
-        {% endif %}
-        
-        // Si hay categorías seleccionadas, expandir el filtro
-        if (hasSelectedCategories && window.bootstrap) {
-            var filterElement = document.getElementById('filterOptions');
-            if (filterElement) {
-                var filterCollapse = new bootstrap.Collapse(filterElement, {
-                    toggle: false
-                });
-                filterCollapse.show();
-            }
+document.addEventListener('DOMContentLoaded', function() {
+    // Obtener elementos
+    const filterToggle = document.getElementById('filterToggle');
+    const filterOptions = document.getElementById('filterOptions');
+    const categorySelect = document.getElementById('categorySelect');
+    const searchInput = document.getElementById('searchInput');
+    const clearFilterBtn = document.getElementById('clearFilterBtn');
+    
+    // Inicializar variables
+    const selected_categories = [];
+    
+    // Verificar si hay filtros aplicados para mostrar el panel de filtros
+    {% if selected_categories %}
+        if (filterOptions) {
+            filterOptions.classList.add('show');
         }
-    });
+    {% endif %}
+    
+    // Manejar clic en el botón de filtros
+    if (filterToggle && filterOptions) {
+        filterToggle.addEventListener('click', function() {
+            filterOptions.classList.toggle('show');
+        });
+    }
+    
+    // Actualizar contador de filtros
+    function updateFilterCount() {
+        const filterCount = document.getElementById('filterCount');
+        if (filterCount) {
+            const count = selected_categories.length;
+            filterCount.textContent = count > 0 ? count : '';
+            filterCount.style.display = count > 0 ? 'inline-block' : 'none';
+        }
+    }
+    
+    // Iniciar conteo
+    updateFilterCount();
+});
 </script>
 {% endblock %} 

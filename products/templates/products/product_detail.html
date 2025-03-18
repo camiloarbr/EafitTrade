@@ -580,60 +580,94 @@
 </div>
 
 <script>
-// Sistema de calificación
 document.addEventListener('DOMContentLoaded', function() {
-    const ratingStars = document.querySelectorAll('.rating-star');
+    // Sistema de calificación por estrellas
+    const stars = document.querySelectorAll('.star-rating i');
     const ratingInput = document.getElementById('selected-rating');
-
-    function setRating(rating) {
-        ratingInput.value = rating;
-        ratingStars.forEach((star, index) => {
-            if (index < rating) {
-                star.classList.remove('far');
-                star.classList.add('fas');
-                star.classList.add('active');
-            } else {
-                star.classList.add('far');
-                star.classList.remove('fas');
-                star.classList.remove('active');
-            }
-        });
-    }
-
-    ratingStars.forEach(star => {
-        star.addEventListener('click', function() {
-            const rating = this.dataset.rating;
-            setRating(rating);
-        });
-
-            star.addEventListener('mouseover', function() {
-                const rating = this.dataset.rating;
-            ratingStars.forEach((s, index) => {
-                    if (index < rating) {
-                        s.classList.remove('far');
-                        s.classList.add('fas');
-                    } else {
-                    s.classList.add('far');
-                        s.classList.remove('fas');
-                    }
-                });
-            });
-        });
-        
-    const ratingContainer = document.querySelector('.star-rating');
-    ratingContainer.addEventListener('mouseleave', function() {
-            const currentRating = ratingInput.value;
-        if (!currentRating) {
-            ratingStars.forEach(star => {
-                star.classList.add('far');
-                star.classList.remove('fas');
-                star.classList.remove('active');
-            });
+    
+    stars.forEach(star => {
+        star.addEventListener('mouseover', function() {
+            const rating = parseInt(this.dataset.rating);
+            
+            // Resaltar estrellas hasta la que está actualmente bajo el cursor
+            stars.forEach((s, index) => {
+                s.classList.remove('far');
+                s.classList.remove('fas');
+                
+                if (index < rating) {
+                    s.classList.add('fas');
                 } else {
-            setRating(currentRating);
+                    s.classList.add('far');
                 }
             });
         });
+        
+        star.addEventListener('mouseout', function() {
+            const currentRating = parseInt(ratingInput.value);
+            
+            // Restablecer estrellas según el valor actual
+            stars.forEach((s, index) => {
+                s.classList.remove('far');
+                s.classList.remove('fas');
+                
+                if (index < currentRating) {
+                    s.classList.add('fas');
+                } else {
+                    s.classList.add('far');
+                }
+            });
+        });
+        
+        star.addEventListener('click', function() {
+            const rating = parseInt(this.dataset.rating);
+            ratingInput.value = rating;
+            
+            // Actualizar estrellas
+            stars.forEach((s, index) => {
+                s.classList.remove('far');
+                s.classList.remove('fas');
+                
+                if (index < rating) {
+                    s.classList.add('fas');
+                } else {
+                    s.classList.add('far');
+                }
+            });
+        });
+    });
+    
+    // Botón de favorito
+    const favoriteBtn = document.getElementById('favoriteBtn');
+    if (favoriteBtn) {
+        favoriteBtn.addEventListener('click', function() {
+            const productId = this.dataset.productId;
+            
+            // Enviar solicitud para alternar el estado de favorito
+            fetch(`/favorite/toggle/${productId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('input[name="csrfmiddlewaretoken"]').value,
+                    'Content-Type': 'application/json'
+                },
+                mode: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Actualizar la interfaz
+                if (data.status === 'added') {
+                    this.classList.add('active');
+                    this.innerHTML = '<i class="fas fa-heart me-2"></i><span>En favoritos</span>';
+                } else {
+                    this.classList.remove('active');
+                    this.innerHTML = '<i class="far fa-heart me-2"></i><span>Agregar a favoritos</span>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    }
+});
 
 // Modal de imagen
 function openImageModal(imageUrl) {

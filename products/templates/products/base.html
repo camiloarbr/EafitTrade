@@ -226,6 +226,7 @@
         }
     </style>
     {% block extra_styles %}{% endblock %}
+    <meta name="csrf-token" content="{{ csrf_token }}">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">

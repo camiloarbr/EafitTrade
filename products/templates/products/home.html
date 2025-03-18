@@ -621,8 +621,10 @@
         fetch(`/favorite/toggle/${productId}/`, {
             method: 'POST',
             headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-            }
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json'
+            },
+            mode: 'same-origin'
         })
         .then(response => response.json())
         .then(data => {
@@ -630,10 +632,15 @@
             if (data.status === 'added') {
                 button.classList.remove('text-secondary');
                 button.classList.add('text-danger');
+                button.title = 'Quitar de favoritos';
             } else {
                 button.classList.remove('text-danger');
                 button.classList.add('text-secondary');
+                button.title = 'Agregar a favoritos';
             }
+        })
+        .catch(error => {
+            console.error('Error:', error);
         });
     }
 </script>
