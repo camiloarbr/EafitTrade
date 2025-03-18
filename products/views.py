@@ -202,12 +202,8 @@ def product_detail(request, product_id):
     try:
         seller_profile = product.seller.seller_profile
         if seller_profile and seller_profile.whatsapp:
-            # Preparar el mensaje predefinido
-            message = f"Hola, estoy interesado en el producto: {product.name}. ¿Podrías darme más información?"
-            # Codificar el mensaje para URL
-            encoded_message = urllib.parse.quote(message)
-            # Construir el enlace completo
-            whatsapp_link = f"https://wa.me/{seller_profile.whatsapp}?text={encoded_message}"
+            # Usar el método get_whatsapp_link del modelo SellerProfile
+            whatsapp_link = seller_profile.get_whatsapp_link(product.name)
     except SellerProfile.DoesNotExist:
         pass
     

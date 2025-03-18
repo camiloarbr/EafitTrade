@@ -490,7 +490,7 @@
                                     <i class="fas fa-heart me-2"></i>
                                     {% if is_favorite %}Quitar de favoritos{% else %}Agregar a favoritos{% endif %}
                                 </button>
-                                {% if seller_profile.whatsapp %}
+                                {% if whatsapp_link %}
                                     <a href="{{ whatsapp_link }}" 
                                        class="btn btn-success btn-action whatsapp-button"
                                        target="_blank"
