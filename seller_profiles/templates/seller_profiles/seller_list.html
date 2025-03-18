@@ -81,76 +81,119 @@
 {% endblock %}
 
 {% block content %}
-<section class="sellers-section">
-    <div class="container">
-        <!-- Filter section -->
-        <div class="filter-section mb-4">
-            <form method="get" class="filter-form">
-                <div class="row g-3">
-                    <!-- Search input -->
-                    <div class="col-12 col-md-6">
+<div class="container py-4">
+    <!-- Barra de búsqueda compacta y estilizada -->
+    <div class="search-container mb-4">
+        <form method="get" id="searchForm">
+            <div class="search-bar-wrapper">
+                <div class="row g-2 align-items-center">
+                    <!-- Barra de búsqueda -->
+                    <div class="col-md-8 col-lg-6">
                         <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fas fa-search"></i>
+                            <span class="input-group-text border-end-0 bg-white">
+                                <i class="fas fa-search text-primary"></i>
                             </span>
                             <input type="text" 
-                                   name="search" 
-                                   class="form-control" 
-                                   placeholder="Buscar vendedores..."
-                                   value="{{ search_query }}">
+                                name="search" 
+                                class="form-control border-start-0"
+                                placeholder="Buscar vendedores..."
+                                value="{{ search_query }}">
+                            <button type="submit" class="btn btn-primary d-none d-md-inline-block">
+                                Buscar
+                            </button>
                         </div>
                     </div>
                     
-                    <!-- Category filter -->
-                    <div class="col-12 col-md-6">
-                        <select name="categories" class="form-select" multiple>
-                            {% for category in all_categories %}
-                                <option value="{{ category }}" 
-                                        {% if category in selected_categories %}selected{% endif %}>
-                                    {{ category }}
-                                </option>
-                            {% endfor %}
-                        </select>
+                    <!-- Botón de filtros -->
+                    <div class="col-auto">
+                        <button class="btn btn-outline-primary" 
+                                type="button" 
+                                data-bs-toggle="collapse" 
+                                data-bs-target="#filterOptions" 
+                                aria-expanded="false" 
+                                aria-controls="filterOptions">
+                            <i class="fas fa-filter me-2"></i>Filtros
+                            {% if selected_categories %}
+                                <span class="badge bg-primary ms-2">{{ selected_categories|length }}</span>
+                            {% endif %}
+                        </button>
                     </div>
                 </div>
-            </form>
-        </div>
+                
+                <!-- Opciones de filtro colapsables -->
+                <div class="collapse mt-3" id="filterOptions">
+                    <div class="filter-card p-3">
+                        <h6 class="mb-3 text-muted">
+                            <i class="fas fa-tags me-2"></i>Filtrar por categorías de productos
+                        </h6>
+                        <div class="category-selection">
+                            <select name="categories" class="form-select" multiple size="5">
+                                {% for category in all_categories %}
+                                    <option value="{{ category }}" 
+                                            {% if category in selected_categories %}selected{% endif %}>
+                                        {{ category }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text mb-3">Selecciona múltiples categorías con la tecla Ctrl</div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-check me-2"></i>Aplicar filtros
+                            </button>
+                            <a href="{% url 'seller_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-undo me-2"></i>Limpiar filtros
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 
-        <!-- Sellers grid -->
-        <div class="row g-4">
-            {% for seller_data in sellers %}
-            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+    <!-- Grid de vendedores -->
+    <div class="row g-4">
+        {% for seller_data in sellers %}
+            <div class="col-md-6 col-lg-4">
                 <a href="{% url 'public_profile' seller_data.profile.user.id %}" class="text-decoration-none">
                     <div class="seller-card">
-                        <div class="text-center">
-                            {% if seller_data.profile.profile_image %}
-                                <img src="{{ seller_data.profile.profile_image.url }}" 
-                                     alt="{{ seller_data.profile.store_name }}" 
-                                     class="seller-image">
-                            {% else %}
-                                <div class="seller-image d-flex align-items-center justify-content-center bg-secondary">
-                                    <i class="fas fa-store fa-3x text-white"></i>
-                                </div>
-                            {% endif %}
-                        </div>
-                        
-                        <div class="seller-info">
-                            <h3 class="store-name">{{ seller_data.profile.store_name }}</h3>
-                            {% if seller_data.profile.slogan %}
-                                <p class="store-slogan">{{ seller_data.profile.slogan }}</p>
-                            {% endif %}
+                        <!-- Contenido del vendedor clickeable -->
+                        <div class="seller-content">
+                            <div class="seller-image-wrapper">
+                                {% if seller_data.profile.profile_image %}
+                                    <img src="{{ seller_data.profile.profile_image.url }}" 
+                                         alt="{{ seller_data.profile.store_name }}"
+                                         class="seller-image">
+                                {% else %}
+                                    <div class="seller-image-placeholder">
+                                        <i class="fas fa-store"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
                             
-                            <!-- Categorías de productos -->
-                            <div class="seller-categories">
-                                {% for category in seller_data.categories %}
-                                    <span class="category-badge">{{ category }}</span>
-                                {% endfor %}
+                            <div class="seller-info">
+                                <h3 class="store-name">{{ seller_data.profile.store_name }}</h3>
+                                {% if seller_data.profile.slogan %}
+                                    <p class="store-slogan">{{ seller_data.profile.slogan }}</p>
+                                {% endif %}
                             </div>
                         </div>
+
+                        <!-- Categorías de productos mejoradas -->
+                        {% if seller_data.categories %}
+                            <div class="categories-section">
+                                <div class="categories-label">Categorías:</div>
+                                <div class="categories-tags">
+                                    {% for category in seller_data.categories %}
+                                        <span class="category-tag">{{ category }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </a>
             </div>
-            {% empty %}
+        {% empty %}
             <div class="col-12 text-center py-5">
                 <i class="fas fa-store-alt-slash fa-3x text-secondary mb-3"></i>
                 <h3>No se encontraron vendedores</h3>
@@ -161,8 +204,179 @@
                     </a>
                 {% endif %}
             </div>
-            {% endfor %}
-        </div>
+        {% endfor %}
     </div>
-</section>
+</div>
+
+<style>
+    /* Estilos para la barra de búsqueda */
+    .search-container {
+        margin-bottom: 2rem;
+    }
+    
+    .search-bar-wrapper {
+        background-color: transparent;
+    }
+    
+    .input-group {
+        border-radius: 50px;
+        overflow: hidden;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    
+    .input-group .form-control {
+        border-radius: 0;
+        height: 46px;
+        font-size: 0.95rem;
+    }
+    
+    .input-group .input-group-text {
+        border-radius: 50px 0 0 50px;
+        padding-left: 1.25rem;
+    }
+    
+    .input-group .btn {
+        border-radius: 0 50px 50px 0;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+    
+    /* Estilos para el panel de filtros */
+    .filter-card {
+        background-color: white;
+        border-radius: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .category-selection .form-select {
+        border-radius: 0.5rem;
+    }
+    
+    /* Estilos para las tarjetas de vendedor */
+    .seller-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .seller-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .seller-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .seller-image-wrapper {
+        width: 80px;
+        height: 80px;
+        flex-shrink: 0;
+    }
+    
+    .seller-image {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    
+    .seller-image-placeholder {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+    }
+    
+    .seller-info {
+        flex-grow: 1;
+    }
+    
+    .store-name {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.25rem;
+    }
+    
+    .store-slogan {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 0;
+    }
+    
+    /* Estilos mejorados para las categorías */
+    .categories-section {
+        margin-top: auto;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .categories-label {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+    
+    .categories-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .category-tag {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        background-color: #f0f4f8;
+        color: var(--primary-color);
+        font-size: 0.75rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    
+    /* Ajustes responsivos */
+    @media (max-width: 768px) {
+        .seller-content {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .seller-image-wrapper {
+            margin-bottom: 1rem;
+        }
+        
+        .categories-tags {
+            justify-content: center;
+        }
+    }
+</style>
+
+{% block extra_scripts %}
+<script>
+    // Expandir automáticamente el filtro si hay categorías seleccionadas
+    document.addEventListener('DOMContentLoaded', function() {
+        const hasSelectedCategories = {% if selected_categories %}true{% else %}false{% endif %};
+        if (hasSelectedCategories) {
+            const filterCollapse = new bootstrap.Collapse(document.getElementById('filterOptions'), {
+                toggle: true
+            });
+        }
+    });
+</script>
+{% endblock %}
 {% endblock %} 

@@ -112,21 +112,23 @@ def add_product(request):
     # ... resto del código existente ...
 
 def seller_list(request):
+    # Iniciar con todos los vendedores
     sellers = SellerProfile.objects.all()
-    # Convert CATEGORY_CHOICES to a list of tuples
-    categories = [choice[0] for choice in Product.CATEGORY_CHOICES]
     
-    # Búsqueda por nombre
-    search_query = request.GET.get('search', '')
+    # Obtener parámetros de búsqueda
+    search_query = request.GET.get('search', '').strip()
+    selected_categories = request.GET.getlist('categories')
+    
+    # Aplicar filtro de búsqueda por nombre
     if search_query:
         sellers = sellers.filter(
             Q(store_name__icontains=search_query) |
             Q(user__username__icontains=search_query)
         )
     
-    # Filtro por categorías
-    selected_categories = request.GET.getlist('categories')
+    # Aplicar filtro por categorías
     if selected_categories:
+        # Filtrar vendedores que tengan productos en cualquiera de las categorías seleccionadas
         sellers = sellers.filter(
             user__products__category__in=selected_categories
         ).distinct()
@@ -134,17 +136,24 @@ def seller_list(request):
     # Preparar los datos de los vendedores con sus categorías
     sellers_data = []
     for seller in sellers:
-        # Get unique categories for each seller's products
-        seller_categories = seller.user.products.values_list('category', flat=True).distinct()
+        # Obtener categorías únicas de los productos del vendedor
+        seller_categories = seller.user.products.values_list(
+            'category', flat=True
+        ).distinct()
+        
         sellers_data.append({
             'profile': seller,
             'categories': list(seller_categories)
         })
     
+    # Preparar las categorías para el filtro
+    all_categories = [choice[0] for choice in Product.CATEGORY_CHOICES]
+    
     context = {
         'sellers': sellers_data,
-        'all_categories': categories,  # Changed from categories to all_categories
+        'all_categories': all_categories,
         'search_query': search_query,
         'selected_categories': selected_categories,
     }
+    
     return render(request, 'seller_profiles/seller_list.html', context)
