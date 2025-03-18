@@ -117,5 +117,36 @@
     .schedule-form:last-child {
         margin-bottom: 0;
     }
+    
+    .whatsapp-button {
+        display: inline-flex;
+        align-items: center;
+        background-color: #25D366;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s;
+        border: none;
+        margin-top: 1rem;
+    }
+    
+    .whatsapp-button:hover {
+        background-color: #128C7E;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    @media (max-width: 768px) {
+        .whatsapp-button {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            z-index: 1000;
+            padding: 0.5rem 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+    }
 </style>
 {% endblock %} 

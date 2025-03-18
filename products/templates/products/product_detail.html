@@ -1,5 +1,6 @@
 {% extends 'products/base.html' %}
 {% load humanize %}
+{% load form_tags %}
 
 {% block title %}{{ product.name }} - EAFIT Trade{% endblock %}
 
@@ -447,6 +448,14 @@
                                         class="btn {% if is_favorite %}btn-danger{% else %}btn-outline-danger{% endif %} btn-action">
                                     {% if is_favorite %}Quitar de favoritos{% else %}Agregar a favoritos{% endif %}
                                 </button>
+                                {% if seller_profile.whatsapp %}
+                                    <a href="{{ whatsapp_link }}" 
+                                       class="btn btn-success btn-action"
+                                       target="_blank"
+                                       rel="noopener noreferrer">
+                                        <i class="fab fa-whatsapp me-2"></i>Contactar Vendedor
+                                    </a>
+                                {% endif %}
                             {% endif %}
                         </div>
                     </div>

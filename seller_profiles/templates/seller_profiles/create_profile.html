@@ -79,6 +79,22 @@
                             {% endif %}
                         </div>
                         
+                        <!-- WhatsApp -->
+                        <div class="mb-4">
+                            <label for="{{ form.whatsapp.id_for_label }}" class="form-label">
+                                {{ form.whatsapp.label }}
+                            </label>
+                            {{ form.whatsapp }}
+                            {% if form.whatsapp.help_text %}
+                                <div class="help-text">{{ form.whatsapp.help_text }}</div>
+                            {% endif %}
+                            {% if form.whatsapp.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.whatsapp.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
                         <!-- Horarios -->
                         <div class="schedule-formset bg-light p-4 rounded">
                             <h3 class="mb-4">

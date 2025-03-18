@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
+import re
 
 class SellerProfile(models.Model):
     user = models.OneToOneField(
@@ -31,6 +32,13 @@ class SellerProfile(models.Model):
         verbose_name='Descripción',
         help_text='Describe tu tienda y los productos que vendes'
     )
+    whatsapp = models.CharField(
+        max_length=15,
+        verbose_name='WhatsApp',
+        help_text='Ingresa tu número de WhatsApp con código de país (ej: 573001234567)',
+        blank=True,
+        null=True
+    )
 
     class Meta:
         verbose_name = 'Perfil de vendedor'
@@ -38,6 +46,23 @@ class SellerProfile(models.Model):
 
     def __str__(self):
         return f"Tienda de {self.store_name}"
+
+    def clean(self):
+        super().clean()
+        if self.whatsapp:
+            # Eliminar cualquier espacio o carácter especial
+            self.whatsapp = re.sub(r'[^0-9]', '', self.whatsapp)
+            
+            # Verificar formato
+            if not re.match(r'^57[3]\d{9}$', self.whatsapp):
+                raise ValidationError({
+                    'whatsapp': 'El número debe comenzar con 57 seguido de un 3 y 9 dígitos más.'
+                })
+
+    def get_whatsapp_link(self):
+        if not self.whatsapp:
+            return None
+        return f"https://wa.me/{self.whatsapp}"
 
 class Schedule(models.Model):
     DAYS_OF_WEEK = [

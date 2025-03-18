@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import ProductForm, CommentForm, CustomUserCreationForm
 from django.views.decorators.http import require_POST
+import urllib.parse
 
 def home(request):
     products = Product.objects.all()
@@ -189,15 +190,21 @@ def product_detail(request, product_id):
     comments = product.comments.all().order_by('-created_at')
     comment_form = CommentForm() if request.user.is_authenticated else None
     
-    # Verificar si el producto está en favoritos
+    # Verify if product is in favorites
     is_favorite = False
     if request.user.is_authenticated:
         is_favorite = Favorite.objects.filter(user=request.user, product=product).exists()
     
-    # Obtener el perfil del vendedor si existe
+    # Get seller profile if exists
     seller_profile = None
+    whatsapp_link = None
     try:
         seller_profile = product.seller.seller_profile
+        if seller_profile.whatsapp:
+            base_url = seller_profile.get_whatsapp_link()
+            message = f"Hola, estoy interesado en el producto '{product.name}'. ¿Podrías darme más información?"
+            encoded_message = urllib.parse.quote(message)
+            whatsapp_link = f"{base_url}?text={encoded_message}"
     except:
         pass
     
@@ -206,7 +213,8 @@ def product_detail(request, product_id):
         'comments': comments,
         'comment_form': comment_form,
         'is_favorite': is_favorite,
-        'seller_profile': seller_profile
+        'seller_profile': seller_profile,
+        'whatsapp_link': whatsapp_link
     })
 
 # Create your views here.

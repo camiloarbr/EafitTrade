@@ -19,6 +19,14 @@
                 {% if profile.slogan %}
                     <p class="store-slogan">{{ profile.slogan }}</p>
                 {% endif %}
+                {% if profile.whatsapp %}
+                    <a href="{{ profile.get_whatsapp_link }}" 
+                       class="whatsapp-button"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        <i class="fab fa-whatsapp me-2"></i>Contactar por WhatsApp
+                    </a>
+                {% endif %}
             </div>
             
             <div class="profile-body">

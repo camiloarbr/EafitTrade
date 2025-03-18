@@ -1,11 +1,12 @@
 from django import forms
 from .models import SellerProfile, Schedule
 from django.forms import inlineformset_factory
+import re
 
 class SellerProfileForm(forms.ModelForm):
     class Meta:
         model = SellerProfile
-        fields = ['profile_image', 'store_name', 'slogan', 'description']
+        fields = ['profile_image', 'store_name', 'slogan', 'description', 'whatsapp']
         widgets = {
             'store_name': forms.TextInput(attrs={'class': 'form-control'}),
             'slogan': forms.TextInput(attrs={'class': 'form-control'}),
@@ -14,7 +15,26 @@ class SellerProfileForm(forms.ModelForm):
                 'rows': 4
             }),
             'profile_image': forms.FileInput(attrs={'class': 'form-control'}),
+            'whatsapp': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '573001234567'
+            }),
         }
+
+    def clean_whatsapp(self):
+        whatsapp = self.cleaned_data.get('whatsapp')
+        if whatsapp:
+            # Eliminar cualquier espacio o carácter especial
+            whatsapp = re.sub(r'[^0-9]', '', whatsapp)
+            
+            # Verificar que el número tenga el formato correcto
+            if not re.match(r'^57[3]\d{9}$', whatsapp):
+                raise forms.ValidationError(
+                    'El número debe comenzar con 57 seguido de un 3 y 9 dígitos más. Ejemplo: 573001234567'
+                )
+            
+            return whatsapp
+        return None
 
 class ScheduleForm(forms.ModelForm):
     class Meta:
