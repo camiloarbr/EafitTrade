@@ -133,6 +133,12 @@
         padding: 0.75rem 1.5rem;
         border-radius: 0.5rem;
         font-weight: 500;
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.2s;
     }
 
     .comments-section {
@@ -360,6 +366,41 @@
         margin-top: 0.5rem;
         color: #495057;
     }
+
+    .btn-success {
+        background-color: #25D366;
+        border-color: #25D366;
+    }
+    
+    .btn-success:hover {
+        background-color: #128C7E;
+        border-color: #128C7E;
+    }
+    
+    @media (max-width: 767.98px) {
+        .action-buttons {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .btn-action {
+            width: 100%;
+        }
+    }
+
+    .whatsapp-button {
+        background-color: #25D366 !important;
+        border-color: #25D366 !important;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .whatsapp-button:hover {
+        background-color: #128C7E !important;
+        border-color: #128C7E !important;
+        transform: translateY(-2px);
+    }
 </style>
 {% endblock %}
 
@@ -438,22 +479,23 @@
                         <div class="action-buttons">
                             {% if user == product.seller %}
                                 <a href="{% url 'edit_product' product.id %}" class="btn btn-primary btn-action">
-                                    Editar producto
+                                    <i class="fas fa-edit me-2"></i>Editar producto
                                 </a>
                                 <a href="{% url 'delete_product' product.id %}" class="btn btn-outline-danger btn-action">
-                                    Eliminar producto
+                                    <i class="fas fa-trash me-2"></i>Eliminar producto
                                 </a>
                             {% elif user.is_authenticated %}
                                 <button onclick="toggleFavorite(event, {{ product.id }})" 
                                         class="btn {% if is_favorite %}btn-danger{% else %}btn-outline-danger{% endif %} btn-action">
+                                    <i class="fas fa-heart me-2"></i>
                                     {% if is_favorite %}Quitar de favoritos{% else %}Agregar a favoritos{% endif %}
                                 </button>
                                 {% if seller_profile.whatsapp %}
                                     <a href="{{ whatsapp_link }}" 
-                                       class="btn btn-success btn-action"
+                                       class="btn btn-success btn-action whatsapp-button"
                                        target="_blank"
                                        rel="noopener noreferrer">
-                                        <i class="fab fa-whatsapp me-2"></i>Contactar Vendedor
+                                        <i class="fab fa-whatsapp me-2"></i>Contactar por WhatsApp
                                     </a>
                                 {% endif %}
                             {% endif %}

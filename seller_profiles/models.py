@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 import re
+import urllib.parse
 
 class SellerProfile(models.Model):
     user = models.OneToOneField(
@@ -59,10 +60,15 @@ class SellerProfile(models.Model):
                     'whatsapp': 'El número debe comenzar con 57 seguido de un 3 y 9 dígitos más.'
                 })
 
-    def get_whatsapp_link(self):
+    def get_whatsapp_link(self, product_name=None):
         if not self.whatsapp:
             return None
-        return f"https://wa.me/{self.whatsapp}"
+        
+        base_url = f"https://wa.me/{self.whatsapp}"
+        if product_name:
+            message = f"Hola, estoy interesado en el producto: {product_name}. ¿Podrías darme más información?"
+            return f"{base_url}?text={urllib.parse.quote(message)}"
+        return base_url
 
 class Schedule(models.Model):
     DAYS_OF_WEEK = [

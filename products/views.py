@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from .models import Product, Comment, Favorite
+from seller_profiles.models import SellerProfile
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import ProductForm, CommentForm, CustomUserCreationForm
@@ -195,17 +196,19 @@ def product_detail(request, product_id):
     if request.user.is_authenticated:
         is_favorite = Favorite.objects.filter(user=request.user, product=product).exists()
     
-    # Get seller profile if exists
+    # Get seller profile and prepare WhatsApp link if available
     seller_profile = None
     whatsapp_link = None
     try:
         seller_profile = product.seller.seller_profile
-        if seller_profile.whatsapp:
-            base_url = seller_profile.get_whatsapp_link()
-            message = f"Hola, estoy interesado en el producto '{product.name}'. ¿Podrías darme más información?"
+        if seller_profile and seller_profile.whatsapp:
+            # Preparar el mensaje predefinido
+            message = f"Hola, estoy interesado en el producto: {product.name}. ¿Podrías darme más información?"
+            # Codificar el mensaje para URL
             encoded_message = urllib.parse.quote(message)
-            whatsapp_link = f"{base_url}?text={encoded_message}"
-    except:
+            # Construir el enlace completo
+            whatsapp_link = f"https://wa.me/{seller_profile.whatsapp}?text={encoded_message}"
+    except SellerProfile.DoesNotExist:
         pass
     
     return render(request, 'products/product_detail.html', {
