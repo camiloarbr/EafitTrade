@@ -1,103 +1,170 @@
 {% extends 'products/base.html' %}
+{% load static %}
 
 {% block title %}Registro - EAFIT Trade{% endblock %}
 
 {% block extra_styles %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-    .auth-section {
+    body {
+        background-color: #f8f9fa;
+    }
+    
+    .auth-container {
         min-height: calc(100vh - 56px);
-        background-color: var(--primary-color);
-        background-image: linear-gradient(135deg, var(--primary-color) 0%, #f8f9fa 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
     }
     
     .auth-card {
-        border-radius: 1rem;
+        width: 100%;
+        max-width: 900px;
+        background: #fff;
+        border-radius: 20px;
         overflow: hidden;
-        box-shadow: 0 0 20px rgba(234, 218, 5, 0.1);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: row;
     }
     
     .auth-image {
-        background-image: url('https://www.eafit.edu.co/Style%20Library/images/logo-universidad-eafit.png');
+        flex: 1;
+        background: var(--primary-color);
+        background-image: url('https://images.unsplash.com/photo-1556740738-b6a63e27c4df?q=80&w=1470&auto=format&fit=crop');
         background-size: cover;
         background-position: center;
-        background-color: #4c5c6c;
-        min-height: 300px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .auth-image::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(13, 110, 253, 0.8);
+    }
+    
+    .auth-image-content {
+        position: relative;
+        z-index: 1;
+        color: white;
+        text-align: center;
+        padding: 2rem;
+    }
+    
+    .auth-image-content h2 {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .auth-image-content p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        max-width: 80%;
+        margin: 0 auto;
     }
     
     .auth-form {
+        flex: 1;
         padding: 3rem;
     }
     
-    .brand-wrapper {
-        margin-bottom: 2rem;
-    }
-    
-    .brand-icon {
-        font-size: 2rem;
-        color: var(--primary-color);
-    }
-    
-    .brand-text {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #333;
-        margin: 0;
-    }
-    
-    .form-control {
-        padding: 0.75rem 1rem;
-        font-size: 1rem;
-        border-radius: 0.5rem;
-        border: 1px solid #dee2e6;
-        transition: all 0.2s ease-in-out;
-    }
-    
-    .form-control:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-    }
-    
-    .form-label {
-        color: #495057;
-        font-weight: 500;
-    }
-    
-    .btn-auth {
-        padding: 0.75rem 1.5rem;
-        font-size: 1rem;
-        border-radius: 0.5rem;
-        width: 100%;
-        font-weight: 500;
-        transition: all 0.2s ease-in-out;
-    }
-    
-    .btn-auth:hover {
-        transform: translateY(-1px);
-    }
-    
-    .auth-footer {
-        margin-top: 2rem;
+    .auth-form h1 {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 2.2rem;
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
         text-align: center;
     }
     
-    .help-text {
-        font-size: 0.875rem;
-        color: var(--secondary-color);
-        margin-top: 0.5rem;
+    .auth-form .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: #4a5568;
     }
     
-    .help-text ul {
-        padding-left: 1.5rem;
+    .auth-form .form-control {
+        height: 52px;
+        padding: 0.75rem 1.25rem;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        font-size: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        transition: all 0.3s ease;
+    }
+    
+    .auth-form .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
+    }
+    
+    .auth-btn {
+        height: 52px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+    .auth-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+    }
+    
+    .form-text {
+        font-size: 0.85rem;
+        color: #718096;
+    }
+    
+    .help-list {
+        padding-left: 1.2rem;
         margin-bottom: 0;
     }
     
-    .help-text li {
+    .help-list li {
         margin-bottom: 0.25rem;
     }
     
-    @media (max-width: 767.98px) {
+    .auth-footer {
+        text-align: center;
+        margin-top: 2rem;
+    }
+    
+    .auth-footer a {
+        color: var(--primary-color);
+        font-weight: 600;
+        text-decoration: none;
+    }
+    
+    .auth-footer a:hover {
+        text-decoration: underline;
+    }
+    
+    @media (max-width: 768px) {
+        .auth-card {
+            flex-direction: column;
+            max-width: 500px;
+        }
+        
         .auth-image {
-            min-height: 200px;
+            display: none;
         }
         
         .auth-form {
@@ -108,102 +175,90 @@
 {% endblock %}
 
 {% block content %}
-<section class="auth-section py-5">
-    <div class="container h-100">
-        <div class="row justify-content-center align-items-center">
-            <div class="col-12 col-xl-10">
-                <div class="card auth-card">
-                    <div class="row g-0">
-                        <div class="col-md-5 d-none d-md-block">
-                            <div class="auth-image h-100"></div>
-                        </div>
-                        <div class="col-md-7">
-                            <div class="auth-form">
-                                <div class="brand-wrapper d-flex align-items-center">
-                                    <i class="fas fa-store brand-icon me-3"></i>
-                                    <h1 class="brand-text">EAFIT Trade</h1>
-                                </div>
-
-                                <h2 class="fw-normal mb-4" style="letter-spacing: 1px;">Crear Cuenta</h2>
-
-                                {% if form.errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    <i class="fas fa-exclamation-circle me-2"></i>
-                                    Por favor corrige los siguientes errores:
-                                    <ul class="mb-0 mt-2">
-                                        {% for field, errors in form.errors.items %}
-                                            {% for error in errors %}
-                                                <li>{{ error }}</li>
-                                            {% endfor %}
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                                {% endif %}
-
-                                <form method="post" novalidate>
-                                    {% csrf_token %}
-                                    
-                                    <div class="mb-4">
-                                        <label for="id_username" class="form-label">Usuario</label>
-                                        <input type="text" name="username" 
-                                               class="form-control form-control-lg {% if form.username.errors %}is-invalid{% endif %}" 
-                                               id="id_username" required>
-                                        {% if form.username.errors %}
-                                        <div class="invalid-feedback">
-                                            {{ form.username.errors|join:", " }}
-                                        </div>
-                                        {% endif %}
-                                        {% if form.username.help_text %}
-                                        <div class="help-text">{{ form.username.help_text }}</div>
-                                        {% endif %}
-                                    </div>
-
-                                    <div class="mb-4">
-                                        <label for="id_password1" class="form-label">Contraseña</label>
-                                        <input type="password" name="password1" 
-                                               class="form-control form-control-lg {% if form.password1.errors %}is-invalid{% endif %}" 
-                                               id="id_password1" required>
-                                        {% if form.password1.errors %}
-                                        <div class="invalid-feedback">
-                                            {{ form.password1.errors|join:", " }}
-                                        </div>
-                                        {% endif %}
-                                        {% if form.password1.help_text %}
-                                        <div class="help-text">{{ form.password1.help_text|safe }}</div>
-                                        {% endif %}
-                                    </div>
-
-                                    <div class="mb-4">
-                                        <label for="id_password2" class="form-label">Confirmar Contraseña</label>
-                                        <input type="password" name="password2" 
-                                               class="form-control form-control-lg {% if form.password2.errors %}is-invalid{% endif %}" 
-                                               id="id_password2" required>
-                                        {% if form.password2.errors %}
-                                        <div class="invalid-feedback">
-                                            {{ form.password2.errors|join:", " }}
-                                        </div>
-                                        {% endif %}
-                                    </div>
-
-                                    <button type="submit" class="btn btn-primary btn-auth mb-3">
-                                        <i class="fas fa-user-plus me-2"></i>Crear Cuenta
-                                    </button>
-                                    
-                                    <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-auth">
-                                        <i class="fas fa-arrow-left me-2"></i>Volver al Inicio
-                                    </a>
-
-                                    <div class="auth-footer">
-                                        <p class="mb-0">¿Ya tienes una cuenta?</p>
-                                        <a href="{% url 'login' %}" class="text-primary">Inicia sesión aquí</a>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-image">
+            <div class="auth-image-content">
+                <h2>¡Únete a nuestra comunidad!</h2>
+                <p>Crea una cuenta para empezar a comprar y vender productos en EAFIT TRADE.</p>
             </div>
         </div>
+        
+        <div class="auth-form">
+            <h1>Crear Cuenta</h1>
+            
+            <form method="post" novalidate>
+                {% csrf_token %}
+                
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>Por favor corrige los errores en el formulario.
+                    </div>
+                {% endif %}
+                
+                <div class="mb-4">
+                    <label for="{{ form.username.id_for_label }}" class="form-label">Nombre de usuario</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.username.errors }}
+                        </div>
+                    {% endif %}
+                    <div class="form-text">{{ form.username.help_text }}</div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="{{ form.password1.id_for_label }}" class="form-label">Contraseña</label>
+                    {{ form.password1 }}
+                    {% if form.password1.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.password1.errors }}
+                        </div>
+                    {% endif %}
+                    <div class="form-text">
+                        <ul class="help-list">
+                            <li>Tu contraseña debe contener al menos 8 caracteres.</li>
+                            <li>Tu contraseña no puede ser demasiado común.</li>
+                            <li>Tu contraseña no puede ser completamente numérica.</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="{{ form.password2.id_for_label }}" class="form-label">Confirmar contraseña</label>
+                    {{ form.password2 }}
+                    {% if form.password2.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.password2.errors }}
+                        </div>
+                    {% endif %}
+                    <div class="form-text">{{ form.password2.help_text }}</div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary auth-btn">
+                    <i class="fas fa-user-plus me-2"></i>Crear Cuenta
+                </button>
+                
+                <div class="auth-footer">
+                    <p>¿Ya tienes una cuenta? <a href="{% url 'login' %}">Inicia sesión</a></p>
+                </div>
+            </form>
+        </div>
     </div>
-</section>
-{% endblock %} 
+</div>
+
+<script>
+// Aplicar clases a los elementos generados por Django
+document.addEventListener('DOMContentLoaded', function() {
+    // Añadir las clases deseadas a los campos
+    document.getElementById('id_username').classList.add('form-control');
+    document.getElementById('id_password1').classList.add('form-control');
+    document.getElementById('id_password2').classList.add('form-control');
+    
+    // Añadir placeholders
+    document.getElementById('id_username').setAttribute('placeholder', 'Elige un nombre de usuario');
+    document.getElementById('id_password1').setAttribute('placeholder', 'Crea una contraseña segura');
+    document.getElementById('id_password2').setAttribute('placeholder', 'Repite tu contraseña');
+});
+</script>
+{% endblock %}
