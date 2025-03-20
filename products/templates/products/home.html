@@ -131,13 +131,6 @@
         }
         
         .product-image {
-            height: 140px;
-        }
-    }
-    
-    /* Ajustes para pantallas muy pequeñas */
-    @media (max-width: 576px) {
-        .product-image {
             height: 120px;
         }
         
@@ -146,7 +139,84 @@
         }
         
         .card-title {
+            font-size: 0.8rem;
+            line-height: 1.2;
+            margin-bottom: 0.25rem;
+        }
+        
+        .price {
+            font-size: 0.9rem;
+        }
+        
+        .category-badge {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.4rem;
+        }
+        
+        .favorite-btn {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .favorite-btn i {
+            font-size: 0.9rem;
+        }
+        
+        .star-rating {
+            font-size: 0.7rem;
+        }
+        
+        .rating-value {
+            font-size: 0.7rem;
+        }
+        
+        .rating-count {
+            font-size: 0.6rem;
+        }
+    }
+    
+    /* Ajustes para pantallas muy pequeñas */
+    @media (max-width: 576px) {
+        .product-image {
+            height: 100px;
+        }
+        
+        .card-body {
+            padding: 0.4rem;
+        }
+        
+        .card-title {
+            font-size: 0.75rem;
+        }
+        
+        .price {
             font-size: 0.85rem;
+        }
+        
+        .category-badge {
+            font-size: 0.6rem;
+            padding: 0.1rem 0.3rem;
+        }
+        
+        .favorite-btn {
+            width: 22px;
+            height: 22px;
+        }
+        
+        .favorite-btn i {
+            font-size: 0.8rem;
+        }
+        
+        .star-rating {
+            font-size: 0.65rem;
+        }
+        
+        .rating-value {
+            font-size: 0.65rem;
+        }
+        
+        .rating-count {
+            font-size: 0.55rem;
         }
     }
     
@@ -735,9 +805,9 @@
     </div>
 
     <!-- Grid de productos -->
-    <div class="row g-4">
+    <div class="row g-2">
         {% for product in products %}
-        <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+        <div class="col-6 col-sm-6 col-lg-4 col-xl-3">
             <a href="{% url 'product_detail' product.id %}" class="text-decoration-none">
                 <div class="card product-card {% if not product.available %}product-unavailable{% endif %}">
                     <div class="position-relative">
