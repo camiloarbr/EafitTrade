@@ -25,8 +25,24 @@ SECRET_KEY = 'django-insecure-m92g&dlk@zvmt)r^eaxjodws)#%o*3encndp&7*p8&ef3e2eya
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Permitir conexiones desde otros dispositivos en la red local y ngrok
+ALLOWED_HOSTS = [
+    'localhost', 
+    '127.0.0.1',
+    '360b-190-9-245-76.ngrok-free.app',  # Tu dominio específico de ngrok
+    '.ngrok-free.app',  # Permitir cualquier subdominio de ngrok-free.app
+    '*'  # En desarrollo, puedes usar esto para permitir todos los hosts
+]
 
+# Configuración CSRF para ngrok
+CSRF_TRUSTED_ORIGINS = [
+    'https://360b-190-9-245-76.ngrok-free.app',
+    'https://*.ngrok-free.app',
+]
+
+# Configuración adicional para manejo de cookies
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 
 # Application definition
 
