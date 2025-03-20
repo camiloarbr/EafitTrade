@@ -29,10 +29,26 @@ urlpatterns = [
     path('edit-product/<int:product_id>/', products_views.edit_product, name='edit_product'),
     path('delete-product/<int:product_id>/', products_views.delete_product, name='delete_product'),
     
-    # Agregar estas URLs para la autenticación
+    # URLs para la autenticación
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
     path('register/', products_views.register, name='register'),
+    
+    # URLs para restablecimiento de contraseña
+    path('password_reset/', auth_views.PasswordResetView.as_view(
+        template_name='registration/password_reset_form.html',
+        email_template_name='registration/password_reset_email.html',
+        subject_template_name='registration/password_reset_subject.txt'
+    ), name='password_reset'),
+    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(
+        template_name='registration/password_reset_done.html'
+    ), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
+        template_name='registration/password_reset_confirm.html'
+    ), name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(
+        template_name='registration/password_reset_complete.html'
+    ), name='password_reset_complete'),
     
     # URLs para comentarios
     path('comment/add/<int:product_id>/', products_views.add_comment, name='add_comment'),
