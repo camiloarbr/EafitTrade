@@ -33,6 +33,7 @@
             font-family: 'Poppins', sans-serif;
             background-color: var(--light-bg);
             color: #2c3e50;
+            padding-top: 76px; /* Espacio para el navbar fijo */
         }
         
         h1, h2, h3, h4, h5, h6 {
@@ -44,6 +45,17 @@
             background-color: var(--primary-color);
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             padding: 0.75rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+            transition: transform 0.3s ease;
+        }
+        
+        /* Clase para ocultar el navbar al hacer scroll hacia abajo */
+        .navbar-hidden {
+            transform: translateY(-100%);
         }
         
         .navbar-brand {
@@ -312,5 +324,25 @@
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     {% block extra_scripts %}{% endblock %}
+
+    <script>
+    let lastScrollTop = 0;
+    const navbar = document.querySelector('.navbar');
+    const scrollThreshold = 100; // Cantidad de pixels antes de ocultar/mostrar
+
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+        
+        if (currentScroll > lastScrollTop && currentScroll > scrollThreshold) {
+            // Scroll hacia abajo
+            navbar.classList.add('navbar-hidden');
+        } else {
+            // Scroll hacia arriba
+            navbar.classList.remove('navbar-hidden');
+        }
+        
+        lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+    }, { passive: true });
+    </script>
 </body>
 </html> 
