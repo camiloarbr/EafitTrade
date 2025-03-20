@@ -21,7 +21,7 @@
                 {% endif %}
                 {% if profile.whatsapp %}
                     <a href="{{ profile.get_whatsapp_link }}" 
-                       class="btn whatsapp-button"
+                       class="btn btn-success btn-action whatsapp-button fixed-whatsapp"
                        target="_blank"
                        rel="noopener noreferrer">
                         <i class="fab fa-whatsapp me-2"></i>Contactar por WhatsApp
@@ -228,6 +228,77 @@
     .empty-products p {
         font-size: 1.1rem;
         color: #6c757d;
+    }
+
+    .whatsapp-button {
+        background-color: #25D366;
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        border: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);
+    }
+
+    .whatsapp-button:hover {
+        background-color: #128C7E;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(37, 211, 102, 0.3);
+    }
+
+    .whatsapp-button i {
+        font-size: 1.2rem;
+    }
+
+    @media (max-width: 768px) {
+        .whatsapp-button {
+            width: 100%;
+            margin-top: 1rem;
+        }
+    }
+
+    .fixed-whatsapp {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 1000;
+        background-color: #25D366;
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-weight: 500;
+        border: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+        text-decoration: none;
+    }
+
+    .fixed-whatsapp:hover {
+        background-color: #128C7E;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+    }
+
+    .fixed-whatsapp i {
+        font-size: 1.25rem;
+    }
+
+    @media (max-width: 768px) {
+        .fixed-whatsapp {
+            bottom: 1rem;
+            right: 1rem;
+            left: 1rem;
+            width: calc(100% - 2rem);
+        }
     }
 </style>
 {% endblock %} 

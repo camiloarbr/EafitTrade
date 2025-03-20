@@ -370,121 +370,259 @@
     input[type="number"] {
         -moz-appearance: textfield;
     }
+
+    .search-section {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .search-form {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .search-bar {
+        background: white;
+        border-radius: 50px;
+        padding: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .search-input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 20px;
+        color: #6c757d;
+    }
+
+    .search-input {
+        height: 45px;
+        border-radius: 50px;
+        padding-left: 50px;
+        border: none;
+        box-shadow: none !important;
+    }
+
+    .search-input:focus {
+        border: 1px solid var(--primary-color);
+    }
+
+    .filters-btn {
+        height: 45px;
+        border-radius: 50px;
+        padding: 0 20px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        background-color: white;
+        border-color: #dee2e6;
+        color: #333;
+    }
+
+    .filters-btn:hover {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+    }
+
+    /* Barra de búsqueda estilizada */
+    .search-container {
+        margin-bottom: 2.5rem;
+    }
+
+    .search-input-container {
+        position: relative;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        border-radius: 50px;
+        overflow: hidden;
+    }
+
+    .search-input {
+        height: 56px;
+        border-radius: 50px;
+        padding-left: 1.5rem;
+        padding-right: 4rem;
+        font-size: 1rem;
+        border: none;
+    }
+
+    .search-input:focus {
+        box-shadow: none;
+        border: 1px solid var(--primary-color);
+    }
+
+    .search-btn {
+        position: absolute;
+        right: 5px;
+        top: 5px;
+        bottom: 5px;
+        border-radius: 50px;
+        width: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .filter-toggle-btn {
+        height: 56px;
+        border-radius: 50px;
+        font-weight: 500;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s;
+    }
+
+    .filter-toggle-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .filter-card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+
+    .filter-card-header {
+        background-color: rgba(0,0,0,0.02);
+        padding: 1.25rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        color: #4a5568;
+    }
+
+    .filter-card-body {
+        padding: 1.5rem;
+    }
+
+    .category-selection .form-select {
+        border-radius: 0.5rem;
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    #foodTypeFilter {
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+    }
+
+    #foodTypeFilter select {
+        width: 100%;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container py-4">
-    <!-- Buscador avanzado -->
-    <div class="search-section mb-4">
-        <div class="card">
-            <div class="card-body">
-                <form method="get" id="searchForm">
-                    <div class="d-flex align-items-center gap-2">
-                        <!-- Barra de búsqueda principal -->
-                        <div class="search-bar flex-grow-1">
-                            <div class="input-group">
-                                <span class="input-group-text border-end-0">
-                                    <i class="fas fa-search"></i>
-                                </span>
-                                <input type="text" 
-                                       name="search" 
-                                       class="form-control border-start-0"
-                                       placeholder="Buscar productos..."
-                                       value="{{ search_query }}">
-                            </div>
+    <!-- Barra de búsqueda mejorada -->
+    <div class="search-container mb-4">
+        <form method="get" id="searchForm">
+            <div class="search-bar-wrapper">
+                <div class="row g-3 align-items-center justify-content-center">
+                    <!-- Barra de búsqueda -->
+                    <div class="col-md-8 col-lg-6">
+                        <div class="search-input-container">
+                            <input type="text" 
+                                name="search" 
+                                class="form-control search-input"
+                                placeholder="Buscar productos..."
+                                value="{{ search_query }}">
+                            <button type="submit" class="btn btn-primary search-btn">
+                                <i class="fas fa-search"></i>
+                            </button>
                         </div>
-                        
-                        <!-- Botón de filtros -->
-                        <button type="button" 
-                                class="btn btn-light position-relative" 
+                    </div>
+                    
+                    <!-- Botón de filtros -->
+                    <div class="col-auto">
+                        <button class="btn btn-outline-primary filter-toggle-btn" 
+                                type="button" 
                                 data-bs-toggle="collapse" 
-                                data-bs-target="#filterOptions"
-                                aria-expanded="false">
-                            <i class="fas fa-sliders-h"></i>
-                            <span class="ms-2">Filtros</span>
-                            <span id="activeFiltersCount" 
-                                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary"
-                                  style="display: none;">
-                                0
-                            </span>
-                        </button>
-                        
-                        <!-- Botón de búsqueda -->
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search me-2"></i>Buscar
+                                data-bs-target="#filterOptions" 
+                                aria-expanded="false" 
+                                aria-controls="filterOptions">
+                            <i class="fas fa-filter me-2"></i>Filtros
                         </button>
                     </div>
+                </div>
 
-                    <!-- Panel de filtros desplegable -->
-                    <div class="collapse mt-3" id="filterOptions">
-                        <div class="card card-body border-0 bg-light">
-                            <div class="row g-3">
-                                <!-- Categorías -->
-                                <div class="col-12 col-md-6">
-                                    <label class="form-label">Categoría</label>
-                                    <div class="category-selector">
-                                        <select name="category" class="form-select" id="categoryFilter">
-                                            <option value="">Todas las categorías</option>
-                                            {% for code, name in categories %}
-                                            <option value="{{ code }}" {% if selected_category == code %}selected{% endif %}>
+                <!-- Panel de filtros (mantener el existente) -->
+                <div class="collapse mt-4" id="filterOptions">
+                    <div class="card card-body border-0 bg-light">
+                        <div class="row g-3">
+                            <!-- Categorías -->
+                            <div class="col-12 col-md-6">
+                                <label class="form-label">Categoría</label>
+                                <div class="category-selector">
+                                    <select name="category" class="form-select" id="categoryFilter">
+                                        <option value="">Todas las categorías</option>
+                                        {% for code, name in categories %}
+                                        <option value="{{ code }}" {% if selected_category == code %}selected{% endif %}>
+                                            {{ name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    
+                                    <!-- Subcategoría (tipo de comida) -->
+                                    <div id="foodTypeFilter" class="mt-2" style="display: none;">
+                                        <select name="food_type" class="form-select">
+                                            <option value="">Todos los tipos</option>
+                                            {% for code, name in food_types %}
+                                            <option value="{{ code }}" {% if selected_food_type == code %}selected{% endif %}>
                                                 {{ name }}
                                             </option>
                                             {% endfor %}
                                         </select>
-                                        
-                                        <!-- Subcategoría (tipo de comida) -->
-                                        <div id="foodTypeFilter" class="mt-2" style="display: none;">
-                                            <select name="food_type" class="form-select">
-                                                <option value="">Todos los tipos</option>
-                                                {% for code, name in food_types %}
-                                                <option value="{{ code }}" {% if selected_food_type == code %}selected{% endif %}>
-                                                    {{ name }}
-                                                </option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
                                     </div>
                                 </div>
-                                
-                                <!-- Rango de precios -->
-                                <div class="col-12 col-md-6">
-                                    <label class="form-label">Rango de precios</label>
-                                    <div class="price-range-inputs">
-                                        <div class="d-flex gap-2">
-                                            <div class="input-group">
-                                                <span class="input-group-text bg-white">
-                                                    <i class="fas fa-dollar-sign"></i>
-                                                </span>
-                                                <input type="number" 
-                                                       name="min_price" 
-                                                       class="form-control" 
-                                                       placeholder="Mínimo" 
-                                                       value="{{ min_price }}"
-                                                       min="0"
-                                                       aria-label="Precio mínimo">
-                                            </div>
-                                            <div class="input-group">
-                                                <span class="input-group-text bg-white">
-                                                    <i class="fas fa-dollar-sign"></i>
-                                                </span>
-                                                <input type="number" 
-                                                       name="max_price" 
-                                                       class="form-control" 
-                                                       placeholder="Máximo" 
-                                                       value="{{ max_price }}"
-                                                       min="0"
-                                                       aria-label="Precio máximo">
-                                            </div>
+                            </div>
+                            
+                            <!-- Rango de precios -->
+                            <div class="col-12 col-md-6">
+                                <label class="form-label">Rango de precios</label>
+                                <div class="price-range-inputs">
+                                    <div class="d-flex gap-2">
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-white">
+                                                <i class="fas fa-dollar-sign"></i>
+                                            </span>
+                                            <input type="number" 
+                                                   name="min_price" 
+                                                   class="form-control" 
+                                                   placeholder="Mínimo" 
+                                                   value="{{ min_price }}"
+                                                   min="0"
+                                                   aria-label="Precio mínimo">
+                                        </div>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-white">
+                                                <i class="fas fa-dollar-sign"></i>
+                                            </span>
+                                            <input type="number" 
+                                                   name="max_price" 
+                                                   class="form-control" 
+                                                   placeholder="Máximo" 
+                                                   value="{{ max_price }}"
+                                                   min="0"
+                                                   aria-label="Precio máximo">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
-        </div>
+        </form>
     </div>
 
     <!-- Resultados de la búsqueda -->
