@@ -573,7 +573,7 @@
                                     </select>
                                     
                                     <!-- Subcategoría (tipo de comida) -->
-                                    <div id="foodTypeFilter" class="mt-2" style="display: none;">
+                                    <div id="foodTypeFilter" class="mt-2" {% if selected_category != 'Comida' %}style="display: none;"{% endif %}>
                                         <select name="food_type" class="form-select">
                                             <option value="">Todos los tipos</option>
                                             {% for code, name in food_types %}
@@ -713,25 +713,6 @@
         const form = document.getElementById('searchForm');
         const categorySelect = document.getElementById('categoryFilter');
         const foodTypeFilter = document.getElementById('foodTypeFilter');
-        const activeFiltersCount = document.getElementById('activeFiltersCount');
-        
-        function updateActiveFiltersCount() {
-            let count = 0;
-            
-            // Contar filtros activos
-            if (categorySelect.value) count++;
-            if (foodTypeFilter.querySelector('select').value) count++;
-            if (form.min_price.value) count++;
-            if (form.max_price.value) count++;
-            
-            // Actualizar badge
-            if (count > 0) {
-                activeFiltersCount.textContent = count;
-                activeFiltersCount.style.display = 'block';
-            } else {
-                activeFiltersCount.style.display = 'none';
-            }
-        }
         
         function handleCategoryChange() {
             if (categorySelect.value === 'Comida') {
@@ -740,18 +721,18 @@
                 foodTypeFilter.style.display = 'none';
                 foodTypeFilter.querySelector('select').value = '';
             }
-            updateActiveFiltersCount();
         }
         
         // Inicializar estado
         handleCategoryChange();
-        updateActiveFiltersCount();
         
         // Event listeners
         categorySelect.addEventListener('change', handleCategoryChange);
-        foodTypeFilter.querySelector('select').addEventListener('change', updateActiveFiltersCount);
-        form.min_price.addEventListener('change', updateActiveFiltersCount);
-        form.max_price.addEventListener('change', updateActiveFiltersCount);
+        
+        // Asegurarse de que el filtro de tipo de comida esté visible si la categoría es 'Comida'
+        if (categorySelect.value === 'Comida') {
+            foodTypeFilter.style.display = 'block';
+        }
     });
 
     function toggleFavorite(event, productId) {
