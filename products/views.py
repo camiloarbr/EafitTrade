@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import ProductForm, CommentForm, CustomUserCreationForm
 from django.views.decorators.http import require_POST
+from django.conf import settings
 import urllib.parse
 
 def home(request):
@@ -62,6 +63,7 @@ def home(request):
         'max_price': max_price,
         'categories': Product.CATEGORY_CHOICES,
         'food_types': Product.FOOD_TYPE_CHOICES,
+        'MEDIA_URL': settings.MEDIA_URL,
     }
     return render(request, 'products/home.html', context)
 

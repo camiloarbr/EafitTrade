@@ -518,10 +518,106 @@
     #foodTypeFilter select {
         width: 100%;
     }
+
+    /* Estilos para la sección de bienvenida */
+    .welcome-section {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .welcome-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h4v4H0V0zm8 0h4v4H8V0zm8 0h4v4h-4V0zM4 4h4v4H4V4zm8 0h4v4H8V4zm8 0h4v4h-4V4zM0 8h4v4H0V8zm8 0h4v4H8V8zm8 0h4v4h-4V8zM4 12h4v4H4v-4zm8 0h4v4h-4v-4zm8 0h4v4h-4v-4zM0 16h4v4H0v-4zm8 0h4v4H8v-4zm8 0h4v4h-4v-4z" fill="%23000" fill-opacity=".05"/></svg>');
+        opacity: 0.5;
+        z-index: 0;
+    }
+
+    .welcome-section .container {
+        position: relative;
+        z-index: 1;
+    }
+
+    .welcome-section h1 {
+        color: var(--primary-color);
+        line-height: 1.2;
+    }
+
+    .welcome-section .lead {
+        color: #495057;
+        font-size: 1.25rem;
+    }
+
+    .welcome-actions {
+        margin-top: 2rem;
+    }
+
+    .welcome-illustration {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+        height: 100%;
+    }
+
+    .welcome-illustration img {
+        max-width: 80%;
+        height: auto;
+        filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
+        animation: float 6s ease-in-out infinite;
+        object-fit: contain;
+    }
+
+    @keyframes float {
+        0% {
+            transform: translateY(0px) scale(1);
+        }
+        50% {
+            transform: translateY(-20px) scale(1.02);
+        }
+        100% {
+            transform: translateY(0px) scale(1);
+        }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
+<!-- Sección de bienvenida -->
+<section class="welcome-section py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-3">¡Bienvenido a EAFIT TRADE!</h1>
+                <p class="lead mb-4">Tu mercado universitario en línea donde puedes comprar y vender productos dentro de la comunidad EAFIT. Encuentra todo lo que necesitas, desde comida hasta tecnología.</p>
+                {% if not user.is_authenticated %}
+                    <div class="welcome-actions">
+                        <a href="{% url 'register' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-store me-2"></i>Quiero ser vendedor
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="welcome-actions">
+                        <a href="{% url 'add_product' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-plus-circle me-2"></i>Publicar Producto
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="welcome-illustration">
+                    <img src="{{ MEDIA_URL }}Logo/EAFIT TRADE logo with a market cart, minimalist style, blue background, white letters.png" alt="EAFIT Trade Logo" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <div class="container py-4">
     <!-- Barra de búsqueda mejorada -->
     <div class="search-container mb-4">
