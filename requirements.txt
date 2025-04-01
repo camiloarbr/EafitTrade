@@ -1,0 +1,9 @@
+Django>=5.1.6
+Pillow>=10.0.0  # For image handling
+django-crispy-forms>=2.1  # For better form rendering
+python-dotenv>=1.0.0  # For environment variables
+django-cleanup>=8.0.0  # Para limpiar archivos media automáticamente
+django-compressor>=4.4  # Para comprimir archivos estáticos
+django-debug-toolbar>=4.2  # Para desarrollo
+whitenoise>=6.6.0  # Para servir archivos estáticos
+gunicorn>=21.2.0  # Para producción
