@@ -48,17 +48,7 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 4. Configurar la base de datos
-
-```bash
-# Crear las migraciones
-python manage.py makemigrations
-
-# Aplicar las migraciones
-python manage.py migrate
-```
-
-### 5. Ejecutar el servidor de desarrollo
+### 4. Ejecutar el servidor de desarrollo
 
 ```bash
 python manage.py runserver
