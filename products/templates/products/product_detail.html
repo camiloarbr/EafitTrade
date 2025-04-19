@@ -542,6 +542,7 @@
                                 {% if whatsapp_link %}
                                     <a href="{{ whatsapp_link }}" 
                                        class="btn btn-success btn-action whatsapp-button"
+                                       onclick="registerWhatsappClick({{ seller_profile.id }})"
                                        target="_blank"
                                        rel="noopener noreferrer">
                                         <i class="fab fa-whatsapp me-2"></i>Contactar por WhatsApp
@@ -632,6 +633,32 @@
     <span class="modal-close" onclick="closeImageModal(event)">&times;</span>
     <img src="" alt="Imagen ampliada" class="modal-image" onclick="event.stopPropagation()">
 </div>
+
+<!-- Clicks en whatsapp boton -->
+<script>
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
+
+    function registerWhatsappClick(profileId) {
+        fetch("{% url 'register_whatsapp_click' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": getCSRFToken(),
+            },
+            body: new URLSearchParams({
+                profile_id: profileId
+            })
+        }).then(response => response.json())
+          .then(data => {
+              if (!data.success) {
+                  console.error("Error registrando clic:", data.error);
+              }
+          });
+    }
+</script>
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

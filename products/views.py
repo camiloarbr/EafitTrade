@@ -8,6 +8,9 @@ from .forms import ProductForm, CommentForm, CustomUserCreationForm
 from django.views.decorators.http import require_POST
 from django.conf import settings
 import urllib.parse
+from django.http import JsonResponse
+from seller_profiles.models import SellerProfile, ProfileClick
+from django.contrib.auth.models import User
 
 def home(request):
     products = Product.objects.all()
@@ -217,5 +220,20 @@ def product_detail(request, product_id):
         'seller_profile': seller_profile,
         'whatsapp_link': whatsapp_link
     })
+
+def register_whatsapp_click(request):
+    if request.method == 'POST':
+        profile_id = request.POST.get('profile_id')
+        try:
+            profile = SellerProfile.objects.get(id=profile_id)
+            ProfileClick.objects.create(
+                profile=profile,
+                user=request.user if request.user.is_authenticated else None
+            )
+            return JsonResponse({'success': True})
+        except SellerProfile.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Perfil no encontrado'}, status=404)
+    return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=405)
+
 
 # Create your views here.

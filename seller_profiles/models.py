@@ -4,6 +4,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 import re
 import urllib.parse
+from django.utils.timezone import now
+
 
 class SellerProfile(models.Model):
     user = models.OneToOneField(
@@ -122,3 +124,21 @@ class Schedule(models.Model):
         if not self.is_available:
             return f"{self.day}: No disponible"
         return f"{self.day}: {self.start_time.strftime('%H:%M')} - {self.end_time.strftime('%H:%M')}"
+    
+
+class ProfileClick(models.Model):
+    profile = models.ForeignKey(
+        SellerProfile,
+        on_delete=models.CASCADE,
+        related_name='clicks'
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,  # Puede ser anónimo
+        blank=True
+    )
+    timestamp = models.DateTimeField(default=now)
+
+    def __str__(self):
+        return f"Clic en {self.profile.store_name} - {self.timestamp.strftime('%Y-%m-%d %H:%M:%S')}"

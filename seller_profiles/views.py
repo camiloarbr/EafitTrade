@@ -7,6 +7,7 @@ from django.db import transaction
 from django.contrib.auth.models import User
 from django.db.models import Q
 from products.models import Product
+from .models import SellerProfile, ProfileClick
 
 # Create your views here.
 
@@ -87,20 +88,35 @@ def edit_profile(request):
 def has_seller_profile(user):
     return hasattr(user, 'seller_profile')
 
+from seller_profiles.models import SellerProfile
+
 def public_profile(request, user_id):
     seller = get_object_or_404(User, id=user_id)
     try:
         profile = seller.seller_profile
-        # Si el usuario es el dueño del perfil, redirigir a la vista privada
+
+        # Redirigir si es su propio perfil
         if request.user == seller:
             return redirect('view_profile')
-        return render(request, 'seller_profiles/public_profile.html', {'profile': profile})
+
+        # Obtener cantidad de clics
+        total_clicks = profile.clicks.count()
+
+        # Puedes también guardar un nuevo clic si quieres rastrear vistas de perfil
+        ProfileClick.objects.create(profile=profile, user=request.user if request.user.is_authenticated else None)
+
+        return render(request, 'seller_profiles/public_profile.html', {
+            'profile': profile,
+            'total_clicks': total_clicks
+        })
+
     except SellerProfile.DoesNotExist:
         if request.user == seller:
             messages.warning(request, 'Necesitas crear tu perfil de vendedor primero.')
             return redirect('create_profile')
         messages.error(request, 'Este vendedor aún no ha creado su perfil.')
         return redirect('home')
+
 
 # Actualizar la vista del producto para incluir el perfil del vendedor
 @login_required

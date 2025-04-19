@@ -28,6 +28,7 @@ urlpatterns = [
     path('add-product/', products_views.add_product, name='add_product'),
     path('edit-product/<int:product_id>/', products_views.edit_product, name='edit_product'),
     path('delete-product/<int:product_id>/', products_views.delete_product, name='delete_product'),
+    path('registrar-click-whatsapp/', products_views.register_whatsapp_click, name='register_whatsapp_click'),
     
     # URLs para la autenticación
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
@@ -67,6 +68,8 @@ urlpatterns = [
     path('profile/edit/', profile_views.edit_profile, name='edit_profile'),
     path('seller/<int:user_id>/', profile_views.public_profile, name='public_profile'),
     path('sellers/', profile_views.seller_list, name='seller_list'),
+
+
 ]
 
 if settings.DEBUG:
