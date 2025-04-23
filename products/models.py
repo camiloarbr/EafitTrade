@@ -181,3 +181,38 @@ class Favorite(models.Model):
 
     def __str__(self):
         return f'{self.user.username} ♥ {self.product.name}'
+
+class ChatQuery(models.Model):
+    query = models.TextField(
+        verbose_name='Consulta',
+        help_text='Consulta en lenguaje natural del usuario'
+    )
+    processed_keywords = models.TextField(
+        verbose_name='Palabras clave procesadas',
+        help_text='Palabras clave extraídas por Gemini API',
+        blank=True,
+        null=True
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='chat_queries'
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Fecha de consulta'
+    )
+    success = models.BooleanField(
+        default=True,
+        verbose_name='Procesamiento exitoso'
+    )
+
+    class Meta:
+        verbose_name = 'Consulta de chatbot'
+        verbose_name_plural = 'Consultas de chatbot'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Consulta: {self.query[:50]}..."

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
-from .models import Product, Comment, Favorite
+from .models import Product, Comment, Favorite, ChatQuery
 from seller_profiles.models import SellerProfile
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -11,6 +11,8 @@ import urllib.parse
 from django.http import JsonResponse
 from seller_profiles.models import SellerProfile, ProfileClick
 from django.contrib.auth.models import User
+from .gemini_processor import GeminiProcessor
+import json
 
 def home(request):
     products = Product.objects.all()
@@ -235,5 +237,88 @@ def register_whatsapp_click(request):
             return JsonResponse({'success': False, 'error': 'Perfil no encontrado'}, status=404)
     return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=405)
 
+@require_POST
+def chat_search(request):
+    """
+    Process a natural language query using Gemini API and return search results
+    """
+    # Check if user is authenticated
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            'success': False, 
+            'error': 'Debes iniciar sesión para usar el chatbot'
+        }, status=403)
+        
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        query = request.POST.get('query', '').strip()
+        
+        if not query:
+            return JsonResponse({'success': False, 'error': 'La consulta no puede estar vacía'})
+        
+        # Process the query using the Gemini API
+        processor = GeminiProcessor()
+        result = processor.process_query(query)
+        
+        # Store the query in the database
+        chat_query = ChatQuery(
+            query=query,
+            user=request.user,
+            success=result.get('success', False)
+        )
+        
+        if result.get('success', False):
+            chat_query.processed_keywords = result.get('keywords', '')
+            chat_query.save()
+            
+            # Split the keywords and filter products
+            keywords = [k.strip() for k in result.get('keywords', '').split(',')]
+            products = Product.objects.all()
+            
+            # Filter products by keywords
+            from django.db.models import Q
+            query_filters = Q()
+            
+            for keyword in keywords:
+                if keyword:
+                    query_filters |= Q(name__icontains=keyword)
+                    query_filters |= Q(description__icontains=keyword)
+                    query_filters |= Q(category__icontains=keyword)
+                    
+                    # If the category is "Comida", also search in food_type
+                    if keyword.lower() in [ft[0].lower() for ft in Product.FOOD_TYPE_CHOICES]:
+                        query_filters |= Q(food_type__icontains=keyword)
+            
+            products = products.filter(query_filters).distinct().order_by('-published_at')
+            
+            # Serialize the products for JSON response
+            products_data = []
+            for product in products:
+                product_data = {
+                    'id': product.id,
+                    'name': product.name,
+                    'price': float(product.price),
+                    'category': product.get_category_display(),
+                    'image_url': product.image.url if product.image else None,
+                    'available': product.available,
+                    'description': product.description[:100] + '...' if len(product.description) > 100 else product.description,
+                    'detail_url': f'/product/{product.id}/'
+                }
+                products_data.append(product_data)
+            
+            return JsonResponse({
+                'success': True,
+                'keywords': result.get('keywords', ''),
+                'products': products_data,
+                'count': len(products_data)
+            })
+        else:
+            # Save the failed query anyway for analysis
+            chat_query.save()
+            return JsonResponse({
+                'success': False,
+                'error': result.get('error', 'Error al procesar la consulta')
+            })
+    
+    return JsonResponse({'success': False, 'error': 'Petición inválida'})
 
 # Create your views here.

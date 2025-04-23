@@ -29,6 +29,7 @@ urlpatterns = [
     path('edit-product/<int:product_id>/', products_views.edit_product, name='edit_product'),
     path('delete-product/<int:product_id>/', products_views.delete_product, name='delete_product'),
     path('registrar-click-whatsapp/', products_views.register_whatsapp_click, name='register_whatsapp_click'),
+    path('chat-search/', products_views.chat_search, name='chat_search'),
     
     # URLs para la autenticación
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
