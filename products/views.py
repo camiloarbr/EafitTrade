@@ -178,6 +178,8 @@ def toggle_favorite(request, product_id):
 @login_required
 def favorites_list(request):
     favorites = Favorite.objects.filter(user=request.user)
+    if not favorites.exists():
+        messages.info(request, 'No tienes productos favoritos. Explora la tienda para agregar algunos.')
     return render(request, 'products/favorites.html', {
         'favorites': favorites
     })

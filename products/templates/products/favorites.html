@@ -250,6 +250,7 @@
 
 {% block content %}
 <div class="favorites-container">
+    {% csrf_token %}
     <div class="favorites-header">
         <h1>Mis Favoritos</h1>
         <p>Aquí encontrarás todos los productos que has marcado como favoritos</p>
@@ -261,7 +262,7 @@
             {% for favorite in favorites %}
             <div class="product-card {% if not favorite.product.available %}product-unavailable{% endif %}" id="favorite-{{ favorite.product.id }}">
                 <button 
-                    onclick="toggleFavorite(event, {{ favorite.product.id }})"
+                    onclick="toggleFavorite(event, '{{ favorite.product.id }}')"
                     class="favorite-btn" 
                     title="Eliminar de favoritos"
                 >
@@ -319,6 +320,9 @@ function toggleFavorite(event, productId) {
     event.preventDefault();
     event.stopPropagation();
     
+    // Convertir a número si viene como cadena
+    productId = parseInt(productId);
+    
     const productCard = document.getElementById(`favorite-${productId}`);
     
     // Añadir animación de salida
@@ -330,7 +334,7 @@ function toggleFavorite(event, productId) {
         method: 'POST',
         headers: {
             'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-            'Content-Type': 'application/json'
+            'X-Requested-With': 'XMLHttpRequest'
         },
         mode: 'same-origin'
     })
