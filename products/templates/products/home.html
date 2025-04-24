@@ -12,6 +12,8 @@
         box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         max-width: 280px;
         margin: 0 auto;
+        display: flex;
+        flex-direction: column;
     }
     
     .product-card:hover {
@@ -120,8 +122,8 @@
     
     /* Ajusta el espaciado entre las tarjetas */
     .row.g-4 {
-        --bs-gutter-x: 1rem;
-        --bs-gutter-y: 1rem;
+        --bs-gutter-x: 1.5rem;
+        --bs-gutter-y: 1.5rem;
     }
     
     /* Ajustes responsivos actualizados */
@@ -754,16 +756,81 @@
             padding: 0.4rem 0.8rem;
         }
     }
+
+    /* Aumentar espaciado vertical entre secciones */
+    .section-spacing {
+        margin-bottom: 3rem;
+    }
+
+    /* Estilos para slogan */
+    .welcome-slogan {
+        color: #495057;
+        font-size: 1.15rem;
+        font-style: italic;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Estilo para el botón de chatbot */
+    .chatbot-btn {
+        width: 100%;
+        padding: 0.8rem;
+        border-radius: var(--button-radius);
+        font-weight: 500;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .chatbot-container {
+        margin-top: 2.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    /* Ajustes para tarjetas uniformes */
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+    }
+
+    .product-card .card-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-card .product-actions {
+        margin-top: auto;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <!-- Sección de bienvenida -->
-<section class="welcome-section py-5">
+<section class="welcome-section py-5 section-spacing">
     <div class="container">
         <div class="row align-items-center">
-            <div class="col-lg-6">
+            <div class="col-12">
                 <h1 class="display-4 fw-bold mb-3">¡Bienvenido a EAFIT TRADE!</h1>
+                <p class="welcome-slogan">Tus productos favoritos más cerca que tu próxima clase.</p>
                 <p class="lead mb-4">Tu mercado universitario en línea donde puedes comprar y vender productos dentro de la comunidad EAFIT. Encuentra todo lo que necesitas, desde comida hasta tecnología.</p>
                 {% if not user.is_authenticated %}
                     <div class="welcome-actions">
@@ -779,18 +846,13 @@
                     </div>
                 {% endif %}
             </div>
-            <div class="col-lg-6 d-none d-lg-block">
-                <div class="welcome-illustration">
-                    <img src="{{ MEDIA_URL }}Logo/EAFIT TRADE logo with a market cart, minimalist style, blue background, white letters.png" alt="EAFIT Trade Logo" class="img-fluid">
-                </div>
-            </div>
         </div>
     </div>
 </section>
 
 <div class="container py-4">
     <!-- Barra de búsqueda mejorada -->
-    <div class="search-container mb-4">
+    <div class="search-container mb-5">
         <form method="get" id="searchForm">
             <div class="search-bar-wrapper">
                 <div class="row g-3 align-items-center justify-content-center">
@@ -893,21 +955,27 @@
 
     <!-- Chatbot de búsqueda inteligente - solo para usuarios autenticados -->
     {% if user.is_authenticated %}
-    <div class="chatbot-container mb-4">
+    <div class="chatbot-container section-spacing">
         <div class="row">
             <div class="col-md-12">
                 <div class="card chatbot-card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <div>
-                            <i class="fas fa-robot chatbot-icon me-2"></i>
-                            <span class="chatbot-title">Búsqueda Inteligente</span>
-                        </div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="chatToggle">
-                            <label class="form-check-label" for="chatToggle">Activar chatbot</label>
+                    <div class="card-header d-flex justify-content-center align-items-center">
+                        <div id="chatbotControls">
+                            <button id="openChatbotBtn" class="btn btn-primary">
+                                <i class="fas fa-robot me-2"></i>Activar Búsqueda Inteligente
+                            </button>
                         </div>
                     </div>
                     <div class="card-body chatbot-body" id="chatbotInterface" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <i class="fas fa-robot chatbot-icon me-2"></i>
+                                <span class="chatbot-title">Búsqueda Inteligente</span>
+                            </div>
+                            <button id="closeChatbotBtn" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i>Cerrar
+                            </button>
+                        </div>
                         <div class="chatbot-prompt mb-3">
                             <p>Busca productos usando lenguaje natural. Puedes preguntar cosas como:</p>
                             <div class="chatbot-examples">
@@ -974,7 +1042,7 @@
     {% endif %}
 
     <!-- Resultados de la búsqueda -->
-    <div class="results-section mb-4">
+    <div class="results-section mb-4 section-spacing">
         <div class="d-flex justify-content-between align-items-center">
             <h2 class="h4 mb-0">
                 {% if search_query or selected_category %}
@@ -1006,7 +1074,7 @@
                             <h5 class="card-title text-dark mb-0">{{ product.name }}</h5>
                             {% if user.is_authenticated %}
                             <button 
-                                onclick="toggleFavorite(event, {{ product.id }})"
+                                onclick="toggleFavorite(event, {{ product.id }});"
                                 class="favorite-btn" 
                                 id="favorite-btn-{{ product.id }}"
                                 title="Agregar a favoritos"
@@ -1083,7 +1151,8 @@
         }
 
         // Chatbot functionality
-        const chatToggle = document.getElementById('chatToggle');
+        const openChatbotBtn = document.getElementById('openChatbotBtn');
+        const closeChatbotBtn = document.getElementById('closeChatbotBtn');
         const chatbotInterface = document.getElementById('chatbotInterface');
         const chatForm = document.getElementById('chatForm');
         const chatInput = document.getElementById('chatInput');
@@ -1095,14 +1164,22 @@
         const chatNoResults = document.getElementById('chatNoResults');
         const chatError = document.getElementById('chatError');
         const errorMessage = document.getElementById('errorMessage');
+        const chatbotControls = document.getElementById('chatbotControls');
         
-        // Toggle chatbot interface
-        chatToggle.addEventListener('change', function() {
-            if (this.checked) {
-                chatbotInterface.style.display = 'block';
-            } else {
-                chatbotInterface.style.display = 'none';
-            }
+        // Mostrar chatbot al hacer clic en el botón
+        openChatbotBtn.addEventListener('click', function() {
+            chatbotInterface.style.display = 'block';
+            chatbotControls.style.display = 'none';
+        });
+        
+        // Cerrar chatbot
+        closeChatbotBtn.addEventListener('click', function() {
+            chatbotInterface.style.display = 'none';
+            chatbotControls.style.display = 'block';
+            // Limpiar cualquier resultado previo
+            chatResults.style.display = 'none';
+            chatError.style.display = 'none';
+            chatInput.value = '';
         });
         
         // Fill chat input with example text
