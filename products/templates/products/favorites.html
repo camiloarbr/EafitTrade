@@ -5,443 +5,313 @@
 
 {% block extra_styles %}
 <style>
-    .favorites-section {
-        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-        padding: 3rem 0;
-        min-height: calc(100vh - 76px);
-        display: flex;
-        flex-direction: column;
+    /* Estilos para la sección favoritos */
+    body {
+        background-color: #f8f9fa;
     }
     
     .favorites-container {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 0 1rem;
-        flex: 1;
+        padding: 1rem;
     }
     
     .favorites-header {
-        text-align: center;
-        margin-bottom: 3rem;
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         padding: 2rem;
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    }
-    
-    .favorites-icon {
-        color: var(--primary-color);
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        animation: pulse 2s infinite;
-    }
-    
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.1); }
-        100% { transform: scale(1); }
+        margin-bottom: 2rem;
+        text-align: center;
     }
     
     .favorites-header h1 {
+        color: #0f4c81;
+        font-size: 2.5rem;
         font-weight: 700;
         margin-bottom: 0.5rem;
-        background: linear-gradient(45deg, var(--primary-color), #1565C0);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
     }
     
     .favorites-header p {
-        color: var(--secondary-color);
-        font-size: 1.1rem;
-        max-width: 600px;
-        margin: 0 auto;
+        color: #6c757d;
+        font-size: 1rem;
     }
-
-    /* Estilos de tarjeta de producto mejorados */
+    
+    /* Estilo de tarjetas de productos */
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1.5rem;
+    }
+    
     .product-card {
-        height: 100%;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border: none;
-        border-radius: 20px;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        background-color: white;
+        border-radius: 12px;
         overflow: hidden;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         position: relative;
-        background: white;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        cursor: pointer;
     }
     
     .product-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
     
-    .product-image-wrapper {
+    .product-img-container {
         position: relative;
-        padding-top: 75%;
+        width: 100%;
+        padding-top: 75%; /* 4:3 aspect ratio */
         overflow: hidden;
     }
     
-    .product-image {
+    .product-img {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 0.3s ease;
-    }
-    
-    .product-card:hover .product-image {
-        transform: scale(1.1);
-    }
-    
-    .card-body {
-        padding: 1.5rem;
-        position: relative;
-    }
-    
-    .card-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        line-height: 1.4;
-        margin-bottom: 1rem;
-        color: #2c3e50;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
     }
     
     .category-badge {
         position: absolute;
-        top: 1rem;
-        right: 1rem;
-        background: rgba(255,255,255,0.95);
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: var(--primary-color);
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        backdrop-filter: blur(5px);
-        z-index: 2;
+        top: 10px;
+        right: 10px;
+        background: white;
+        color: #495057;
+        font-size: 0.75rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 30px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        z-index: 1;
     }
     
-    .price {
-        font-size: 1.25rem;
+    .product-body {
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+    
+    .product-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #212529;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.3;
+    }
+    
+    .price-container {
+        margin-top: auto;
+        padding-top: 0.5rem;
+    }
+    
+    .product-price {
+        font-size: 1.1rem;
         font-weight: 700;
-        color: var(--primary-color);
-        margin: 0;
+        color: #212529;
+        display: flex;
+        align-items: center;
+    }
+    
+    .availability-badge {
+        margin-left: 0.5rem;
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .availability-badge i {
+        margin-right: 0.25rem;
     }
     
     .favorite-btn {
         position: absolute;
-        top: 1rem;
-        left: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: white;
+        top: 10px;
+        left: 10px;
+        background-color: white;
+        color: #dc3545;
         border: none;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.3s ease;
-        z-index: 2;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        z-index: 1;
+        cursor: pointer;
     }
     
     .favorite-btn:hover {
-        transform: scale(1.1);
-        box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        background-color: #f8f9fa;
     }
     
-    .favorite-btn i {
-        font-size: 1.2rem;
-        color: #dc3545;
+    /* Estado de producto no disponible */
+    .product-unavailable .product-img {
+        filter: grayscale(0.7);
     }
     
-    .availability-badge {
-        font-size: 0.85rem;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+    .product-unavailable .product-body {
+        opacity: 0.8;
     }
     
-    .star-rating {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-top: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid rgba(0,0,0,0.05);
-    }
-    
-    .rating-value {
-        font-size: 1rem;
-        font-weight: 700;
-        color: #ffc107;
-    }
-    
-    .rating-count {
-        color: var(--secondary-color);
-        font-size: 0.85rem;
-    }
-
-    /* Estado no disponible */
-    .product-unavailable {
-        opacity: 0.75;
-    }
-    
-    .product-unavailable .product-image {
-        filter: grayscale(50%);
-    }
-
-    /* Simplificación del estado vacío */
-    .empty-favorites {
+    /* Estilos para el estado vacío */
+    .empty-state {
         text-align: center;
         padding: 3rem 2rem;
-        background: transparent;
-        box-shadow: none;
-        margin: auto;
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        margin: 3rem auto;
         max-width: 500px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
     }
     
-    .empty-favorites i {
-        font-size: 4rem;
+    .empty-state i {
+        font-size: 3rem;
         color: #dee2e6;
         margin-bottom: 1.5rem;
     }
     
-    .empty-favorites h3 {
+    .empty-state h3 {
         font-size: 1.5rem;
-        font-weight: 600;
-        margin-bottom: 0.75rem;
-        color: #2c3e50;
+        color: #343a40;
+        margin-bottom: 1rem;
     }
     
-    .empty-favorites p {
-        font-size: 1rem;
+    .empty-state p {
         color: #6c757d;
         margin-bottom: 1.5rem;
-        max-width: 300px;
     }
     
-    .empty-favorites .btn {
-        padding: 0.75rem 1.5rem;
-        font-size: 1rem;
-        border-radius: 10px;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .empty-favorites .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15);
-    }
-
-    /* Animación de entrada para las tarjetas */
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    .product-card {
-        animation: fadeInUp 0.6s ease backwards;
-    }
-    
-    .row > div:nth-child(1) .product-card { animation-delay: 0.1s; }
-    .row > div:nth-child(2) .product-card { animation-delay: 0.2s; }
-    .row > div:nth-child(3) .product-card { animation-delay: 0.3s; }
-    .row > div:nth-child(4) .product-card { animation-delay: 0.4s; }
-    .row > div:nth-child(5) .product-card { animation-delay: 0.5s; }
-
-    /* Ajustes responsivos */
+    /* Responsive */
     @media (max-width: 768px) {
-        .favorites-section {
-            padding: 2rem 0;
+        .products-grid {
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1rem;
         }
         
-        .favorites-header {
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        
-        .card-body {
-            padding: 0.5rem;
-        }
-        
-        .category-badge {
-            padding: 0.15rem 0.4rem;
-            font-size: 0.65rem;
-        }
-        
-        .card-title {
-            font-size: 0.8rem;
-            line-height: 1.2;
-            margin-bottom: 0.25rem;
-        }
-        
-        .price {
-            font-size: 0.9rem;
-        }
-        
-        .favorite-btn {
-            width: 24px;
-            height: 24px;
-        }
-        
-        .favorite-btn i {
-            font-size: 0.9rem;
-        }
-        
-        .star-rating {
-            font-size: 0.7rem;
-        }
-        
-        .rating-value {
-            font-size: 0.7rem;
-        }
-        
-        .rating-count {
-            font-size: 0.6rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .product-image-wrapper {
-            padding-top: 65%;
-        }
-        
-        .card-body {
-            padding: 0.4rem;
-        }
-        
-        .card-title {
-            font-size: 0.75rem;
-        }
-        
-        .price {
+        .product-title {
             font-size: 0.85rem;
         }
         
-        .category-badge {
-            font-size: 0.6rem;
-            padding: 0.1rem 0.3rem;
+        .product-price {
+            font-size: 1rem;
+        }
+        
+        .favorites-header h1 {
+            font-size: 2rem;
+        }
+        
+        .favorites-header p {
+            font-size: 0.9rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .products-grid {
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 0.75rem;
+        }
+        
+        .product-body {
+            padding: 0.75rem;
+        }
+        
+        .product-title {
+            font-size: 0.8rem;
+            -webkit-line-clamp: 1;
+        }
+        
+        .product-price {
+            font-size: 0.9rem;
         }
         
         .favorite-btn {
-            width: 22px;
-            height: 22px;
+            width: 28px;
+            height: 28px;
         }
         
         .favorite-btn i {
             font-size: 0.8rem;
-        }
-        
-        .star-rating {
-            font-size: 0.65rem;
-        }
-        
-        .rating-value {
-            font-size: 0.65rem;
-        }
-        
-        .rating-count {
-            font-size: 0.55rem;
         }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<section class="favorites-section">
-    <div class="favorites-container">
-        <div class="favorites-header">
-            <i class="fas fa-heart favorites-icon"></i>
-            <h1 class="display-4">Mis Favoritos</h1>
-            <p>Aquí encontrarás todos los productos que has marcado como favoritos</p>
-        </div>
-
-        <div id="favorites-content">
-            {% if favorites %}
-            <div class="row g-2">
-                {% for favorite in favorites %}
-                <div class="col-6 col-sm-6 col-lg-4 col-xl-3" id="favorite-{{ favorite.product.id }}">
-                    <a href="{% url 'product_detail' favorite.product.id %}" class="text-decoration-none">
-                        <div class="card product-card {% if not favorite.product.available %}product-unavailable{% endif %}">
-                            <div class="product-image-wrapper">
-                                {% if favorite.product.image %}
-                                <img src="{{ favorite.product.image.url }}" 
-                                     class="product-image" 
-                                     alt="{{ favorite.product.name }}">
-                                {% endif %}
-                                <span class="category-badge">
-                                    <i class="fas fa-tag me-2"></i>{{ favorite.product.get_category_display }}
-                                </span>
-                                <button 
-                                    onclick="toggleFavorite(event, {{ favorite.product.id }})"
-                                    class="favorite-btn"
-                                    title="Eliminar de favoritos"
-                                >
-                                    <i class="fas fa-heart"></i>
-                                </button>
-                            </div>
-                            
-                            <div class="card-body">
-                                <h5 class="card-title">{{ favorite.product.name }}</h5>
-
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <p class="price">$ {{ favorite.product.price|floatformat:0|intcomma }}</p>
-                                    <span class="availability-badge {% if favorite.product.available %}text-success{% else %}text-danger{% endif %}">
-                                        {% if favorite.product.available %}
-                                            <i class="fas fa-check-circle"></i>Disponible
-                                        {% else %}
-                                            <i class="fas fa-times-circle"></i>No disponible
-                                        {% endif %}
-                                    </span>
-                                </div>
-
-                                {% if favorite.product.total_ratings > 0 %}
-                                <div class="star-rating">
-                                    <div class="d-flex align-items-center">
-                                        <span class="rating-value">{{ favorite.product.average_rating }}</span>
-                                        <i class="fas fa-star text-warning ms-1"></i>
-                                    </div>
-                                    <span class="rating-count">{{ favorite.product.total_ratings }} valoraciones</span>
-                                </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="empty-favorites">
-                <i class="far fa-heart"></i>
-                <h3>No tienes favoritos</h3>
-                <p>Encuentra productos que te gusten y agrégalos a tus favoritos</p>
-                <a href="{% url 'home' %}" class="btn btn-primary">
-                    Explorar productos
-                </a>
-            </div>
-            {% endif %}
-        </div>
+<div class="favorites-container">
+    <div class="favorites-header">
+        <h1>Mis Favoritos</h1>
+        <p>Aquí encontrarás todos los productos que has marcado como favoritos</p>
     </div>
-</section>
+
+    <div id="favorites-content">
+        {% if favorites %}
+        <div class="products-grid">
+            {% for favorite in favorites %}
+            <div class="product-card {% if not favorite.product.available %}product-unavailable{% endif %}" id="favorite-{{ favorite.product.id }}">
+                <button 
+                    onclick="toggleFavorite(event, {{ favorite.product.id }})"
+                    class="favorite-btn" 
+                    title="Eliminar de favoritos"
+                >
+                    <i class="fas fa-heart"></i>
+                </button>
+                
+                <div class="product-img-container">
+                    {% if favorite.product.image %}
+                    <img src="{{ favorite.product.image.url }}" class="product-img" alt="{{ favorite.product.name }}">
+                    {% else %}
+                    <div class="product-img default-img"></div>
+                    {% endif %}
+                    <span class="category-badge">{{ favorite.product.get_category_display }}</span>
+                </div>
+                
+                <div class="product-body">
+                    <a href="{% url 'product_detail' favorite.product.id %}" class="text-decoration-none">
+                        <h3 class="product-title">{{ favorite.product.name }}</h3>
+                    </a>
+                    
+                    <div class="price-container">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <span class="product-price">$ {{ favorite.product.price|floatformat:0|intcomma }}</span>
+                            {% if favorite.product.available %}
+                            <span class="availability-badge text-success">
+                                <i class="fas fa-check-circle"></i>Disponible
+                            </span>
+                            {% else %}
+                            <span class="availability-badge text-danger">
+                                <i class="fas fa-times-circle"></i>No disponible
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="far fa-heart"></i>
+            <h3>No tienes favoritos</h3>
+            <p>Encuentra productos que te gusten y agrégalos a tus favoritos</p>
+            <a href="{% url 'home' %}" class="btn btn-primary">
+                <i class="fas fa-search me-2"></i>Explorar productos
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
 
 {% block extra_scripts %}
 <script>
@@ -474,7 +344,7 @@ function toggleFavorite(event, productId) {
                 if (remainingFavorites.length === 0) {
                     const favoritesContent = document.getElementById('favorites-content');
                     const emptyState = document.createElement('div');
-                    emptyState.className = 'empty-favorites';
+                    emptyState.className = 'empty-state';
                     emptyState.style.opacity = '0';
                     emptyState.style.transform = 'translateY(20px)';
                     emptyState.innerHTML = `
@@ -482,7 +352,7 @@ function toggleFavorite(event, productId) {
                         <h3>No tienes favoritos</h3>
                         <p>Encuentra productos que te gusten y agrégalos a tus favoritos</p>
                         <a href="{% url 'home' %}" class="btn btn-primary">
-                            Explorar productos
+                            <i class="fas fa-search me-2"></i>Explorar productos
                         </a>
                     `;
                     
@@ -503,6 +373,22 @@ function toggleFavorite(event, productId) {
         productCard.style.opacity = '';
     });
 }
+
+// Hacer que las tarjetas sean clickeables (excepto los botones)
+document.addEventListener('DOMContentLoaded', function() {
+    const productCards = document.querySelectorAll('.product-card');
+    
+    productCards.forEach(card => {
+        card.addEventListener('click', function(event) {
+            // Si el clic no fue en un botón o un enlace
+            if (!event.target.closest('button') && !event.target.closest('a')) {
+                // Obtener el enlace del detalle del producto de esta tarjeta
+                const detailLink = this.querySelector('a').getAttribute('href');
+                window.location.href = detailLink;
+            }
+        });
+    });
+});
 </script>
 {% endblock %}
 {% endblock %} 
