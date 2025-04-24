@@ -64,7 +64,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {% for schedule in profile.schedules.all %}
+                                            {% for schedule in ordered_schedules %}
                                             <tr>
                                                 <td>{{ schedule.get_day_display }}</td>
                                                 <td>

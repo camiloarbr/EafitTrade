@@ -73,12 +73,13 @@ class SellerProfile(models.Model):
         return base_url
 
 class Schedule(models.Model):
+    # Usamos valores numéricos para los días para poder ordenarlos correctamente
     DAYS_OF_WEEK = [
-        ('Lunes', 'Lunes'),
-        ('Martes', 'Martes'),
-        ('Miércoles', 'Miércoles'),
-        ('Jueves', 'Jueves'),
-        ('Viernes', 'Viernes'),
+        (1, 'Lunes'),
+        (2, 'Martes'),
+        (3, 'Miércoles'),
+        (4, 'Jueves'),
+        (5, 'Viernes'),
     ]
 
     profile = models.ForeignKey(
@@ -86,8 +87,7 @@ class Schedule(models.Model):
         on_delete=models.CASCADE,
         related_name='schedules'
     )
-    day = models.CharField(
-        max_length=20,
+    day = models.IntegerField(
         choices=DAYS_OF_WEEK,
         verbose_name='Día'
     )
@@ -107,7 +107,7 @@ class Schedule(models.Model):
     )
 
     class Meta:
-        ordering = ['day']
+        ordering = ['day']  # Ahora day es un número, así que ordenará correctamente
         unique_together = ['profile', 'day']
 
     def clean(self):
@@ -121,9 +121,10 @@ class Schedule(models.Model):
             self.end_time = None
 
     def __str__(self):
+        day_name = self.get_day_display()
         if not self.is_available:
-            return f"{self.day}: No disponible"
-        return f"{self.day}: {self.start_time.strftime('%H:%M')} - {self.end_time.strftime('%H:%M')}"
+            return f"{day_name}: No disponible"
+        return f"{day_name}: {self.start_time.strftime('%H:%M')} - {self.end_time.strftime('%H:%M')}"
     
 
 class ProfileClick(models.Model):

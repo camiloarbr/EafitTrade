@@ -16,7 +16,11 @@ from django.db.models import Count
 def view_profile(request):
     try:
         profile = request.user.seller_profile
-        return render(request, 'seller_profiles/view_profile.html', {'profile': profile})
+        # Ordenar los horarios en el orden correcto de los días de la semana
+        day_order = {'Lunes': 1, 'Martes': 2, 'Miércoles': 3, 'Jueves': 4, 'Viernes': 5}
+        schedules = profile.schedules.all()
+        ordered_schedules = sorted(schedules, key=lambda x: day_order.get(x.day, 99))
+        return render(request, 'seller_profiles/view_profile.html', {'profile': profile, 'ordered_schedules': ordered_schedules})
     except SellerProfile.DoesNotExist:
         messages.warning(request, 'Necesitas crear tu perfil de vendedor primero.')
         return redirect('create_profile')
@@ -100,6 +104,11 @@ def public_profile(request, user_id):
         if request.user == seller:
             return redirect('view_profile')
 
+        # Ordenar los horarios en el orden correcto de los días de la semana
+        day_order = {'Lunes': 1, 'Martes': 2, 'Miércoles': 3, 'Jueves': 4, 'Viernes': 5}
+        schedules = profile.schedules.all()
+        ordered_schedules = sorted(schedules, key=lambda x: day_order.get(x.day, 99))
+
         # Obtener cantidad de clics
         total_clicks = profile.clicks.count()
 
@@ -108,7 +117,8 @@ def public_profile(request, user_id):
 
         return render(request, 'seller_profiles/public_profile.html', {
             'profile': profile,
-            'total_clicks': total_clicks
+            'total_clicks': total_clicks,
+            'ordered_schedules': ordered_schedules
         })
 
     except SellerProfile.DoesNotExist:
