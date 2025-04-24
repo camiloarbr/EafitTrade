@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from products.models import Product
 from .models import SellerProfile, ProfileClick
+from django.db.models import Count
 
 # Create your views here.
 
@@ -149,6 +150,11 @@ def seller_list(request):
             user__products__category__in=selected_categories
         ).distinct()
     
+    # Obtener ranking de vendedores más populares
+    top_sellers = SellerProfile.objects.annotate(
+        total_clicks=Count('clicks')
+    ).order_by('-total_clicks')[:3]  # Top 3 vendedores
+    
     # Preparar los datos de los vendedores con sus categorías
     sellers_data = []
     for seller in sellers:
@@ -170,6 +176,7 @@ def seller_list(request):
         'all_categories': all_categories,
         'search_query': search_query,
         'selected_categories': selected_categories,
+        'top_sellers': top_sellers
     }
     
     return render(request, 'seller_profiles/seller_list.html', context)

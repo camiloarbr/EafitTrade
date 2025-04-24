@@ -10,6 +10,31 @@
         <p class="text-center text-muted mb-0">Descubre la variedad de tiendas y productos disponibles en EAFIT Trade</p>
     </div>
     
+    <!-- Ranking de vendedores más populares -->
+    <div class="ranking-section mb-4">
+        <h3 class="section-title">
+            <i class="fas fa-trophy me-2"></i>Top 3 Vendedores Más Populares
+        </h3>
+        <div class="ranking-list">
+            {% for seller in top_sellers %}
+                <a href="{% url 'public_profile' seller.user.id %}" class="text-decoration-none">
+                    <div class="ranking-item">
+                        <div class="ranking-position">
+                            {{ forloop.counter }}º
+                        </div>
+                        <div class="ranking-info">
+                            <div class="ranking-name">{{ seller.store_name }}</div>
+                            <div class="ranking-views">
+                                <i class="fas fa-eye me-1"></i>
+                                {{ seller.clicks.count }} visitas
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    
     <!-- Barra de búsqueda mejorada -->
     <div class="search-container mb-4">
         <form method="get" id="searchForm">
@@ -352,6 +377,90 @@
         .seller-content {
             padding: 1.25rem;
         }
+    }
+
+    /* Estilos para el ranking */
+    .ranking-section {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        box-shadow: var(--card-shadow);
+    }
+
+    .ranking-list {
+        margin-top: 1rem;
+    }
+
+    .ranking-list a {
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .ranking-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem;
+        border-radius: var(--border-radius);
+        background: #f8f9fa;
+        transition: all 0.3s ease;
+    }
+
+    .ranking-item:hover {
+        background: #e9ecef;
+        transform: translateX(5px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .ranking-position {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        font-weight: bold;
+        margin-right: 1rem;
+        font-size: 1.1rem;
+        transition: transform 0.3s ease;
+    }
+
+    .ranking-item:hover .ranking-position {
+        transform: scale(1.1);
+    }
+
+    .ranking-info {
+        flex: 1;
+    }
+
+    .ranking-name {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.25rem;
+        transition: color 0.3s ease;
+    }
+
+    .ranking-item:hover .ranking-name {
+        color: var(--primary-color);
+    }
+
+    .ranking-views {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    /* Estilos para los primeros puestos */
+    .ranking-item:nth-child(1) .ranking-position {
+        background: #1a4b8c;  /* Azul oscuro para el primer lugar */
+    }
+
+    .ranking-item:nth-child(2) .ranking-position {
+        background: #2d6bbd;  /* Azul medio para el segundo lugar */
+    }
+
+    .ranking-item:nth-child(3) .ranking-position {
+        background: #4d8fde;  /* Azul claro para el tercer lugar */
     }
 </style>
 
