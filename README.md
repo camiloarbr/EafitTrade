@@ -1,7 +1,17 @@
 # Eafit Trade 
 
-## Descripción del Problema
+## 📋 Descripción del Proyecto
 Actualmente, los estudiantes y personal de EAFIT carecen de una fuente confiable y organizada de información sobre los vendedores en el campus. Esto dificulta encontrar opciones de compra, comparar precios y acceder a productos específicos. Nuestra aplicación resuelve esto proporcionando un catálogo digital con información detallada de los vendedores, mejorando la conexión entre compradores y vendedores.
+
+## 🛠️ Tecnologías Utilizadas
+
+- **Backend:** Django 5.1.6
+- **Frontend:** HTML5, CSS3, JavaScript, Bootstrap
+- **Base de datos:** SQLite (desarrollo), PostgreSQL (recomendado para producción)
+- **Autenticación:** Sistema de autenticación de Django
+- **Manejo de imágenes:** Pillow
+- **Integración IA:** Google Gemini API para búsqueda inteligente
+- **Despliegue:** Gunicorn, Whitenoise
 
 ## 🚀 Instrucciones de Instalación y Ejecución
 
@@ -48,13 +58,56 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 4. Ejecutar el servidor de desarrollo
+### 4. Configurar variables de entorno
+Crear un archivo `.env` en el directorio raíz del proyecto con las siguientes variables:
+
+```
+GEMINI_API_KEY=tu_clave_de_api_google_gemini
+```
+
+### 5. Ejecutar migraciones de la base de datos
+
+```bash
+python manage.py migrate
+```
+
+### 6. Crear un superusuario (opcional)
+
+```bash
+python manage.py createsuperuser
+```
+
+### 7. Ejecutar el servidor de desarrollo
 
 ```bash
 python manage.py runserver
 ```
 
 La aplicación estará disponible en: http://127.0.0.1:8000/
+
+## 📂 Estructura del Proyecto
+
+```
+EafitTrade/
+├── eafit_trade/          # Configuración principal del proyecto
+│   ├── settings.py       # Configuración de Django
+│   ├── urls.py           # URLs principales
+│   └── ...
+├── products/             # Aplicación para gestión de productos
+│   ├── models.py         # Modelos de datos
+│   ├── views.py          # Lógica de vistas
+│   ├── templates/        # Plantillas HTML
+│   └── ...
+├── seller_profiles/      # Aplicación para gestión de perfiles de vendedores
+│   ├── models.py         # Modelos de datos
+│   ├── views.py          # Lógica de vistas
+│   ├── templates/        # Plantillas HTML
+│   └── ...
+├── media/                # Archivos subidos por usuarios
+├── staticfiles/          # Archivos estáticos recopilados
+├── requirements.txt      # Dependencias del proyecto
+└── manage.py             # Script de gestión de Django
+```
 
 ## 🔧 Solución de problemas comunes
 
@@ -73,4 +126,22 @@ Si recibes este error:
 Si recibes este error:
 1. Asegúrate de estar en el directorio correcto (debe ser el directorio `EafitTrade` que contiene el archivo `manage.py`)
 2. Usa `dir` o `ls` para verificar que `manage.py` existe en tu directorio actual
+
+## 👥 Contribuir al Proyecto
+
+1. Crea un fork del repositorio
+2. Crea una rama para tu funcionalidad (`git checkout -b feature/nueva-funcionalidad`)
+3. Realiza tus cambios y haz commits (`git commit -am 'Añade nueva funcionalidad'`)
+4. Sube tus cambios (`git push origin feature/nueva-funcionalidad`)
+5. Crea un Pull Request
+
+## 📜 Licencia
+
+Este proyecto está licenciado bajo la licencia MIT - ver el archivo LICENSE para más detalles.
+
+## 📞 Contacto
+
+Si tienes preguntas sobre el proyecto, puedes contactar a:
+- Email: info@eafittrade.com
+- GitHub: [camiloarbr](https://github.com/camiloarbr/EafitTrade)
 
