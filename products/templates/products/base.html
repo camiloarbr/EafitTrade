@@ -53,15 +53,21 @@
             transition: transform 0.3s ease;
         }
         
+        /* Mejoras para el logo */
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            padding: 0;
+        }
+        
+        .navbar-brand img {
+            max-height: 55px;
+            transition: all 0.3s ease;
+        }
+        
         /* Clase para ocultar el navbar al hacer scroll hacia abajo */
         .navbar-hidden {
             transform: translateY(-100%);
-        }
-        
-        .navbar-brand {
-            font-weight: 700;
-            color: white !important;
-            font-size: 1.3rem;
         }
         
         .nav-link {
@@ -244,7 +250,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="{% url 'home' %}">
-                <img src="/media/Logo/EafitTrade_Nuevo_logo.png" alt="EAFIT Trade Logo" height="40" class="d-inline-block align-middle">
+                <img src="/media/Logo/EafitTrade_Nuevo_logo.png" alt="EAFIT Trade Logo" height="55" class="d-inline-block align-middle">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
