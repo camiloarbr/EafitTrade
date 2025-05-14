@@ -163,7 +163,7 @@ def seller_list(request):
     # Obtener ranking de vendedores más populares
     top_sellers = SellerProfile.objects.annotate(
         total_clicks=Count('clicks')
-    ).order_by('-total_clicks')[:3]  # Top 3 vendedores
+    ).order_by('-total_clicks')[:5]  # Top 5 vendedores
     
     # Preparar los datos de los vendedores con sus categorías
     sellers_data = []

@@ -10,28 +10,39 @@
         <p class="text-center text-muted mb-0">Descubre la variedad de tiendas y productos disponibles en EAFIT Trade</p>
     </div>
     
-    <!-- Ranking de vendedores más populares -->
-    <div class="ranking-section mb-4">
-        <h3 class="section-title">
-            <i class="fas fa-trophy me-2"></i>Top 3 Vendedores Más Populares
-        </h3>
-        <div class="ranking-list">
-            {% for seller in top_sellers %}
-                <a href="{% url 'public_profile' seller.user.id %}" class="text-decoration-none">
-                    <div class="ranking-item">
-                        <div class="ranking-position">
-                            {{ forloop.counter }}º
-                        </div>
-                        <div class="ranking-info">
-                            <div class="ranking-name">{{ seller.store_name }}</div>
-                            <div class="ranking-views">
-                                <i class="fas fa-eye me-1"></i>
-                                {{ seller.clicks.count }} visitas
+    <!-- Vendedores destacados como carousel -->
+    <div class="featured-vendors-section mb-5">
+        <h2 class="section-title mb-4 text-center fw-bold">Vendedores Más Populares</h2>
+        <div class="vendors-carousel-container">
+            <div class="vendors-carousel">
+                {% for seller in top_sellers %}
+                    <div class="vendor-card">
+                        <a href="{% url 'public_profile' seller.user.id %}" class="text-decoration-none">
+                            <div class="vendor-image-container">
+                                {% if seller.profile_image %}
+                                    <img src="{{ seller.profile_image.url }}" alt="{{ seller.store_name }}" class="vendor-image">
+                                {% else %}
+                                    <div class="vendor-image-placeholder">
+                                        <i class="fas fa-store"></i>
+                                    </div>
+                                {% endif %}
                             </div>
-                        </div>
+                            <h3 class="vendor-name">{{ seller.store_name }}</h3>
+                            <div class="vendor-visits">
+                                <i class="fas fa-eye"></i> {{ seller.clicks.count }} visitas
+                            </div>
+                        </a>
                     </div>
-                </a>
-            {% endfor %}
+                {% endfor %}
+            </div>
+            <div class="carousel-buttons">
+                <button type="button" class="btn carousel-prev">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button type="button" class="btn carousel-next">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
         </div>
     </div>
     
@@ -362,146 +373,243 @@
         color: #718096;
         margin-bottom: 1.5rem;
     }
-    
-    /* Responsive */
-    @media (max-width: 768px) {
-        .seller-header {
-            padding: 1.25rem;
-        }
-        
-        .seller-image-container {
-            width: 100px;
-            height: 100px;
-        }
-        
-        .seller-content {
-            padding: 1.25rem;
-        }
+
+    /* Estilos para el carrusel de vendedores destacados */
+    .featured-vendors-section {
+        margin-bottom: 3rem;
+        padding: 2rem 0;
+        background: linear-gradient(to right, #f8f9fa, #e2e8f0, #f8f9fa);
+        border-radius: var(--border-radius);
     }
 
-    /* Estilos para el ranking */
-    .ranking-section {
+    .featured-vendors-section h2 {
+        color: #1a365d;
+    }
+
+    .vendors-carousel-container {
+        position: relative;
+        padding: 0 3rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .vendors-carousel {
+        display: flex;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        gap: 1rem;
+        padding: 1.5rem 0;
+        margin: 0 -10px;
+        scrollbar-width: none; /* Firefox */
+        justify-content: space-between;
+    }
+
+    .vendors-carousel::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+    }
+
+    .vendor-card {
+        flex: 0 0 18%;
+        min-width: 180px;
+        max-width: 220px;
         background: white;
         border-radius: var(--border-radius);
-        padding: 1.5rem;
         box-shadow: var(--card-shadow);
+        transition: all 0.3s;
+        padding: 1.5rem;
+        text-align: center;
+        margin: 0 0.5%;
     }
 
-    .ranking-list {
-        margin-top: 1rem;
+    .vendor-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--hover-shadow);
     }
 
-    .ranking-list a {
-        display: block;
-        margin-bottom: 0.5rem;
+    .vendor-image-container {
+        width: 110px;
+        height: 110px;
+        margin: 0 auto 1rem;
     }
 
-    .ranking-item {
-        display: flex;
-        align-items: center;
-        padding: 0.75rem;
-        border-radius: var(--border-radius);
-        background: #f8f9fa;
-        transition: all 0.3s ease;
+    .vendor-image {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid white;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
 
-    .ranking-item:hover {
-        background: #e9ecef;
-        transform: translateX(5px);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .ranking-position {
-        width: 50px;
-        height: 50px;
+    .vendor-image-placeholder {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: var(--primary-color);
         display: flex;
         align-items: center;
         justify-content: center;
-        background: var(--primary-color);
         color: white;
-        border-radius: 50%;
-        font-weight: bold;
-        margin-right: 1rem;
-        font-size: 1.1rem;
-        transition: transform 0.3s ease;
+        font-size: 2.5rem;
+        border: 4px solid white;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
 
-    .ranking-item:hover .ranking-position {
-        transform: scale(1.1);
-    }
-
-    .ranking-info {
-        flex: 1;
-    }
-
-    .ranking-name {
-        font-weight: 600;
+    .vendor-name {
+        font-size: 1.2rem;
+        font-weight: 700;
         color: #2c3e50;
-        margin-bottom: 0.25rem;
-        transition: color 0.3s ease;
+        margin-bottom: 0.75rem;
     }
 
-    .ranking-item:hover .ranking-name {
-        color: var(--primary-color);
-    }
-
-    .ranking-views {
+    .vendor-visits {
         font-size: 0.9rem;
         color: #6c757d;
     }
 
-    /* Estilos para los primeros puestos */
-    .ranking-item:nth-child(1) .ranking-position {
-        background: #1a4b8c;  /* Azul oscuro para el primer lugar */
+    .carousel-buttons {
+        display: flex;
+        justify-content: space-between;
+        position: absolute;
+        width: 100%;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        pointer-events: none;
     }
 
-    .ranking-item:nth-child(2) .ranking-position {
-        background: #2d6bbd;  /* Azul medio para el segundo lugar */
+    .carousel-prev, .carousel-next {
+        background: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        cursor: pointer;
+        color: var(--primary-color);
+        pointer-events: auto;
+        transition: all 0.3s;
     }
 
-    .ranking-item:nth-child(3) .ranking-position {
-        background: #4d8fde;  /* Azul claro para el tercer lugar */
+    .carousel-prev:hover, .carousel-next:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .carousel-prev {
+        margin-left: 10px;
+    }
+
+    .carousel-next {
+        margin-right: 10px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+        .vendor-card {
+            flex: 0 0 22%;
+            min-width: 160px;
+        }
+    }
+    
+    @media (max-width: 992px) {
+        .vendor-card {
+            flex: 0 0 30%;
+            min-width: 150px;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .vendor-card {
+            flex: 0 0 45%;
+            min-width: 140px;
+            margin: 0 0.25rem;
+        }
+        
+        .vendor-image-container {
+            width: 90px;
+            height: 90px;
+        }
+        
+        .carousel-buttons {
+            display: none; /* Ocultar botones en móvil para facilitar el deslizamiento táctil */
+        }
+        
+        .vendors-carousel-container {
+            padding: 0;
+        }
+        
+        .vendors-carousel {
+            padding: 1rem 0.5rem;
+            gap: 0.5rem;
+            justify-content: flex-start;
+            overflow-x: scroll;
+            -webkit-overflow-scrolling: touch;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .vendor-card {
+            flex: 0 0 80%;
+            min-width: 170px;
+        }
     }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Obtener elementos
-    const filterToggle = document.getElementById('filterToggle');
-    const filterOptions = document.getElementById('filterOptions');
-    const categorySelect = document.getElementById('categorySelect');
-    const searchInput = document.getElementById('searchInput');
-    const clearFilterBtn = document.getElementById('clearFilterBtn');
+    // Carousel navigation
+    var carousel = document.querySelector('.vendors-carousel');
+    var prevBtn = document.querySelector('.carousel-prev');
+    var nextBtn = document.querySelector('.carousel-next');
     
-    // Inicializar variables
-    const selected_categories = [];
+    if (prevBtn) {
+        prevBtn.onclick = function() {
+            if (carousel) {
+                // Calculate scroll amount based on the width of the carousel
+                var scrollAmount = Math.max(carousel.offsetWidth / 2, 350);
+                carousel.scrollLeft = carousel.scrollLeft - scrollAmount;
+            }
+        };
+    }
     
-    // Verificar si hay filtros aplicados para mostrar el panel de filtros
+    if (nextBtn) {
+        nextBtn.onclick = function() {
+            if (carousel) {
+                // Calculate scroll amount based on the width of the carousel
+                var scrollAmount = Math.max(carousel.offsetWidth / 2, 350);
+                carousel.scrollLeft = carousel.scrollLeft + scrollAmount;
+            }
+        };
+    }
+    
+    // Initially position all cards to be visible
+    if (carousel && carousel.children.length > 0) {
+        // Ensure all vendors are evenly distributed
+        var totalWidth = carousel.offsetWidth;
+        var cardWidth = carousel.children[0].offsetWidth;
+        var totalCards = carousel.children.length;
+        
+        // Add appropriate styling if needed
+        if (totalCards <= 5) {
+            carousel.style.justifyContent = 'space-evenly';
+        }
+    }
+    
+    // Filters
+    var filterOptions = document.getElementById('filterOptions');
+    
+    // Show filters if categories are selected
     {% if selected_categories %}
         if (filterOptions) {
             filterOptions.classList.add('show');
         }
     {% endif %}
-    
-    // Manejar clic en el botón de filtros
-    if (filterToggle && filterOptions) {
-        filterToggle.addEventListener('click', function() {
-            filterOptions.classList.toggle('show');
-        });
-    }
-    
-    // Actualizar contador de filtros
-    function updateFilterCount() {
-        const filterCount = document.getElementById('filterCount');
-        if (filterCount) {
-            const count = selected_categories.length;
-            filterCount.textContent = count > 0 ? count : '';
-            filterCount.style.display = count > 0 ? 'inline-block' : 'none';
-        }
-    }
-    
-    // Iniciar conteo
-    updateFilterCount();
 });
 </script>
 {% endblock %} 

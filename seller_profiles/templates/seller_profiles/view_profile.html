@@ -100,19 +100,21 @@
                         {% for product in profile.user.products.all %}
                             {% if product.available %}
                                 <div class="col-md-6 col-lg-4 col-xl-3">
-                                    <div class="product-card">
-                                        <div class="product-image-container">
-                                            {% if product.image %}
-                                                <img src="{{ product.image.url }}" class="product-image" alt="{{ product.name }}">
-                                            {% endif %}
-                                            <div class="product-category">{{ product.get_category_display }}</div>
+                                    <a href="{% url 'product_detail' product.id %}" class="product-card-link">
+                                        <div class="product-card">
+                                            <div class="product-image-container">
+                                                {% if product.image %}
+                                                    <img src="{{ product.image.url }}" class="product-image" alt="{{ product.name }}">
+                                                {% endif %}
+                                                <div class="product-category">{{ product.get_category_display }}</div>
+                                            </div>
+                                            <div class="product-details">
+                                                <h3 class="product-title">{{ product.name }}</h3>
+                                                <div class="product-price">$ {{ product.price|floatformat:0|intcomma }}</div>
+                                                <div class="btn btn-sm btn-primary view-details-btn mt-3">Ver Detalles</div>
+                                            </div>
                                         </div>
-                                        <div class="product-details">
-                                            <h3 class="product-title">{{ product.name }}</h3>
-                                            <div class="product-price">$ {{ product.price|floatformat:0|intcomma }}</div>
-                                            <a href="{% url 'product_detail' product.id %}" class="btn btn-sm btn-primary w-100 mt-3">Ver Detalles</a>
-                                        </div>
-                                    </div>
+                                    </a>
                                 </div>
                             {% endif %}
                         {% endfor %}
@@ -244,6 +246,13 @@
         border-bottom: 2px solid rgba(0,0,0,0.05);
     }
     
+    .product-card-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        height: 100%;
+    }
+    
     .product-card {
         background: white;
         border-radius: var(--border-radius);
@@ -304,6 +313,11 @@
         font-size: 1.25rem;
         font-weight: 700;
         color: var(--primary-color);
+    }
+    
+    .view-details-btn {
+        width: 100%;
+        text-align: center;
     }
     
     @media (max-width: 768px) {
