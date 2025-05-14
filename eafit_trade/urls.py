@@ -70,7 +70,8 @@ urlpatterns = [
     path('seller/<int:user_id>/', profile_views.public_profile, name='public_profile'),
     path('sellers/', profile_views.seller_list, name='seller_list'),
 
-
+    # Añadir la ruta para iniciar ngrok
+    path('start-ngrok/', products_views.start_ngrok_view, name='start_ngrok'),
 ]
 
 if settings.DEBUG:

@@ -27,7 +27,7 @@ class GeminiProcessor:
             prompt = f"""
             Eres un asistente que convierte consultas en lenguaje natural a palabras clave relevantes para búsqueda de productos.
             
-            Consulta: "{query}"
+            Consulta: "{query}" 
             
             Tu tarea es:
             1. Identificar la intención principal del usuario

@@ -13,6 +13,47 @@ from seller_profiles.models import SellerProfile, ProfileClick
 from django.contrib.auth.models import User
 from .gemini_processor import GeminiProcessor
 import json
+import logging
+
+# Importar pyngrok para poder iniciar ngrok desde Django
+from pyngrok import ngrok, conf
+
+# Configurar el logger para ngrok
+logger = logging.getLogger(__name__)
+
+# Esta función inicia ngrok y devuelve la URL pública
+def start_ngrok():
+    try:
+        # Puedes establecer tu token de autenticación aquí
+        # (Reemplaza 'TU_TOKEN_AQUI' con tu token real de ngrok)
+        # ngrok.set_auth_token('TU_TOKEN_AQUI')
+        
+        # Eliminar cualquier túnel existente
+        for tunnel in ngrok.get_tunnels():
+            ngrok.disconnect(tunnel.public_url)
+        
+        # Iniciar un nuevo túnel HTTP hacia el puerto 8000 (donde se ejecuta Django)
+        http_tunnel = ngrok.connect(8000)
+        
+        # Registrar la URL pública en los logs
+        logger.info(f"Ngrok iniciado: {http_tunnel.public_url}")
+        
+        return http_tunnel.public_url
+    except Exception as e:
+        logger.error(f"Error al iniciar ngrok: {str(e)}")
+        return None
+
+# Puedes llamar a esta función en alguna vista para iniciar ngrok
+def start_ngrok_view(request):
+    if request.user.is_superuser:  # Solo permitir a administradores
+        url = start_ngrok()
+        if url:
+            messages.success(request, f"Ngrok iniciado en: {url}")
+        else:
+            messages.error(request, "Error al iniciar ngrok")
+    else:
+        messages.error(request, "No tienes permisos para realizar esta acción")
+    return redirect('home')
 
 def home(request):
     products = Product.objects.all()

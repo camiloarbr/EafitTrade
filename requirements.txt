@@ -13,3 +13,14 @@ requests>=2.31.0  # Para realizar solicitudes HTTP (usado en Gemini API)
 black>=23.7.0  # Formateador de código (desarrollo)
 flake8>=6.1.0  # Linter para verificar errores en código (desarrollo)
 pytest>=7.4.0  # Para pruebas unitarias (desarrollo)
+
+# Nuevas dependencias
+google-generativeai==0.4.0
+six==1.16.0
+wheel==0.43.0
+django-widget-tweaks==1.5.0
+pydantic==2.6.3
+crispy-bootstrap4==2023.1
+crispy-tailwind==1.0.0
+django-extensions==3.2.3
+pyngrok==7.2.7

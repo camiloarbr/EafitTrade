@@ -29,15 +29,17 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost', 
     '127.0.0.1',
-    '360b-190-9-245-76.ngrok-free.app',  # Tu dominio específico de ngrok
     '.ngrok-free.app',  # Permitir cualquier subdominio de ngrok-free.app
-    '*'  # En desarrollo, puedes usar esto para permitir todos los hosts
+    '.ngrok.io',        # Para compatibilidad con dominios antiguos de ngrok
+    '.ngrok.app',       # Para compatibilidad con otros formatos de dominio ngrok
+    '*'                 # En desarrollo, permite todos los hosts
 ]
 
 # Configuración CSRF para ngrok
 CSRF_TRUSTED_ORIGINS = [
-    'https://360b-190-9-245-76.ngrok-free.app',
     'https://*.ngrok-free.app',
+    'https://*.ngrok.io',
+    'https://*.ngrok.app',
 ]
 
 # Configuración adicional para manejo de cookies

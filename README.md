@@ -145,3 +145,71 @@ Si tienes preguntas sobre el proyecto, puedes contactar a:
 - Email: info@eafittrade.com
 - GitHub: [camiloarbr](https://github.com/camiloarbr/EafitTrade)
 
+## Usando ngrok con EafitTrade
+
+Para exponer tu servidor local de desarrollo a internet y permitir que otros usuarios accedan a tu instancia de EafitTrade, puedes utilizar ngrok. Esto es útil para pruebas, demostraciones o desarrollo colaborativo.
+
+### Instalación de ngrok
+
+1. Descarga ngrok desde [https://ngrok.com/download](https://ngrok.com/download) o instálalo usando pyngrok:
+```bash
+pip install pyngrok
+```
+
+2. Si descargaste el ejecutable directamente:
+   - Descomprime el archivo
+   - Coloca el ejecutable en una ubicación accesible
+
+### Configuración del token de autenticación de ngrok
+
+1. Registra una cuenta gratuita en [https://ngrok.com/signup](https://ngrok.com/signup)
+
+2. Una vez registrado, ve a la [página de configuración de autenticación](https://dashboard.ngrok.com/get-started/your-authtoken) para obtener tu token de autenticación
+
+3. Configura el token en ngrok usando el comando:
+```bash
+.\ngrok.exe config add-authtoken tu_token_de_ngrok
+```
+
+4. En Windows, si usas PowerShell, puede que el operador `&&` no funcione. Usa comandos separados en lugar de concatenarlos.
+
+### Método 1: Uso de ngrok desde la línea de comandos
+
+1. Inicia tu servidor Django en el puerto 8000:
+```bash
+python manage.py runserver
+```
+
+2. En otra terminal, ejecuta ngrok para crear un túnel al puerto 8000:
+```bash
+.\ngrok.exe http 8000  # En Windows, usa la ruta completa si es necesario
+```
+
+3. Ngrok te proporcionará una URL pública (por ejemplo, `https://a1b2c3d4.ngrok.io`) que puedes compartir.
+
+### Método 2: Uso de ngrok integrado con Django
+
+EafitTrade incluye una integración con pyngrok que permite iniciar ngrok directamente desde la aplicación:
+
+1. Asegúrate de que pyngrok esté instalado y configurado con tu token de autenticación:
+```bash
+pip install pyngrok
+python -c "from pyngrok import ngrok; ngrok.set_auth_token('tu_token_de_ngrok')"
+```
+
+2. Inicia el servidor Django:
+```bash
+python manage.py runserver
+```
+
+3. Visita la URL `/start-ngrok/` desde tu navegador (debes estar autenticado como administrador).
+
+4. Se mostrará un mensaje con la URL pública de ngrok que puedes compartir.
+
+### Consideraciones importantes
+
+- La configuración ya incluye los dominios necesarios en `ALLOWED_HOSTS` para permitir conexiones desde ngrok.
+- Las URLs de ngrok cambian cada vez que reinicias ngrok, a menos que tengas una cuenta de pago.
+- Para servicios de producción, considera usar un hosting real en lugar de ngrok.
+- Recuerda que exponer tu servidor local a Internet puede representar riesgos de seguridad.
+
