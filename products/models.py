@@ -3,6 +3,10 @@ from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+import pytz
+
+# Configuración para la zona horaria de Colombia (UTC-5)
+COLOMBIA_TIMEZONE = pytz.timezone('America/Bogota')
 
 class Product(models.Model):
     CATEGORY_CHOICES = [
@@ -145,7 +149,7 @@ class Comment(models.Model):
         help_text='Calificación de 0 a 5 estrellas'
     )
     created_at = models.DateTimeField(
-        auto_now_add=True,
+        default=timezone.now,
         verbose_name='Fecha de publicación'
     )
 
@@ -156,6 +160,15 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'Comentario de {self.user.username} en {self.product.name}'
+
+    def save(self, *args, **kwargs):
+        # Si es un nuevo comentario, asignar la fecha actual con la zona horaria de Colombia
+        if not self.pk:
+            # Obtener la fecha actual en UTC
+            now_utc = timezone.now()
+            # Convertir a la zona horaria de Colombia
+            self.created_at = now_utc.astimezone(COLOMBIA_TIMEZONE)
+        super().save(*args, **kwargs)
 
 class Favorite(models.Model):
     user = models.ForeignKey(

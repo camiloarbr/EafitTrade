@@ -5,7 +5,10 @@ from django.core.exceptions import ValidationError
 import re
 import urllib.parse
 from django.utils.timezone import now
+import pytz
 
+# Configuración para la zona horaria de Colombia (UTC-5)
+COLOMBIA_TIMEZONE = pytz.timezone('America/Bogota')
 
 class SellerProfile(models.Model):
     user = models.OneToOneField(

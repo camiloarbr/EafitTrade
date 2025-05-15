@@ -665,7 +665,7 @@
                                 {% endfor %}
                             </div>
                         </div>
-                            <small class="text-muted">{{ comment.created_at|date:"d M Y, H:i" }}</small>
+                            <small class="text-muted">{{ comment.created_at|date:"d M Y" }}</small>
                     </div>
                         <p class="comment-text mb-1">{{ comment.text }}</p>
                     {% if user == comment.user %}

@@ -101,16 +101,16 @@
                             {% if product.available %}
                                 <div class="col-md-6 col-lg-4 col-xl-3">
                                     <a href="{% url 'product_detail' product.id %}" class="product-card-link">
-                                        <div class="product-card">
-                                            <div class="product-image-container">
-                                                {% if product.image %}
-                                                    <img src="{{ product.image.url }}" class="product-image" alt="{{ product.name }}">
-                                                {% endif %}
-                                                <div class="product-category">{{ product.get_category_display }}</div>
-                                            </div>
-                                            <div class="product-details">
-                                                <h3 class="product-title">{{ product.name }}</h3>
-                                                <div class="product-price">$ {{ product.price|floatformat:0|intcomma }}</div>
+                                    <div class="product-card">
+                                        <div class="product-image-container">
+                                            {% if product.image %}
+                                                <img src="{{ product.image.url }}" class="product-image" alt="{{ product.name }}">
+                                            {% endif %}
+                                            <div class="product-category">{{ product.get_category_display }}</div>
+                                        </div>
+                                        <div class="product-details">
+                                            <h3 class="product-title">{{ product.name }}</h3>
+                                            <div class="product-price">$ {{ product.price|floatformat:0|intcomma }}</div>
                                                 <div class="btn btn-sm btn-primary view-details-btn mt-3">Ver Detalles</div>
                                             </div>
                                         </div>
@@ -265,6 +265,7 @@
     .product-card:hover {
         transform: translateY(-5px);
         box-shadow: var(--hover-shadow);
+        background-color: rgba(var(--primary-color-rgb), 0.05);
     }
     
     .product-image-container {
@@ -318,6 +319,12 @@
     .view-details-btn {
         width: 100%;
         text-align: center;
+        transition: all 0.3s;
+    }
+    
+    .product-card:hover .view-details-btn {
+        background-color: var(--primary-color);
+        color: white;
     }
     
     @media (max-width: 768px) {

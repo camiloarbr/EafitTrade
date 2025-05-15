@@ -20,6 +20,22 @@ class SellerProfileForm(forms.ModelForm):
                 'placeholder': '573001234567'
             }),
         }
+        help_texts = {
+            'store_name': 'Nombre visible de tu negocio para los compradores.',
+            'slogan': 'Una frase corta que describa tu negocio (opcional).',
+            'description': 'Describe tu negocio, qué productos vendes y cualquier información relevante para tus clientes.',
+            'profile_image': 'Sube una imagen de tu logo o perfil (opcional).',
+            'whatsapp': 'Número de WhatsApp para contacto (opcional). Formato: 573001234567.'
+        }
+        error_messages = {
+            'store_name': {
+                'required': 'Por favor ingresa un nombre para tu tienda.',
+                'max_length': 'El nombre de la tienda no puede exceder los 100 caracteres.'
+            },
+            'description': {
+                'required': 'Por favor ingresa una descripción para tu tienda.'
+            }
+        }
 
     def clean_whatsapp(self):
         whatsapp = self.cleaned_data.get('whatsapp')
@@ -49,15 +65,20 @@ class ScheduleForm(forms.ModelForm):
             'start_time': forms.TimeInput(attrs={
                 'class': 'form-control time-input',
                 'type': 'time',
-                'min': '07:00',
+                'min': '06:00',
                 'max': '22:00'
             }),
             'end_time': forms.TimeInput(attrs={
                 'class': 'form-control time-input',
                 'type': 'time',
-                'min': '07:00',
+                'min': '06:00',
                 'max': '22:00'
             }),
+        }
+        help_texts = {
+            'is_available': 'Indica si estás disponible este día.',
+            'start_time': 'Hora de inicio (entre 6:00 a.m. y 10:00 p.m.)',
+            'end_time': 'Hora de cierre (entre 6:00 a.m. y 10:00 p.m.)'
         }
 
 class ScheduleFormSet(forms.BaseInlineFormSet):
