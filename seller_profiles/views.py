@@ -169,13 +169,17 @@ def seller_list(request):
     sellers_data = []
     for seller in sellers:
         # Obtener categorías únicas de los productos del vendedor
+        # Filter out None and empty values before making distinct
         seller_categories = seller.user.products.values_list(
             'category', flat=True
-        ).distinct()
+        ).exclude(category__isnull=True).exclude(category='').distinct()
+        
+        # Convert to list and sort for consistent display order
+        categories_list = sorted(list(seller_categories))
         
         sellers_data.append({
             'profile': seller,
-            'categories': list(seller_categories)
+            'categories': categories_list
         })
     
     # Preparar las categorías para el filtro

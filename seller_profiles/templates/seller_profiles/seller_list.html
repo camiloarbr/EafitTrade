@@ -337,6 +337,7 @@
         flex-wrap: wrap;
         gap: 0.5rem;
         justify-content: center;
+        margin-top: 1rem;
     }
     
     .category-badge {
@@ -347,6 +348,14 @@
         font-weight: 600;
         background-color: #f0f4f8;
         color: var(--primary-color);
+        margin-bottom: 0.25rem;
+        transition: all 0.2s ease;
+    }
+    
+    .category-badge:hover {
+        background-color: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
     }
     
     /* Estado vacío */
