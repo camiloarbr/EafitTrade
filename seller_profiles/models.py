@@ -76,13 +76,12 @@ class SellerProfile(models.Model):
         return base_url
 
 class Schedule(models.Model):
-    # Usamos valores numéricos para los días para poder ordenarlos correctamente
     DAYS_OF_WEEK = [
-        (1, 'Lunes'),
-        (2, 'Martes'),
-        (3, 'Miércoles'),
-        (4, 'Jueves'),
-        (5, 'Viernes'),
+        ('Lunes', 'Lunes'),
+        ('Martes', 'Martes'),
+        ('Miércoles', 'Miércoles'),
+        ('Jueves', 'Jueves'),
+        ('Viernes', 'Viernes')
     ]
 
     profile = models.ForeignKey(
@@ -90,7 +89,8 @@ class Schedule(models.Model):
         on_delete=models.CASCADE,
         related_name='schedules'
     )
-    day = models.IntegerField(
+    day = models.CharField(
+        max_length=20,
         choices=DAYS_OF_WEEK,
         verbose_name='Día'
     )
@@ -101,33 +101,72 @@ class Schedule(models.Model):
     start_time = models.TimeField(
         verbose_name='Hora de inicio',
         null=True,
-        blank=True
+        blank=True,
+        help_text='Horario de inicio (entre 6:00 AM y 9:30 PM, en intervalos de 30 minutos)'
     )
     end_time = models.TimeField(
         verbose_name='Hora de cierre',
         null=True,
-        blank=True
+        blank=True,
+        help_text='Horario de cierre (entre 6:30 AM y 10:00 PM, en intervalos de 30 minutos)'
     )
 
     class Meta:
-        ordering = ['day']  # Ahora day es un número, así que ordenará correctamente
+        ordering = ['day']
         unique_together = ['profile', 'day']
+        verbose_name = 'Horario'
+        verbose_name_plural = 'Horarios'
 
     def clean(self):
+        super().clean()
+        
         if self.is_available:
             if not self.start_time or not self.end_time:
-                raise ValidationError('Debe especificar hora de inicio y cierre cuando el día está disponible')
-            if self.start_time >= self.end_time:
-                raise ValidationError('La hora de inicio debe ser anterior a la hora de cierre')
+                raise ValidationError({
+                    'start_time': 'Debe especificar hora de inicio cuando el día está disponible',
+                    'end_time': 'Debe especificar hora de cierre cuando el día está disponible'
+                })
+            
+            # Convertir a minutos para comparaciones más fáciles
+            start_time_minutes = self.start_time.hour * 60 + self.start_time.minute
+            end_time_minutes = self.end_time.hour * 60 + self.end_time.minute
+            
+            # Validar rango de horas (6:00 AM a 10:00 PM)
+            if start_time_minutes < 6 * 60 or start_time_minutes >= 22 * 60:
+                raise ValidationError({
+                    'start_time': 'La hora de inicio debe estar entre las 6:00 AM y las 9:30 PM'
+                })
+            if end_time_minutes < (6 * 60 + 30) or end_time_minutes > 22 * 60:
+                raise ValidationError({
+                    'end_time': 'La hora de cierre debe estar entre las 6:30 AM y las 10:00 PM'
+                })
+            
+            # Validar que la hora de inicio sea anterior a la de cierre
+            if start_time_minutes >= end_time_minutes:
+                raise ValidationError({
+                    'end_time': 'La hora de cierre debe ser posterior a la hora de inicio'
+                })
+
+            # Validar intervalos de 30 minutos
+            if start_time_minutes % 30 != 0 or end_time_minutes % 30 != 0:
+                raise ValidationError({
+                    'start_time': 'Las horas deben ser en intervalos de 30 minutos (ejemplo: 6:00, 6:30, 7:00, etc.)',
+                    'end_time': 'Las horas deben ser en intervalos de 30 minutos (ejemplo: 6:00, 6:30, 7:00, etc.)'
+                })
+
+            # Validar que haya al menos 30 minutos entre inicio y cierre
+            if end_time_minutes - start_time_minutes < 30:
+                raise ValidationError({
+                    'end_time': 'Debe haber al menos 30 minutos entre la hora de inicio y cierre'
+                })
         else:
             self.start_time = None
             self.end_time = None
 
     def __str__(self):
-        day_name = self.get_day_display()
         if not self.is_available:
-            return f"{day_name}: No disponible"
-        return f"{day_name}: {self.start_time.strftime('%H:%M')} - {self.end_time.strftime('%H:%M')}"
+            return f"{self.day}: No disponible"
+        return f"{self.day}: {self.start_time.strftime('%H:%M')} - {self.end_time.strftime('%H:%M')}"
     
 
 class ProfileClick(models.Model):

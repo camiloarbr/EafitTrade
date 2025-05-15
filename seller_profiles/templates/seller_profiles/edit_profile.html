@@ -128,16 +128,35 @@
                                                         </label>
                                                     </div>
                                                 </div>
-                                                
-                                                <div class="schedule-times" data-available="{{ schedule_form.is_available.value|yesno:'true,false' }}">
+                                                  <div class="schedule-times" data-available="{{ schedule_form.is_available.value|yesno:'true,false' }}">
                                                     <div class="row g-3">
                                                         <div class="col-md-6">
-                                                            <label class="form-label">Hora de inicio</label>
-                                                            {{ schedule_form.start_time }}
+                                                            <label class="form-label">
+                                                                <i class="fas fa-sun me-1 text-warning"></i>Hora de inicio
+                                                            </label>
+                                                            <div class="input-group">
+                                                                {{ schedule_form.start_time }}
+                                                            </div>
+                                                            <small class="form-text text-muted">Entre 6:00 AM y 9:30 PM</small>
+                                                            {% if schedule_form.start_time.errors %}
+                                                                <div class="invalid-feedback d-block">
+                                                                    {{ schedule_form.start_time.errors|join:", " }}
+                                                                </div>
+                                                            {% endif %}
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <label class="form-label">Hora de cierre</label>
-                                                            {{ schedule_form.end_time }}
+                                                            <label class="form-label">
+                                                                <i class="fas fa-moon me-1 text-primary"></i>Hora de cierre
+                                                            </label>
+                                                            <div class="input-group">
+                                                                {{ schedule_form.end_time }}
+                                                            </div>
+                                                            <small class="form-text text-muted">Entre 6:30 AM y 10:00 PM</small>
+                                                            {% if schedule_form.end_time.errors %}
+                                                                <div class="invalid-feedback d-block">
+                                                                    {{ schedule_form.end_time.errors|join:", " }}
+                                                                </div>
+                                                            {% endif %}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -252,48 +271,66 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             placeholder.innerHTML = `<i class="fas fa-cloud-upload-alt me-2"></i>Cambiar imagen`;
         }
-    });
-    
-    // Manejar horarios
+    });    // Manejar horarios
     const scheduleCards = document.querySelectorAll('.schedule-card');
     
     scheduleCards.forEach(card => {
         const toggle = card.querySelector('.form-check-input');
         const timesContainer = card.querySelector('.schedule-times');
-        const timeInputs = card.querySelectorAll('input[type="time"]');
+        const startTimeSelect = card.querySelector('select[name*="start_time"]');
+        const endTimeSelect = card.querySelector('select[name*="end_time"]');
+        
+        function updateEndTimeOptions() {
+            const startTime = startTimeSelect.value;
+            const endTimeOptions = endTimeSelect.options;
+            
+            // Habilitar todas las opciones primero
+            Array.from(endTimeOptions).forEach(option => {
+                option.disabled = false;
+            });
+            
+            if (startTime) {
+                // Deshabilitar opciones de cierre que sean antes o iguales a la hora de inicio
+                Array.from(endTimeOptions).forEach(option => {
+                    if (option.value && option.value <= startTime) {
+                        option.disabled = true;
+                    }
+                });
+                
+                // Si la hora de cierre seleccionada no es válida, seleccionar la siguiente disponible
+                if (endTimeSelect.value <= startTime) {
+                    const nextValidOption = Array.from(endTimeOptions).find(option => 
+                        option.value > startTime && !option.disabled
+                    );
+                    if (nextValidOption) {
+                        endTimeSelect.value = nextValidOption.value;
+                    }
+                }
+            }
+        }
         
         function updateTimeInputs() {
             const isAvailable = toggle.checked;
             timesContainer.dataset.available = isAvailable;
             
-            timeInputs.forEach(input => {
-                input.required = isAvailable;
+            [startTimeSelect, endTimeSelect].forEach(select => {
+                select.required = isAvailable;
                 if (!isAvailable) {
-                    input.value = '';
+                    select.value = '';
                 }
             });
+            
+            if (isAvailable) {
+                updateEndTimeOptions();
+            }
         }
+        
+        // Eventos
+        toggle.addEventListener('change', updateTimeInputs);
+        startTimeSelect.addEventListener('change', updateEndTimeOptions);
         
         // Inicializar estado
         updateTimeInputs();
-        
-        // Escuchar cambios
-        toggle.addEventListener('change', updateTimeInputs);
-    });
-
-    // Flatpickr para los campos de hora
-    document.querySelectorAll('input[type="time"]').forEach(function(input) {
-        input.setAttribute('placeholder', 'Selecciona hora');
-        flatpickr(input, {
-            enableTime: true,
-            noCalendar: true,
-            dateFormat: "H:i",
-            time_24hr: true,
-            minTime: "06:00",
-            maxTime: "22:00",
-            allowInput: true,
-            clickOpens: true
-        });
     });
 });
 </script>

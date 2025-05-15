@@ -53,6 +53,28 @@ class SellerProfileForm(forms.ModelForm):
         return None
 
 class ScheduleForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Generar opciones de tiempo en intervalos de 30 minutos
+        start_time_choices = []
+        end_time_choices = []
+        
+        for hour in range(6, 22):  # 6 AM a 9:30 PM para inicio, 6:30 AM a 10 PM para cierre
+            for minute in [0, 30]:
+                time_str = f"{hour:02d}:{minute:02d}"
+                time_display = f"{hour:02d}:{minute:02d}"
+                
+                if hour < 22 or (hour == 21 and minute == 30):  # Solo hasta 9:30 PM para inicio
+                    start_time_choices.append((time_str, time_display))
+                if (hour > 6 or (hour == 6 and minute == 30)) and (hour < 22 or minute == 0):  # 6:30 AM a 10 PM para cierre
+                    end_time_choices.append((time_str, time_display))
+        
+        self.fields['start_time'].widget = forms.Select(choices=[('', 'Seleccionar hora')] + start_time_choices)
+        self.fields['end_time'].widget = forms.Select(choices=[('', 'Seleccionar hora')] + end_time_choices)
+        
+        self.fields['start_time'].widget.attrs.update({'class': 'form-select time-select'})
+        self.fields['end_time'].widget.attrs.update({'class': 'form-select time-select'})
+
     class Meta:
         model = Schedule
         fields = ['day', 'is_available', 'start_time', 'end_time']
@@ -61,25 +83,41 @@ class ScheduleForm(forms.ModelForm):
             'is_available': forms.CheckboxInput(attrs={
                 'class': 'form-check-input availability-toggle',
                 'role': 'switch'
+            }),'start_time': forms.Select(attrs={
+                'class': 'form-select time-select',
             }),
-            'start_time': forms.TimeInput(attrs={
-                'class': 'form-control time-input',
-                'type': 'time',
-                'min': '06:00',
-                'max': '22:00'
-            }),
-            'end_time': forms.TimeInput(attrs={
-                'class': 'form-control time-input',
-                'type': 'time',
-                'min': '06:00',
-                'max': '22:00'
+            'end_time': forms.Select(attrs={
+                'class': 'form-select time-select',
+                'min': '06:30',  # Mínimo 30 minutos después de la hora de inicio mínima
+                'max': '22:00',
+                'placeholder': 'Selecciona hora de cierre'
             }),
         }
         help_texts = {
             'is_available': 'Indica si estás disponible este día.',
-            'start_time': 'Hora de inicio (entre 6:00 a.m. y 10:00 p.m.)',
-            'end_time': 'Hora de cierre (entre 6:00 a.m. y 10:00 p.m.)'
+            'start_time': 'Hora de inicio (entre 6:00 AM y 9:30 PM)',
+            'end_time': 'Hora de cierre (entre 6:30 AM y 10:00 PM)'
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        is_available = cleaned_data.get('is_available')
+        start_time = cleaned_data.get('start_time')
+        end_time = cleaned_data.get('end_time')
+
+        if is_available:
+            if not start_time:
+                self.add_error('start_time', 'Debes especificar una hora de inicio cuando el día está disponible')
+            if not end_time:
+                self.add_error('end_time', 'Debes especificar una hora de cierre cuando el día está disponible')
+
+            if start_time and end_time:
+                # Verificar que haya al menos 30 minutos entre inicio y cierre
+                time_diff = (end_time.hour * 60 + end_time.minute) - (start_time.hour * 60 + start_time.minute)
+                if time_diff < 30:
+                    self.add_error('end_time', 'Debe haber al menos 30 minutos entre la hora de inicio y cierre')
+
+        return cleaned_data
 
 class ScheduleFormSet(forms.BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
@@ -100,4 +138,4 @@ ScheduleInlineFormSet = inlineformset_factory(
     validate_min=True,
     validate_max=True,
     can_delete=False
-) 
+)

@@ -132,8 +132,13 @@
                                                 <div class="schedule-times" data-available="{{ form.is_available.value|yesno:'true,false' }}">
                                                     <div class="row g-3">
                                                         <div class="col-md-6">
-                                                            <label class="form-label">Hora de inicio</label>
-                                                            {{ form.start_time }}
+                                                            <label class="form-label">
+                                                                <i class="fas fa-sun me-1 text-warning"></i>Hora de inicio
+                                                            </label>
+                                                            <div class="input-group">
+                                                                {{ form.start_time }}
+                                                            </div>
+                                                            <small class="form-text text-muted">Entre 6:00 AM y 10:00 PM</small>
                                                             {% if form.start_time.errors %}
                                                                 <div class="invalid-feedback d-block">
                                                                     {{ form.start_time.errors|join:", " }}
@@ -141,8 +146,13 @@
                                                             {% endif %}
                                                         </div>
                                                         <div class="col-md-6">
-                                                            <label class="form-label">Hora de cierre</label>
-                                                            {{ form.end_time }}
+                                                            <label class="form-label">
+                                                                <i class="fas fa-moon me-1 text-primary"></i>Hora de cierre
+                                                            </label>
+                                                            <div class="input-group">
+                                                                {{ form.end_time }}
+                                                            </div>
+                                                            <small class="form-text text-muted">Entre 6:00 AM y 10:00 PM</small>
                                                             {% if form.end_time.errors %}
                                                                 <div class="invalid-feedback d-block">
                                                                     {{ form.end_time.errors|join:", " }}
@@ -207,16 +217,22 @@
         border-color: var(--primary-color);
         box-shadow: 0 0 0 4px rgba(13,110,253,0.15);
     }
-    
-    .schedule-card {
+      .schedule-card {
         border: none;
         border-radius: var(--border-radius);
         box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+
+    .schedule-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
     .schedule-times[data-available="false"] {
         opacity: 0.5;
         pointer-events: none;
+        transition: opacity 0.3s ease;
     }
 
     .form-switch {
@@ -229,6 +245,8 @@
         margin-left: -2.5em;
         background-color: #e9ecef;
         border-color: #dee2e6;
+        cursor: pointer;
+        transition: all 0.2s ease;
     }
 
     .form-switch .form-check-input:checked {
@@ -239,6 +257,26 @@
     .form-control[type="time"] {
         padding: 0.6rem 1rem;
         width: 100%;
+        border-radius: 0.5rem;
+        border: 1px solid #dee2e6;
+        font-size: 1rem;
+        background-color: white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .form-control[type="time"]:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.25);
+    }
+
+    .schedule-formset .card-body {
+        padding: 1.5rem;
+    }
+
+    .form-text {
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
     }
 </style>
 
@@ -263,28 +301,52 @@ document.addEventListener('DOMContentLoaded', function() {
     scheduleCards.forEach(card => {
         const toggle = card.querySelector('.form-check-input');
         const timesContainer = card.querySelector('.schedule-times');
-        const timeInputs = card.querySelectorAll('input[type="time"]');
+        const startTimeInput = card.querySelector('input[name*="start_time"]');
+        const endTimeInput = card.querySelector('input[name*="end_time"]');
+        
+        function updateTimeRange() {
+            const startTime = startTimeInput.value;
+            if (startTime) {
+                // Asegurar que la hora de cierre sea al menos 30 minutos después de la hora de inicio
+                const startDate = new Date(`2000-01-01T${startTime}`);
+                startDate.setMinutes(startDate.getMinutes() + 30);
+                const minEndTime = startDate.toTimeString().slice(0, 5);
+                
+                endTimeInput.min = minEndTime;
+                if (endTimeInput.value && endTimeInput.value <= startTime) {
+                    endTimeInput.value = minEndTime;
+                }
+            }
+        }
         
         function updateTimeInputs() {
             const isAvailable = toggle.checked;
             timesContainer.dataset.available = isAvailable;
             
-            timeInputs.forEach(input => {
+            [startTimeInput, endTimeInput].forEach(input => {
                 input.required = isAvailable;
                 if (!isAvailable) {
                     input.value = '';
                 }
             });
+            
+            if (isAvailable && !startTimeInput.value) {
+                startTimeInput.value = '08:00'; // Hora por defecto
+                updateTimeRange();
+            }
+            if (isAvailable && !endTimeInput.value) {
+                endTimeInput.value = '17:00'; // Hora por defecto
+            }
         }
+        
+        // Eventos
+        toggle.addEventListener('change', updateTimeInputs);
+        startTimeInput.addEventListener('change', updateTimeRange);
         
         // Inicializar estado
         updateTimeInputs();
-        
-        // Escuchar cambios
-        toggle.addEventListener('change', updateTimeInputs);
     });
-
-    // Flatpickr para los campos de hora
+});    // Configuración de Flatpickr para los campos de hora
     document.querySelectorAll('input[type="time"]').forEach(function(input) {
         input.setAttribute('placeholder', 'Selecciona hora');
         flatpickr(input, {
@@ -294,10 +356,20 @@ document.addEventListener('DOMContentLoaded', function() {
             time_24hr: true,
             minTime: "06:00",
             maxTime: "22:00",
+            minuteIncrement: 30,
             allowInput: true,
-            clickOpens: true
+            clickOpens: true,
+            defaultHour: input.id.includes('start_time') ? 8 : 17,
+            onChange: function(selectedDates, dateStr) {
+                // Validar el rango de horas
+                const hour = parseInt(dateStr.split(':')[0]);
+                if (hour < 6 || hour >= 22) {
+                    alert('Por favor selecciona una hora entre las 6:00 AM y las 10:00 PM');
+                    this.clear();
+                }
+            }
         });
     });
 });
 </script>
-{% endblock %} 
+{% endblock %}
