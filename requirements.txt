@@ -1,26 +1,37 @@
-Django>=5.1.6
+### Dependencias principales ###
+Django>=5.1.6  # Framework web
 Pillow>=10.0.0  # Para manejo de imágenes
-django-crispy-forms>=2.1  # Para mejorar la renderización de formularios
 python-dotenv>=1.0.0  # Para variables de entorno
-django-cleanup>=8.0.0  # Para limpiar archivos media automáticamente
-django-compressor>=4.4  # Para comprimir archivos estáticos
-django-debug-toolbar>=4.2  # Para desarrollo
 whitenoise>=6.6.0  # Para servir archivos estáticos
-gunicorn>=21.2.0  # Para producción
-requests>=2.31.0  # Para realizar solicitudes HTTP (usado en Gemini API)
+gunicorn>=21.2.0  # Para servidor de producción
+pytz>=2024.1  # Para manejo de zonas horarias
 
-# Dependencias opcionales para desarrollo
-black>=23.7.0  # Formateador de código (desarrollo)
-flake8>=6.1.0  # Linter para verificar errores en código (desarrollo)
-pytest>=7.4.0  # Para pruebas unitarias (desarrollo)
+### Dependencias para la interfaz de usuario ###
+django-crispy-forms>=2.1  # Para mejorar la renderización de formularios
+crispy-bootstrap4>=2023.1  # Tema Bootstrap 4 para crispy-forms
+django-widget-tweaks>=1.5.0  # Para personalización de widgets
+django-compressor>=4.4  # Para comprimir archivos estáticos
 
-# Nuevas dependencias
-google-generativeai==0.4.0
-six==1.16.0
-wheel==0.43.0
-django-widget-tweaks==1.5.0
-pydantic==2.6.3
-crispy-bootstrap4==2023.1
-crispy-tailwind==1.0.0
-django-extensions==3.2.3
-pyngrok==7.2.7
+### Dependencias para características específicas ###
+requests>=2.31.0  # Para realizar solicitudes HTTP
+google-generativeai>=0.4.0  # API de Gemini para procesamiento de texto
+pydantic>=2.6.3  # Para validación de datos
+pyngrok>=7.2.7  # Para túneles HTTP con ngrok
+
+### Utilidades y herramientas ###
+django-cleanup>=8.0.0  # Para limpiar archivos media automáticamente
+django-extensions>=3.2.3  # Herramientas adicionales para Django
+six>=1.16.0  # Compatibilidad Python 2/3
+wheel>=0.43.0  # Para instalación de paquetes
+
+### Dependencias de desarrollo ###
+django-debug-toolbar>=4.2  # Barra de depuración
+black>=23.7.0  # Formateador de código
+flake8>=6.1.0  # Linter de código
+pytest>=7.4.0  # Framework de pruebas
+coverage>=7.4.0  # Para reportes de cobertura de código
+
+### Dependencias opcionales ###
+django-storages>=1.14.2  # Para almacenamiento en la nube (opcional)
+psycopg2-binary>=2.9.9  # Para PostgreSQL (opcional)
+redis>=5.0.1  # Para caché y colas (opcional)
